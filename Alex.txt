@@ -1,0 +1,228 @@
+# Bericht: Der Alex-Algorithmus – Schrittweise Darstellung und Begriffseinführung
+
+Im Folgenden präsentieren wir einen detaillierten Bericht über den **Alex-Algorithmus** (Adaptive Lineare EXtrapolation), der die Funktionsweise schrittweise und klar verständlich darstellt. Der Bericht führt alle zentralen Begriffe nacheinander ein, erklärt deren Bedeutung und zeigt, wie sie in den Algorithmus eingebettet sind. Ziel ist es, den Algorithmus so zu beschreiben, dass sowohl die Konzepte als auch die Abläufe für Leser mit unterschiedlichem Vorwissen zugänglich sind. Der Fokus liegt auf der hybriden Optimierungsmethode, die für teure Verlustfunktionen im überwachten Lernen entwickelt wurde, dem Schutz von Punkten mit kleiner Gradientennorm sowie der neuen **Hybrid Mixing Method**, die die Effizienz des Algorithmus weiter steigert. Neue Sicherheitsmechanismen, wie die dynamische Bereinigung bei numerischen Instabilitäten und die Skalierung weit entfernter Kandidatenpunkte, verbessern die Robustheit und Stabilität des Algorithmus.
+
+---
+
+Der **Alex-Algorithmus** ist eine fortschrittliche Optimierungsmethode, die speziell dafür entwickelt wurde, teure Verlustfunktionen im überwachten Lernen effizient zu minimieren. **Das übergeordnete Ziel des Algorithmus ist es, die Anzahl der notwendigen Funktions- und Gradientenauswertungen so gering wie möglich zu halten, da diese Operationen rechenintensiv und somit „teuer“ sind.** Er kombiniert gradientenbasierte Techniken mit einer dynamischen Simplex-Struktur, um die Anzahl der Funktions- und Gradientenauswertungen zu reduzieren, was besonders bei rechenintensiven Problemen wie dem Fine-Tuning neuronaler Netze entscheidend ist. **Man kann den Alex-Algorithmus als ein Gradientenverfahren mit adaptierter Schrittweite betrachten, das durch die Integration einer dynamischen Simplex-Struktur und Teilraumoptimierung erweitert wird, um die Effizienz weiter zu steigern.** Die Einführung der Hybrid Mixing Method verbessert die Konvergenzgeschwindigkeit, indem sie die Vorteile der Teilraumoptimierung und des Gradientenabstiegs kombiniert, um neue Punkte mit maximaler Verbesserung bei minimaler Anzahl an Evaluationen zu generieren. Neue Sicherheitsmechanismen, wie die Entfernung problematischer Punkte bei numerischen Fehlschlägen oder Entgleisung der Modellfunktion sowie die Skalierung weit entfernter Punkte, erhöhen die Robustheit. Der Algorithmus zeichnet sich durch seine Robustheit, geringe Hyperparameterabhängigkeit und die Fähigkeit aus, sowohl schnelle lokale Fortschritte als auch eine intelligente Nutzung der globalen Geometrie der Verlustfunktion zu ermöglichen.
+
+## 1. Grundlegende Begriffe und Konzepte
+
+Die folgenden Begriffe sind zentral für das Verständnis des Alex-Algorithmus:
+
+### 1.1. Verlustfunktion ($f$)
+
+Die **Verlustfunktion** $f: \mathbb{R}^n \to \mathbb{R}$ ist die Funktion, die minimiert werden soll. Sie quantifiziert den Fehler eines Modells in Abhängigkeit seiner Parameter $x$. Im Kontext des Alex-Algorithmus wird angenommen, dass $f$ **teuer** ist, d. h., jede Auswertung von $f(x)$ und seinem Gradienten $\nabla f(x)$ erfordert erhebliche Rechenressourcen. Ziel ist es, die Anzahl dieser Auswertungen zu minimieren, während wir den Punkt $x \in \mathbb{R}^n$ finden, der $f(x)$ minimiert.
+
+### 1.2. Simplex
+
+Ein **Simplex** ist eine dynamische Menge von $k$ Punkten in $\mathbb{R}^n$, die die lokale Geometrie der Verlustfunktion abbildet. **Man kann ihn metaphorisch als einen „Sammler“ der Informationen des Gradientenverfahrens auf dessen Optimierungspfad verstehen.** Jeder Punkt $x_i$ im Simplex hat:
+- Einen **Positionsvektor** $x_i \in \mathbb{R}^n$, der die Parameter des Modells repräsentiert.
+- Einen **Funktionswert** $f(x_i) \in \mathbb{R}$, der die Qualität des Punktes misst.
+- Einen **Gradienten** $\nabla f(x_i) \in \mathbb{R}^n$, der die Richtung des steilsten Anstiegs der Verlustfunktion anzeigt.
+
+Die Anzahl der Punkte $k$ im Simplex variiert dynamisch und erfüllt die Bedingung $1 \leq k \leq k_{max}$, wobei $k_{max}$ die maximale Simplexgröße ist (siehe unten). Der Simplex dient als Grundlage für die Teilraumoptimierung, bei der neue Punkte durch Linearkombinationen der Simplexpunkte generiert werden. **Basierend auf diesem „Informationsteppich“ aus gesammelten Punkten mit ihren Funktionswerten und Gradienten wird anschließend eine Optimierung auf dem affinen Unterraum versucht, den diese Punkte aufspannen.** Neue Sicherheitsmechanismen entfernen Punkte, die numerische Instabilitäten oder Entgleisungen verursachen, und schützen die zwei besten Punkte, um die Qualität des Simplex zu erhalten.
+
+### 1.3. Maximale Simplexgröße ($k_{max}$)
+
+$k_{max}$ ist ein entscheidender Eingabeparameter, der die Obergrenze für die Anzahl der Punkte im Simplex festlegt. Die Dimension des Problems spielt hier eine Rolle, typischerweise ist $k_{max}$ proportional zur Problemgröße.
+
+### 1.4. Bester Punkt ($x_{\text{best}}$)
+
+Der **beste Punkt** $x_{\text{best}}$ ist der Punkt im Simplex mit dem niedrigsten Funktionswert. Er dient als Ausgangspunkt für alle Suchoperationen innerhalb eines Iterationszyklus.
+
+### 1.5. Kandidatenpunkt ($x_{\text{candidate}}$)
+
+Ein **Kandidatenpunkt** $x_{\text{candidate}}$ ist ein potenzieller neuer Punkt, der dem Simplex hinzugefügt werden kann. Er wird entweder durch einen Gradientenabstiegsschritt, durch die Teilraumoptimierung oder durch die neue Hybrid Mixing Method generiert. Neue Skalierungsmechanismen stellen sicher, dass weit entfernte Kandidatenpunkte auf eine geeignete Distanz beschränkt werden.
+
+### 1.6. Ein-Parameter-Funktion ($\phi(\alpha)$)
+
+Die Funktion $\phi(\alpha) = f(x_{\text{best}} + \alpha d)$ beschreibt den Verlauf der Verlustfunktion $f$ entlang einer Geraden vom Punkt $x_{\text{best}}$ in Richtung $d$. Sie ist entscheidend für die Liniensuche zur Bestimmung einer optimalen Schrittweite $\alpha$.
+
+## 2. Eingabeparameter des Algorithmus
+
+Der Alex-Algorithmus ist relativ robust und benötigt weniger Feintuning von Hyperparametern als andere Optimierer wie Adam. Die Hauptparameter sind:
+- **Startpunkt ($x_1$)**: Der initiale Schätzwert für die Parameter.
+- **Maximale Simplexgröße ($k_{max}$)**: Obergrenze für die Anzahl der Punkte im Simplex.
+- **Startschrittweite ($\alpha_0$)**: Initialer Wert für die Liniensuche im Gradientenabstieg.
+- **Toleranzen für die Liniensuche ($\epsilon, \delta$)**: Bestimmen die Präzision und Abbruchkriterien der Liniensuche.
+- **Schwellenwert für Gradientenkollation ($\tau$)**: Definiert, wie parallel zwei Gradientenvektoren sein dürfen.
+- **Überschätzungsparameter ($\gamma$)**: Für eine aggressivere Liniensuche.
+- **Anzahl der besten Punkte für die Rettungssuche ($m$)**: Bestimmt, wie viele der besten Punkte in einer Rettungssuche berücksichtigt werden.
+- **Schwellenwert für kleine Gradientennormen ($\eta$)**: Schützt Punkte mit sehr kleinen Gradientennormen vor der Entfernung aus dem Simplex.
+- **Toleranz für Modellfunktionswert ($fx_{\text{model_tol}}$)**: Schwellenwert (`1e-6`) zur Erkennung von Entgleisungen in der Teilraumoptimierung.
+- **Maximaler Distanzfaktor ($MAX_DISTANCE_FACTOR$)**: Parameter (`10.0`) zur Skalierung weit entfernter Kandidatenpunkte.
+
+Diese Parameter sind so konzipiert, dass sie intuitiv sind und eine gute Balance zwischen Konvergenzgeschwindigkeit und Robustheit bieten.
+
+## 3. Schrittweise Darstellung des Algorithmus
+
+Der Alex-Algorithmus läuft iterativ ab, bis ein Konvergenzkriterium erfüllt ist (z. B. $\lVert \nabla f(x_{\text{best}}) \rVert < \text{Toleranz}$ oder maximale Iterationen). Jede Iteration besteht aus mehreren Schritten, die neue Kandidatenpunkte generieren, den Simplex aktualisieren und die Stabilität der Optimierung sicherstellen. **In jedem Zyklus versucht Alex mehrere Optimierungsstrategien durchzuführen:**
+
+1. **Hybrid Mixing Method**: Eine hybride Strategie, die Teilraumoptimierung und Gradientenabstieg kombiniert, um einen neuen Punkt mit maximaler Verbesserung bei minimaler Anzahl an Funktions- und Gradientenauswertungen zu generieren.
+2. **Gradient Descent Step**: Minimiert die Verlustfunktion in der Richtung des steilsten Abstiegs, ausgehend vom besten Punkt im Simplex, um schnellen lokalen Fortschritt zu erzielen.
+3. **Subspace Optimization Step**: Führt eine Optimierung auf dem affinen Unterraum durch, den die Simplexpunkte aufspannen, um neue Suchrichtungen zu finden, die idealerweise „senkrecht“ zu den bisherigen Gradienten sind.
+
+Die Hybrid Mixing Method wird als primäre Strategie getestet, mit einem Fallback auf die bisherigen Methoden (`subspace_optimization_step` und `gradient_descent_step`), wenn sie keinen ausreichenden Fortschritt liefert. Neue Sicherheitsmechanismen wie die dynamische Punktentfernung und Skalierung verbessern die Robustheit.
+
+### 3.1. Initialisierung
+
+Der Simplex wird mit dem Startpunkt ($x_1$) initialisiert. Sowohl der Funktionswert $f(x_1)$ als auch der Gradient $\nabla f(x_1)$ werden berechnet und zum ersten Punkt im Simplex hinzugefügt.
+
+### 3.2. Iterative Optimierungsschleife
+
+Innerhalb der Hauptschleife (bis zur Konvergenz):
+
+#### 3.2.1. Bestimmung des besten Punktes
+
+Der Punkt $x_{\text{best}}$ mit dem niedrigsten Funktionswert wird aus dem aktuellen Simplex identifiziert. Dieser dient als Referenzpunkt für die nachfolgenden Suchschritte.
+
+#### 3.2.2. Hybrid Mixing Method
+
+Die **Hybrid Mixing Method** ist eine hybride Strategie, die die Stärken der Teilraumoptimierung (`subspace_optimization_step`) und des Gradientenabstiegs (`gradient_descent_step`) kombiniert, um einen neuen Simplexpunkt mit maximaler Verbesserung bei minimaler Anzahl an Funktions- und Gradientenauswertungen zu generieren. Sie ist besonders effektiv für quadratische Funktionen der Form $f(x) = 0.5 * x^T A x$, zeigt aber auch Potenzial für nichtlineare Probleme, wenn geeignete Absicherungen implementiert werden.
+
+**Schritte der Hybrid Mixing Method**:
+
+1. **Teilraumoptimierung**:
+   - Ein Kandidatenpunkt $x_{\text{subspace_candidate}}$ wird als Linearkombination der Simplexpunkte berechnet, sodass er im affinen Raum der Simplexpunkte liegt:
+     $$x_{\text{subspace_candidate}} = \sum_{i=1}^k \beta_i x_i, \quad \text{mit} \quad \sum_{i=1}^k \beta_i = 1$$
+   - Die Koeffizienten $\beta_i$ werden durch Lösen eines Optimierungsproblems bestimmt, das die Gradienteninformationen ($\nabla f(x_i)$) nutzt, um die Gradientennorm $\left\| \sum_{i=1}^k \beta_i \nabla f(x_i) \right\|^2$ zu minimieren. Dies geschieht durch Lösen der Normalgleichungen:
+     $$A = G^T G, \quad A_{\text{ext}} = \begin{bmatrix} A & \mathbf{1} \\ \mathbf{1}^T & 0 \end{bmatrix}, \quad b_{\text{ext}} = \begin{bmatrix} \mathbf{0} \\ 1 \end{bmatrix}$$
+     wobei $G = [\nabla f(x_1), \dots, \nabla f(x_k)]$ die Gradientenmatrix ist.
+   - Ein Modellgradient wird berechnet:
+     $$\text{model_gradient} = \sum_{i=1}^k \beta_i \nabla f(x_i)$$
+     Für quadratische Funktionen ist dieser Modellgradient exakt der wahre Gradient an $x_{\text{subspace_candidate}}$ ($\text{model_gradient} = A * x_{\text{subspace_candidate}}$).
+   - Ein Modellfunktionswert $f_{\text{Model}}(x_{\text{subspace_candidate}})$ wird berechnet, der für quadratische Funktionen den exakten Funktionswert $f(x_{\text{subspace_candidate}})$ darstellt:
+     $$f_{\text{Model}}(x_{\text{subspace_candidate}}) = f(x_{\text{best}}) + \frac{1}{2} \left[ \nabla f(x_{\text{best}})^T (x_{\text{subspace_candidate}} - x_{\text{best}}) + \text{model_gradient}^T (x_{\text{subspace_candidate}} - x_{\text{best}}) \right]$$
+
+2. **Sicherheitsmechanismen**:
+   - **Numerische Stabilität**: Wenn die Berechnung von $\beta$, $x_{\text{subspace_candidate}}$, $\text{model_gradient}$ oder $f_{\text{Model}}$ numerische Instabilitäten aufweist (z. B. Singularität von $A_{\text{ext}}$, NaN/Inf-Werte), wird ein Punkt aus dem Simplex entfernt. Dabei werden die zwei besten Punkte (nach Funktionswert) geschützt (`num_protected_best=2`), und der Punkt, der die Konditionszahl von $A_{\text{ext}}$ am meisten verbessert, wird entfernt.
+   - **Entgleisung**: Wenn der Modellfunktionswert entgleist ($f_{\text{Model}} > f(x_{\text{best}}) + fx_{\text{model_tol}}$, mit $fx_{\text{model_tol}} = 1e-6$), wird ein Punkt entfernt, um den Simplex zu bereinigen.
+   - **Konditionsprüfung**: Die Konditionszahl von $A_{\text{ext}}$ wird protokolliert, und eine Warnung wird ausgegeben, wenn sie $10^{15}$ überschreitet, um auf potenzielle Instabilitäten hinzuweisen.
+
+3. **Distanzprüfung und Skalierung**:
+   - Wenn $f_{\text{Model}} \leq f(x_{\text{best}}) + fx_{\text{model_tol}}$, aber die Distanz $\lVert x_{\text{subspace_candidate}} - x_{\text{best}} \rVert > MAX_DISTANCE_FACTOR \cdot \max_{i=2}^k \lVert x_i - x_{\text{best}} \rVert$ (mit $MAX_DISTANCE_FACTOR = 10.0$), wird $x_{\text{subspace_candidate}}$ auf eine maximale Distanz skaliert:
+     $$v = x_{\text{subspace_candidate}} - x_{\text{best}}, \quad \text{dist} = \lVert v \rVert, \quad \text{scaling_factor} = \frac{MAX_DISTANCE_FACTOR \cdot \max_{i=2}^k \lVert x_i - x_{\text{best}} \rVert}{\text{dist}}$$
+     $$x_{\text{subspace_candidate}} = x_{\text{best}} + \text{scaling_factor} \cdot v$$
+     Der Modellfunktionswert wird entsprechend aktualisiert:
+     $$f_{\text{Model}} = f(x_{\text{best}}) + \frac{1}{2} \left[ \nabla f(x_{\text{best}})^T (x_{\text{subspace_candidate}} - x_{\text{best}}) + \text{model_gradient}^T (x_{\text{subspace_candidate}} - x_{\text{best}}) \right]$$
+
+4. **Gradientenschritt**:
+   - Anstatt $x_{\text{subspace_candidate}}$ direkt zu evaluieren, führt die Hybrid Mixing Method einen Gradientenschritt in Richtung des negativen Modellgradienten durch:
+     $$x_{\text{new}} = x_{\text{subspace_candidate}} + \alpha \cdot (-\text{model_gradient})$$
+   - Die Schrittweite $\alpha$ wird adaptiv angepasst, indem die gleiche Logik wie im Gradientenabstieg verwendet wird:
+     - Berechne die Richtungsableitungen:
+       $$\phi'(\alpha=0) = \text{model_gradient}^T (-\text{model_gradient}) = -\|\text{model_gradient}\|^2$$
+       $$\phi'(\alpha) = \nabla f(x_{\text{new}})^T (-\text{model_gradient})$$
+     - Bestimme die optimale Schrittweite:
+       $$\alpha^* = -\frac{\phi'(0)}{\phi'(\alpha) - \phi'(0) + \epsilon} \cdot \alpha_{\text{curr}}$$
+       falls die Richtungsableitungen ausreichend unterschiedlich sind (z. B. $|\phi'(\alpha) - \phi'(0)| > \epsilon$). Andernfalls wird die Schrittweite konservativ reduziert (z. B. $\alpha = \alpha \cdot 0.5$).
+     - Begrenze $\alpha$ auf einen vordefinierten Bereich ($\alpha_{\text{min}} \leq \alpha \leq \alpha_{\text{max}}$).
+     - Diese Anpassung ist für quadratische Funktionen exakt und minimiert den Funktionswert entlang der Richtung des steilsten Abstiegs.
+
+5. **Evaluation**:
+   - Nur der neue Punkt $x_{\text{new}}$ wird mit der Zielfunktion evaluiert ($f(x_{\text{new}})$, $\nabla f(x_{\text{new}})$), um den Funktionswert $f(x_{\text{new}})$ und den Gradienten $\nabla f(x_{\text{new}})$ zu erhalten. Dies spart eine Funktions- und Gradientenauswertung im Vergleich zu `subspace_optimization_step`, das $x_{\text{subspace_candidate}}$ direkt auswertet.
+
+6. **Akzeptanzkriterium**:
+   - Der Punkt $x_{\text{new}}$ wird akzeptiert, wenn er den Simplex verbessert, definiert durch:
+     $$f(x_{\text{new}}) < \max_{x_i \in \text{Simplex}} f(x_i)$$
+     Dies stellt sicher, dass $x_{\text{new}}$ besser ist als der schlechteste Punkt im Simplex.
+   - Wenn die numerische Stabilität gefährdet ist (z. B. NaN/Inf-Werte oder hohe Konditionszahl) oder eine Entgleisung erkannt wird, wird ein Punkt entfernt, und die Methode gibt einen Fallback-Wert zurück.
+
+7. **Fallback-Strategie**:
+   - Wenn $x_{\text{new}}$ die Akzeptanzkriterien nicht erfüllt oder numerische Instabilitäten auftreten, wird auf die bisherige Methode `subspace_optimization_step` zurückgegriffen:
+     - $x_{\text{subspace_candidate}}$ wird mit der Zielfunktion evaluiert ($f(x_{\text{subspace_candidate}})$, $\nabla f(x_{\text{subspace_candidate}})$).
+     - Der resultierende Simplexpunkt wird eingefügt, wenn sein Funktionswert besser ist als der des schlechtesten Punktes im Simplex.
+     - Zusätzlich wird `gradient_descent_step` ausgeführt, um den Fortschritt zu sichern.
+
+**Vorteile der Hybrid Mixing Method**:
+- **Maximale Information**: Nutzt die gesamte Simplexinformation durch die Teilraumoptimierung und kombiniert sie mit einem Gradientenschritt, der den affinen Raum verlässt.
+- **Maximale Verbesserung**: Der Gradientenschritt in Richtung des steilsten Abstiegs maximiert die Reduktion des Funktionswerts, insbesondere für quadratische Funktionen.
+- **Minimale Evaluationen**: Spart eine Funktions- und Gradientenauswertung pro Iteration, wenn erfolgreich.
+- **Robustheit**: Neue Sicherheitsmechanismen (Punktentfernung, Skalierung, Konditionsprüfung) gewährleisten Stabilität auch bei schwierigen Verlustfunktionen.
+
+**Risiken und Absicherungen**:
+- **Numerische Instabilität**: Hohe Konditionszahlen von $A_{\text{ext}}$ oder NaN/Inf-Werte werden durch Punktentfernung abgefangen, wobei die zwei besten Punkte geschützt werden.
+- **Entgleisung**: Ein entgleisender Modellfunktionswert ($f_{\text{Model}} > f(x_{\text{best}}) + fx_{\text{model_tol}}$) führt zur Entfernung eines Punktes.
+- **Weit entfernte Punkte**: Skalierung auf $MAX_DISTANCE_FACTOR \cdot \max_{i=2}^k \lVert x_i - x_{\text{best}} \rVert$ verhindert unphysikalische Sprünge.
+- **Nichtlineare Funktionen**: Bei nichtlinearen Funktionen ist der Modellgradient eine Näherung, was die Methode riskanter macht. Die Fallback-Strategie und die Skalierung erhöhen die Robustheit.
+
+#### 3.2.3. Generierung eines Kandidatenpunkts durch Gradientenabstieg
+
+Dieser Schritt generiert einen Kandidatenpunkt $x_{\text{candidate_grad}}$ durch eine Suche entlang des negativen Gradienten $-\nabla f(x_{\text{best}})$. Dabei wird nicht notwendigerweise der globale optimale Punkt in dieser Richtung gesucht, sondern ein Punkt, der eine signifikante Verbesserung erzielt und idealerweise einen Gradienten liefert, der „senkrecht“ zu den bisherigen Gradienten im Simplex steht.
+
+1. **Suchrichtung**:
+   - Definiere die Suchrichtung: $d_{\text{grad}} = -\nabla f(x_{\text{best}})$.
+
+2. **Heuristische Überprüfung**:
+   - Berechne einen Testpunkt: $x_{\text{test}} = x_{\text{best}} + \alpha_0 d_{\text{grad}}$.
+   - Berechne $f(x_{\text{test}})$ und $\nabla f(x_{\text{test}})$.
+   - Prüfe zwei Bedingungen:
+     - **Bedingung A (Funktionswert)**: $f(x_{\text{test}}) < \max_{x_j \in \text{Simplex}} f(x_j)$.
+     - **Bedingung B (Gradientenkollation)**: $\nabla f(x_{\text{test}}) \cdot \nabla f(x_{\text{best}}) < \tau \cdot \lVert \nabla f(x_{\text{best}}) \rVert^2$.
+   - Wenn beide Bedingungen erfüllt sind, setze $x_{\text{candidate_grad}} = x_{\text{test}}$.
+
+3. **Adaptive Liniensuche (falls nötig)**:
+   - Falls A oder B nicht erfüllt ist, definiere $\phi(\alpha) = f(x_{\text{best}} + \alpha d_{\text{grad}})$.
+   - Initialisiere $\alpha_{\text{curr}} = \alpha_0$.
+   - Iteriere:
+     - Berechne $\phi'(\alpha_{\text{curr}}) = \nabla f(x_{\text{best}} + \alpha_{\text{curr}} d_{\text{grad}}) \cdot d_{\text{grad}}$.
+     - Berechne die optimale Schrittweite:
+       $\alpha^*_{\text{step}} = -\frac{\phi'(0)}{\phi'(\alpha_{\text{curr}}) - \phi'(0) + \epsilon} \cdot \alpha_{\text{curr}}$
+     - Teste $x_{\text{step_test}} = x_{\text{best}} + \alpha^*_{\text{step}} d_{\text{grad}}$.
+     - Wenn $f(x_{\text{step_test}}) < f(x_{\text{best}}) - \delta \cdot \lVert \nabla f(x_{\text{best}}) \rVert^2$, setze $x_{\text{candidate_grad}} = x_{\text{step_test}}$ und brich ab.
+     - Aktualisiere $\alpha_{\text{curr}} = \alpha^*_{\text{step}}$.
+   - Falls die Liniensuche konvergiert, wende Überschätzung an: $\alpha_{\text{neu}} = \gamma \alpha_{\text{final}}$.
+   - Falls $f(x_{\text{best}} + \alpha_{\text{neu}} d_{\text{grad}}) \geq \max_{x_j \in \text{Simplex}} f(x_j)$, setze $\alpha_{\text{neu}} = \alpha_{\text{final}} / 2$.
+   - Setze $x_{\text{candidate_grad}} = x_{\text{best}} + \alpha_{\text{neu}} d_{\text{grad}}$.
+
+4. **Simplex-Update**:
+   - Füge $x_{\text{candidate_grad}}$, $f(x_{\text{candidate_grad}})$ und $\nabla f(x_{\text{candidate_grad}})$ zum Simplex hinzu.
+   - Inkrementiere $k = k + 1$.
+   - Wenn $k > k_{max}$, wird ein Punkt aus dem Simplex entfernt, wobei Punkte mit sehr kleinen Gradientennormen ($\lVert \nabla f(x_i) \rVert < \eta$) geschützt werden und die zwei besten Punkte (`num_protected_best=2`) vor der Entfernung bewahrt werden.
+
+#### 3.2.4. Generierung eines Kandidatenpunkts durch Teilraumoptimierung
+
+Dieser Schritt generiert einen Kandidatenpunkt ($x_{\text{candidate_subspace}}$) durch eine Linearkombination der Simplexpunkte, um die Gradientennorm zu minimieren. Dies ist nur möglich, wenn mindestens zwei Punkte im Simplex vorhanden sind ($k \geq 2$).
+
+- **Definition des Teilraums**: Die Simplexpunkte spannen einen affinen Unterraum auf.
+- **Minimierung der Gradientennorm**: Es wird ein neuer Punkt $x_{\text{candidate_subspace}} = \sum_{i=1}^k \beta_i x_i$ in diesem Unterraum gesucht, dessen Gradientennorm $\left\| \sum_{i=1}^k \beta_i \nabla f(x_i) \right\|^2$ minimal ist, unter der Nebenbedingung $\sum_{i=1}^k \beta_i = 1$. Die Koeffizienten $\beta_i$ werden durch Lösen der Normalgleichungen bestimmt (siehe 3.2.2).
+- **Modellgradient**: Der Modellgradient des Kandidatenpunkts ist:
+  $\nabla f_{\text{Model}}(x_{\text{candidate_subspace}}) = \sum_{i=1}^k \beta_i \nabla f(x_i)$
+- **Modellfunktionswert**: Der Modellfunktionswert wird berechnet, um die Qualität des Kandidatenpunkts abzuschätzen:
+  $$f_{\text{Model}}(x_{\text{candidate_subspace}}) = f(x_{\text{best}}) + \frac{1}{2} \left[ \nabla f(x_{\text{best}})^T (x_{\text{candidate_subspace}} - x_{\text{best}}) + \text{model_gradient}^T (x_{\text{candidate_subspace}} - x_{\text{best}}) \right]$$
+- **Sicherheitsmechanismen**:
+  - **Numerische Stabilität**: Bei Singularität, NaN/Inf-Werten oder extremen $\beta_i$-Werten (z. B. $|\beta_i| > 10^{50}$) wird ein Punkt entfernt, wobei die zwei besten Punkte geschützt werden (`num_protected_best=2`).
+  - **Entgleisung**: Wenn $f_{\text{Model}} > f(x_{\text{best}}) + fx_{\text{model_tol}}$, wird ein Punkt entfernt, um den Simplex zu bereinigen.
+  - **Distanzprüfung**: Wenn $\lVert x_{\text{candidate_subspace}} - x_{\text{best}} \rVert > MAX_DISTANCE_FACTOR \cdot \max_{i=2}^k \lVert x_i - x_{\text{best}} \rVert$, wird der Punkt skaliert (siehe 3.2.2).
+  - **Konditionsprüfung**: Die Konditionszahl von $A_{\text{ext}}$ wird protokolliert, mit einer Warnung bei $\text{cond}(A_{\text{ext}}) > 10^{15}$.
+- **Fälle für die Bewertung**:
+  - **Guter Punkt**: Wenn $f_{\text{Model}} \leq f(x_{\text{best}}) + fx_{\text{model_tol}}$ und die Distanz akzeptabel ist, wird $x_{\text{candidate_subspace}}$ zurückgegeben.
+  - **Informativer Punkt**: Wenn der Punkt keine Verbesserung liefert, aber seine Gradienteninformation wertvoll ist, kann eine **Rettungssuche** durchgeführt werden, die einen kleinen Schritt vom aktuellen Punkt in der Richtung des negativen Gradienten testet.
+- **Simplex-Update**: Der generierte Punkt wird zum Simplex hinzugefügt, und bei Überschreitung von $k_{max}$ wird der schlechteste Punkt entfernt, wobei Punkte mit kleinen Gradientennormen ($\lVert \nabla f(x_i) \rVert < \eta$) geschützt werden.
+
+#### 3.2.5. Modellfunktionswert im affinen Raum
+
+Zusätzlich zum Kandidatenpunkt und seinem Modellgradienten wird ein **Modellfunktionswert** für den Punkt $x_{\text{candidate_subspace}}$ berechnet, um eine Vorabschätzung der Verlustfunktion zu erhalten, bevor die teure Auswertung von $f(x_{\text{candidate_subspace}})$ durchgeführt wird. Dieser Modellfunktionswert ist besonders nützlich in der Hybrid Mixing Method, da er eine Abschätzung der Qualität von $x_{\text{subspace_candidate}}$ liefert, ohne eine zusätzliche Evaluation durchzuführen. Neue Absicherungen erkennen Entgleisungen ($f_{\text{Model}} > f(x_{\text{best}}) + fx_{\text{model_tol}}$) und entfernen problematische Punkte.
+
+#### 3.2.6. Stabilitätsbewertung durch Testauslassung (Leave-One-Out)
+
+Dieser Schritt wird durchgeführt, um die numerische Stabilität der Teilraumoptimierung zu gewährleisten. Insbesondere für Punkte, deren Funktionswert höher ist als der des durch die Teilraumoptimierung generierten Kandidatenpunkts, wird eine Leave-One-Out-Analyse durchgeführt. Dabei wird die Konditionszahl von $A_{\text{ext}}$ für verschiedene Punktkombinationen berechnet, um den Punkt zu identifizieren, dessen Entfernung die numerische Stabilität am meisten verbessert. Die zwei besten Punkte werden dabei geschützt (`num_protected_best=2`).
+
+## 4. Komplexität und Vorteile
+
+### 4.1. Rechenkomplexität
+
+Die Initialisierung des Algorithmus erfordert eine einmalige Auswertung von $f$ und $\nabla f$. **Das übergeordnete Ziel ist es, innerhalb eines jeden Optimierungszyklus möglichst wenige Funktions- und Gradientenberechnungen durchzuführen.** Die Hybrid Mixing Method zielt darauf ab, nur eine Berechnung pro Iteration durchzuführen, indem sie die Evaluation von $x_{\text{subspace_candidate}}$ überspringt. Bei einem Fehlschlag der Hybrid Mixing Method können jedoch zusätzliche Berechnungen durch den Fallback auf `subspace_optimization_step` und `gradient_descent_step` erforderlich sein. Die Testauslassung ist effizient, da nur relevante Punkte getestet werden. Der Speicherbedarf des Simplex ist $O(k_{max} \cdot n)$. Die Berechnung der Konditionszahl und die Skalierung von Kandidatenpunkten erhöhen den Rechenaufwand geringfügig, verbessern aber die Stabilität erheblich.
+
+### 4.2. Vorteile des Alex-Algorithmus
+
+- **Effizienz**: Durch die Minimierung der teuren Funktions- und Gradientenauswertungen, insbesondere durch die Hybrid Mixing Method, ist der Alex-Algorithmus ideal für Probleme mit hohem Rechenaufwand geeignet.
+- **Robustheit**: Die hybride Kombination aus Gradientenabstieg, Teilraumoptimierung und Hybrid Mixing Method sowie die dynamische Simplex-Struktur machen den Algorithmus robuster gegenüber schwierigen Verlustfunktionen (z. B. flache Bereiche, Schluchten). Neue Sicherheitsmechanismen wie Punktentfernung und Skalierung erhöhen die Robustheit weiter.
+- **Stabilität**: Die Testauslassung, der Schutz der zwei besten Punkte, die Entgleisungsprüfung und die Skalierung weit entfernter Punkte tragen zur numerischen Stabilität bei.
+- **Geringe Hyperparameterabhängigkeit**: Im Vergleich zu anderen Optimierern benötigt Alex weniger Feintuning der Hyperparameter. Neue Parameter wie $fx_{\text{model_tol}}$ und $MAX_DISTANCE_FACTOR$ sind intuitiv und robust voreingestellt.
+- **Adaptive Steuerung**: Die adaptive Schrittweitenregelung, die dynamische Simplex-Anpassung und die neuen Sicherheitsmechanismen ermöglichen eine effiziente und zielgerichtete Suche im Parameterraum.
+
+## 5. Fazit
+
+Der Alex-Algorithmus ist ein leistungsfähiger Optimierer für teure Verlustfunktionen, der Gradientenabstieg, Teilraumoptimierung und die neue Hybrid Mixing Method intelligent kombiniert. Die Hybrid Mixing Method steigert die Effizienz, indem sie die Simplexinformation mit einem Gradientenschritt kombiniert, um neue Punkte mit maximaler Verbesserung bei minimaler Anzahl an Evaluationen zu generieren. Neue Sicherheitsmechanismen, wie die dynamische Entfernung problematischer Punkte bei numerischen Fehlschlägen oder Entgleisungen und die Skalierung weit entfernter Kandidatenpunkte, verbessern die Robustheit und Stabilität. Die Fallback-Strategie gewährleistet, dass der Algorithmus auch bei schwierigen Verlustfunktionen Fortschritte macht. Der Algorithmus ist besonders geeignet für Probleme wie das Fine-Tuning großer neuronaler Netze oder andere Optimierungsaufgaben, bei denen die Rechenkosten pro Funktions- und Gradientenauswertung kritisch sind. Seine hybride Natur, die dynamische Simplex-Struktur und die neuen Absicherungen machen ihn zu einer vielversprechenden Alternative zu herkömmlichen Optimierungsmethoden.
