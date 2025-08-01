@@ -1,119 +1,163 @@
-    # Zwischenbericht: NonlinearOptimizationTestFunctionsInJulia
-    # Stand: 31. Juli 2025, 12:46 PM CEST
+# Zwischenbericht: NonlinearOptimizationTestFunctionsInJulia
+# Stand: 01. August 2025, 02:08 PM CEST
 
-    ## Projektübersicht
-    Das Projekt `NonlinearOptimizationTestFunctionsInJulia` entwickelt eine Julia-Bibliothek mit einer Sammlung von Testfunktionen für nichtlineare Optimierung, basierend auf *Test functions for optimization needs* (Molga & Smutnicki, 2005). Ziel ist es, ein verlässliches Werkzeug für Forscher, Entwickler und Studierende zu schaffen, das Optimierungsalgorithmen testen und vergleichen kann, mit dem Anspruch, Vergleichsprojekte in Funktionsumfang, Testabdeckung, Performance und Dokumentation zu übertreffen. Die Bibliothek ist dynamisch, mit nahezu täglichen Änderungen durch Hinzufügung neuer Funktionen oder Anpassungen. Jede Testfunktion ist mit analytischen Gradienten und detaillierten Metadaten ausgestattet, optimiert für die Integration mit Optimierungspaketen wie Optim.jl, NLopt, ForwardDiff und Zygote. Alle Implementierungen werden gegen Molga & Smutnicki (2005), al-roomi.org und weiteren Quellen verifiziert, um höchste Genauigkeit zu gewährleisten. Der Zwischenbericht selbst ist ein integraler Bestandteil des Projekts, der die Entwicklung aus einer Meta-Perspektive dokumentiert und als Gedächtnisstütze dient, um wiederholte Fehler zu vermeiden.
+## Projektübersicht
+Das Projekt `NonlinearOptimizationTestFunctionsInJulia` entwickelt eine Julia-Bibliothek mit einer Sammlung von Testfunktionen für nichtlineare Optimierung, basierend auf *Test functions for optimization needs* (Molga & Smutnicki, 2005). Ziel ist es, ein verlässliches Werkzeug für Forscher, Entwickler und Studierende zu schaffen, das Optimierungsalgorithmen testen und vergleichen kann, mit dem Anspruch, Vergleichsprojekte in Funktionsumfang, Testabdeckung, Performance und Dokumentation zu übertreffen. Die Bibliothek ist dynamisch, mit nahezu täglichen Änderungen durch Hinzufügung neuer Funktionen oder Anpassungen. Jede Testfunktion ist mit analytischen Gradienten und detaillierten Metadaten ausgestattet, optimiert für die Integration mit Optimierungspaketen wie Optim.jl, NLopt, ForwardDiff und Zygote. Alle Implementierungen werden gegen Molga & Smutnicki (2005), al-roomi.org und weiteren Quellen verifiziert, um höchste Genauigkeit zu gewährleisten. Der Zwischenbericht selbst ist ein integraler Bestandteil des Projekts, der die Entwicklung aus einer Meta-Perspektive dokumentiert und als Gedächtnisstütze dient, um wiederholte Fehler zu vermeiden.
 
-    ## Designentscheidungen
-    Die folgenden Designentscheidungen wurden getroffen, um die Ziele des Projekts zu erreichen, einschließlich Entscheidungen zur Gestaltung des Zwischenberichts und des Readme als Projektbestandteile:
+## Designentscheidungen
+Die folgenden Designentscheidungen wurden getroffen, um die Ziele des Projekts zu erreichen, einschließlich Entscheidungen zur Gestaltung des Zwischenberichts und des Readme als Projektbestandteile:
 
-    1. **Zwischenbericht als Gedächtnisstütze**:
-       - Entscheidung: Der Zwischenbericht ist ein internes Dokument, das an uns beide gerichtet ist, zeitlos gestaltet sein soll und Designentscheidungen, Pläne und erkannte Probleme des Projekts dokumentiert. Er vermeidet spezifische Zahlen (z. B. Anzahl der Funktionen) oder konkrete Funktionslisten, erlaubt aber minimale spezifische Pläne (z. B. „morgen Rosenbrock überprüfen“).
-       - Begründung: Die Zeitlosigkeit stellt sicher, dass der Zwischenbericht bei häufigen Projektänderungen relevant bleibt, während die interne Ausrichtung eine klare Gedächtnisstütze bietet. Minimale spezifische Pläne ermöglichen kurzfristige Prioritäten ohne Verlust der Flexibilität.
+1. **Zwischenbericht als Gedächtnisstütze**:
+   - Entscheidung: Der Zwischenbericht ist ein internes Dokument, das an uns beide gerichtet ist, zeitlos gestaltet sein soll und Designentscheidungen, Pläne und erkannte Probleme des Projekts dokumentiert. Er vermeidet spezifische Zahlen (z. B. Anzahl der Funktionen) oder konkrete Funktionslisten, erlaubt aber minimale spezifische Pläne (z. B. „morgen Rosenbrock überprüfen“).
+   - Begründung: Die Zeitlosigkeit stellt sicher, dass der Zwischenbericht bei häufigen Projektänderungen relevant bleibt, während die interne Ausrichtung eine klare Gedächtnisstütze bietet. Minimale spezifische Pläne ermöglichen kurzfristige Prioritäten ohne Verlust der Flexibilität.
 
-    2. **Verbot von Triple-Backticks im Zwischenbericht, Programmkommentaren und Readme**:
-       - Entscheidung: Triple-Backticks (```) dürfen in keinem Dokument (Zwischenbericht, Readme, andere Dokumentationen) verwendet werden; stattdessen wird 4-Leerzeichen-Einrückung genutzt.
-       - Begründung: Triple-Backticks verursachen erhebliche Probleme bei der Verarbeitung oder Anzeige der Dokumentation, was wiederholte Fehler verursacht hat.
+2. **Verbot von Triple-Backticks im Zwischenbericht, Programmkommentaren und Readme**:
+   - Entscheidung: Triple-Backticks (```) dürfen in keinem Dokument (Zwischenbericht, Readme, andere Dokumentationen) verwendet werden; stattdessen wird 4-Leerzeichen-Einrückung genutzt.
+   - Begründung: Triple-Backticks verursachen erhebliche Probleme bei der Verarbeitung oder Anzeige der Dokumentation, was wiederholte Fehler verursacht hat.
 
-    3. **Julia als Programmiersprache**:
-       - Entscheidung: Julia wurde für die Implementierung gewählt.
-       - Begründung: Julia bietet hohe Performance für numerische Berechnungen, insbesondere für iterative Optimierungstests, und unterstützt nahtlos Pakete wie Optim.jl, NLopt, ForwardDiff und Zygote für automatische Differentiation.
+3. **Julia als Programmiersprache**:
+   - Entscheidung: Julia wurde für die Implementierung gewählt.
+   - Begründung: Julia bietet hohe Performance für numerische Berechnungen, insbesondere für iterative Optimierungstests, und unterstützt nahtlos Pakete wie Optim.jl, NLopt, ForwardDiff und Zygote für automatische Differentiation.
 
-    4. **Analytische Gradienten**:
-       - Entscheidung: Jede Testfunktion enthält analytische Gradienten, sowohl in-place (`gradient!`) als auch nicht-in-place (`grad`).
-       - Begründung: Analytische Gradienten bieten höhere Präzision und Performance im Vergleich zu numerischer Differentiation. Die in-place Variante (`gradient!`) wird automatisch vom `TestFunction`-Konstruktor als `(G, x) -> copyto!(G, grad(x))` generiert, um Konsistenz und Redundanzfreiheit zu gewährleisten.
+4. **Analytische Gradienten**:
+   - Entscheidung: Jede Testfunktion enthält analytische Gradienten, sowohl in-place (`gradient!`) als auch nicht-in-place (`grad`).
+   - Begründung: Analytische Gradienten bieten höhere Präzision und Performance im Vergleich zu numerischer Differentiation. Die in-place Variante (`gradient!`) wird automatisch vom `TestFunction`-Konstruktor als `(G, x) -> copyto!(G, grad(x))` generiert, um Konsistenz und Redundanzfreiheit zu gewährleisten.
 
-    5. **Metadatenstruktur**:
-       - Entscheidung: Jede Testfunktion enthält ein Metadaten-Dictionary mit Einträgen wie `:name`, `:start`, `:min_position`, `:min_value`, `:properties`, `:lb`, `:ub` und `:in_molga_smutnicki_2005`.
-       - Begründung: Die Metadaten erleichtern die Nutzung durch Bereitstellung von Minimalstellen, Grenzen und Eigenschaften (z. B. unimodal/multimodal). Funktionen wie `:start(n)`, `:lb(n)` und `:ub(n)` akzeptieren die Dimension `n`, um Skalierbarkeit zu unterstützen.
+5. **Metadatenstruktur**:
+   - Entscheidung: Jede Testfunktion enthält ein Metadaten-Dictionary mit Einträgen wie `:name`, `:start`, `:min_position`, `:min_value`, `:properties`, `:lb`, `:ub` und `:in_molga_smutnicki_2005`.
+   - Begründung: Die Metadaten erleichtern die Nutzung durch Bereitstellung von Minimalstellen, Grenzen und Eigenschaften (z. B. unimodal/multimodal). Funktionen wie `:start(n)`, `:lb(n)` und `:ub(n)` akzeptieren die Dimension `n`, um Skalierbarkeit zu unterstützen.
 
-    6. **Flexibles Testfunktions-Dictionary**:
-       - Entscheidung: Testfunktionen sind als Konstanten (z. B. mit Großschreibung) und über ein `TEST_FUNCTIONS`-Dictionary (lowercase keys) zugänglich.
-       - Begründung: Dies bietet Nutzern intuitive Zugriffswege, während lowercase-Schlüssel Konsistenz und einfache Programmierung ermöglichen.
+6. **Flexibles Testfunktions-Dictionary**:
+   - Entscheidung: Testfunktionen sind als Konstanten (z. B. mit Großschreibung) und über ein `TEST_FUNCTIONS`-Dictionary (lowercase keys) zugänglich.
+   - Begründung: Dies bietet Nutzern intuitive Zugriffswege, während lowercase-Schlüssel Konsistenz und einfache Programmierung ermöglichen.
 
-    7. **Konsolidierung der Tests**:
-       - Entscheidung: Alle Tests sind in `test/runtests.jl` zentralisiert, mit funktionsspezifischen Tests in `test/<functionname>_tests.jl` und übergreifenden Cross-Function Tests.
-       - Begründung: Dies vermeidet Redundanzen, verbessert die Wartbarkeit und ermöglicht konsistente Tests für Funktionswerte, Gradienten, Metadaten und Edge Cases.
+7. **Konsolidierung der Tests**:
+   - Entscheidung: Alle Tests sind in `test/runtests.jl` zentralisiert, mit funktionsspezifischen Tests in `test/<functionname>_tests.jl` und übergreifenden Cross-Function Tests.
+   - Begründung: Dies vermeidet Redundanzen, verbessert die Wartbarkeit und ermöglicht konsistente Tests für Funktionswerte, Gradienten, Metadaten und Edge Cases.
 
-    8. **Verifikation gegen etablierte Quellen**:
-       - Entscheidung: Implementierungen werden gegen Molga & Smutnicki (2005), al-roomi.org und weitere Quellen (z. B. Jamil & Yang, 2013) verifiziert.
-       - Begründung: Dies stellt die wissenschaftliche Korrektheit von Minimalstellen, Werten und Grenzen sicher, was für die Vertrauenswürdigkeit der Bibliothek entscheidend ist.
+8. **Verifikation gegen etablierte Quellen**:
+   - Entscheidung: Implementierungen werden gegen Molga & Smutnicki (2005), al-roomi.org und weitere Quellen (z. B. Jamil & Yang, 2013) verifiziert.
+   - Begründung: Dies stellt die wissenschaftliche Korrektheit von Minimalstellen, Werten und Grenzen sicher, was für die Vertrauenswürdigkeit der Bibliothek entscheidend ist.
 
-    9. **Readme als Nutzerdokumentation**:
-       - Entscheidung: Das Readme soll externe Nutzer ansprechen, in einem nüchternen, sachlichen und wissenschaftlichen Ton verfasst sein, und die Bibliothek als verlässliches Werkzeug präsentieren, mit einem „Verkaufs“-Aspekt, der die Vorteile faktenbasiert hervorhebt, ohne übertriebene Marktschreierei.
-       - Begründung: Mathematisch versierte Nutzer erwarten präzise, wissenschaftlich fundierte Informationen, während Anfänger zugängliche Erklärungen und Beispiele benötigen. Der „Verkaufs“-Aspekt soll die Präzision, Julia-Integration, Metadaten und Erweiterbarkeit betonen.
+9. **Readme als Nutzerdokumentation**:
+   - Entscheidung: Das Readme soll externe Nutzer ansprechen, in einem nüchternen, sachlichen und wissenschaftlichen Ton verfasst sein, und die Bibliothek als verlässliches Werkzeug präsentieren, mit einem „Verkaufs“-Aspekt, der die Vorteile faktenbasiert hervorhebt, ohne übertriebene Marktschreierei.
+   - Begründung: Mathematisch versierte Nutzer erwarten präzise, wissenschaftlich fundierte Informationen, während Anfänger zugängliche Erklärungen und Beispiele benötigen. Der „Verkaufs“-Aspekt soll die Präzision, Julia-Integration, Metadaten und Erweiterbarkeit betonen.
 
-    10. **Readme-Zielgruppe**:
-        - Entscheidung: Das Readme richtet sich an mathematisch versierte Nutzer (Forscher, fortgeschrittene Studierende, Entwickler in Mathematik, Informatik oder Ingenieurwissenschaften) sowie Anfänger in der Optimierung.
-        - Begründung: Die Bibliothek muss sowohl Experten mit detaillierten Informationen über Funktionen (z. B. mathematische Eigenschaften, Minimalstellen, Grenzen) als auch Anfängern mit klaren, einfachen Beispielen dienen.
+10. **Readme-Zielgruppe**:
+    - Entscheidung: Das Readme richtet sich an mathematisch versierte Nutzer (Forscher, fortgeschrittene Studierende, Entwickler in Mathematik, Informatik oder Ingenieurwissenschaften) sowie Anfänger in der Optimierung.
+    - Begründung: Die Bibliothek muss sowohl Experten mit detaillierten Informationen über Funktionen (z. B. mathematische Eigenschaften, Minimalstellen, Grenzen) als auch Anfängern mit klaren, einfachen Beispielen dienen.
 
-    11. **Readme-Inhalte**:
-        - Entscheidung: Das Readme soll alle implementierten Testfunktionen detailliert beschreiben (mathematische Eigenschaften, Minimalstellen, Werte, Grenzen), Installationsanweisungen, Nutzungsbeispiele (z. B. Funktionsauswertung, Gradientenberechnung, Optimierung mit Optim.jl/NLopt), Metadatenabfragen, Literaturverweise und einen Abschnitt zur Community-Beteiligung enthalten.
-        - Begründung: Dies stellt sicher, dass Nutzer alle notwendigen Informationen erhalten, um die Bibliothek effektiv zu nutzen, während die Flexibilität bei Projektänderungen gewahrt bleibt.
+11. **Readme-Inhalte**:
+    - Entscheidung: Das Readme soll alle implementierten Testfunktionen detailliert beschreiben (mathematische Eigenschaften, Minimalstellen, Werte, Grenzen), Installationsanweisungen, Nutzungsbeispiele (z. B. Funktionsauswertung, Gradientenberechnung, Optimierung mit Optim.jl/NLopt), Metadatenabfragen, Literaturverweise und einen Abschnitt zur Community-Beteiligung enthalten.
+    - Begründung: Dies stellt sicher, dass Nutzer alle notwendigen Informationen erhalten, um die Bibliothek effektiv zu nutzen, während die Flexibilität bei Projektänderungen gewahrt bleibt.
 
-    ## Pläne
-    Die folgenden Pläne skizzieren die zukünftige Entwicklung des Projekts, wobei spezifische Beispiele minimal verwendet werden, um Zeitlosigkeit zu gewährleisten:
+## Pläne
+Die folgenden Pläne skizzieren die zukünftige Entwicklung des Projekts, wobei spezifische Beispiele minimal verwendet werden, um Zeitlosigkeit zu gewährleisten:
 
-    1. **Erweiterung der Testfunktionen**:
-       - Hinzufügung neuer Testfunktionen aus Molga & Smutnicki (2005) und anderen relevanten Quellen, um die Sammlung zu erweitern.
-       - Beispiel: Implementierung der Hartmann-Funktion als nächste Priorität.
+1. **Erweiterung der Testfunktionen**:
+   - Die Hartmann-Funktion wurde erfolgreich implementiert und getestet, einschließlich ihrer Metadaten (z. B. Minimum, Grenzen, Eigenschaften) und analytischen Gradienten, verifiziert gegen Molga & Smutnicki (2005) und al-roomi.org. Die Tests in `test/hartmann_tests.jl` decken Funktionswerte, Gradienten und Edge-Cases ab, wie in `test/runtests.jl` zentralisiert.
+   - Als nächste Priorität sollen weitere Testfunktionen implementiert werden, darunter Styblinski-Tang, Sum of Powers, Eggholder, Keane, Sine Envelope, Rana, Camelback, Cross-in-Tray, Drop-Wave, Himmelblau, Levi, F_NWp281, Powell Singular, Powell Badly Scaled und Helical Valley. Diese Funktionen werden gemäß den Richtlinien in `Anleitung_neue_Testfunktion.txt` entwickelt, mit besonderem Fokus auf:
+     - Verifikation der mathematischen Definition, Minima, Grenzen und Eigenschaften gegen etablierte Quellen wie al-roomi.org, Molga & Smutnicki (2005), Jamil & Yang (2013), Hedar (2005) oder Suganthan et al. (2005).
+     - Implementierung analytischer Gradienten (in-place und nicht-in-place) für jede Funktion, um Konsistenz mit bestehenden Funktionen zu gewährleisten.
+     - Erstellung funktionsspezifischer Tests in `test/<functionname>_tests.jl`, die Funktionswerte, Gradienten, Metadaten und Edge-Cases (z. B. ungültige Dimensionen) prüfen.
+     - Berücksichtigung potenzieller numerischer Instabilitäten, ähnlich wie bei der Shekel-Funktion (z. B. nicht-null Gradient am Minimum, Norm ≈ 0.223), durch angepasste Testtoleranzen (z. B. `atol=0.3`).
+     - Priorisierung von Funktionen mit hoher Relevanz für Benchmarking (z. B. Himmelblau wegen ihrer vier globalen Minima, Styblinski-Tang wegen Skalierbarkeit) und Funktionen mit einzigartigen Eigenschaften (z. B. Powell Singular wegen singularer Hesse-Matrix).
+   - Die Implementierung wird schrittweise erfolgen, mit wöchentlichen Meilensteinen, um die Verifikation gegen mehrere Quellen sicherzustellen und die Testabdeckung zu maximieren.
 
-    2. **Verbesserung der Testabdeckung**:
-       - Erweiterung der Tests in `test/runtests.jl` um Prüfungen für höhere Dimensionen (z. B. `n=10`, `n=100`) für skalierbare Funktionen, insbesondere für Gradienten im Optimum.
-       - Optimierung der Testzeit, z. B. durch Reduzierung der Anzahl zufälliger Punkte in Gradiententests, falls erforderlich.
+2. **Verbesserung der Testabdeckung**:
+   - Erweiterung der Tests in `test/runtests.jl` um Prüfungen für höhere Dimensionen (z. B. `n=10`, `n=100`) für skalierbare Funktionen, insbesondere für Gradienten im Optimum.
+   - Optimierung der Testzeit, z. B. durch Reduzierung der Anzahl zufälliger Punkte in Gradiententests, falls erforderlich.
 
-    3. **Verbesserung der Dokumentation**:
-       - Vervollständigung der Docstrings für interne Funktionen und Integration von MathJax für mathematische Formeln.
-       - Entwicklung eines umfassenden Readme, das den oben genannten Entscheidungen entspricht und flexibel bleibt.
+3. **Verbesserung der Dokumentation**:
+   - Vervollständigung der Docstrings für interne Funktionen und Integration von MathJax für mathematische Formeln.
+   - Entwicklung eines umfassenden Readme, das den oben genannten Entscheidungen entspricht und flexibel bleibt.
 
-    4. **Community-Beteiligung**:
-       - Einrichtung eines GitHub-Repositorys, um Beiträge von Nutzern (z. B. neue Funktionen, Fehlerkorrekturen) zu ermöglichen.
-       - Förderung der Zusammenarbeit mit der Julia-Community für langfristige Relevanz.
+4. **Community-Beteiligung**:
+   - Einrichtung eines GitHub-Repositorys, um Beiträge von Nutzern (z. B. neue Funktionen, Fehlerkorrekturen) zu ermöglichen.
+   - Förderung der Zusammenarbeit mit der Julia-Community für langfristige Relevanz.
 
-    5. **Registrierung im Julia General Registry**:
-       - Vorbereitung von `Project.toml` und Dokumentation für die Registrierung, um die Bibliothek breit verfügbar zu machen.
+5. **Registrierung im Julia General Registry**:
+   - Vorbereitung von `Project.toml` und Dokumentation für die Registrierung, um die Bibliothek breit verfügbar zu machen.
 
-    ## Erkannte Probleme
-    Die folgenden Herausforderungen wurden während der Entwicklung identifiziert:
+## Vergleichsprojekte
+Um die Positionierung von `NonlinearOptimizationTestFunctionsInJulia` zu stärken und Orientierung für die Weiterentwicklung zu bieten, wurden folgende Vergleichsprojekte analysiert, die ähnliche Testfunktionen für nichtlineare Optimierung bereitstellen. Die Analyse fokussiert auf die Anzahl und Art der Funktionen, den Zugriff auf Funktionen und Ableitungen, zusätzliche Informationen, Referenzen und weitere relevante Aspekte wie Benutzerfreundlichkeit, Kompatibilität, Dokumentation und Community-Unterstützung, um Entwicklern eine klare Orientierung zu geben:
 
-    1. **Dynamische Änderungen**:
-       - Problem: Nahezu tägliche Hinzufügung neuer Funktionen oder Anpassungen erschwert die Aufrechterhaltung einer konsistenten Dokumentation.
-       - Lösungsansatz: Dokumentation (z. B. Zwischenbericht, Readme) ohne spezifische Zahlen oder Funktionslisten gestalten, um Flexibilität zu gewährleisten.
+1. **Pyomo (Python)**:
+   - **Anzahl und Art der Funktionen**: Pyomo bietet eine begrenzte Auswahl von ca. 10–15 Testfunktionen (z. B. Rosenbrock, Ackley, Rastrigin), die unimodale, multimodale, skalierbare und nicht-skalierbare Funktionen umfassen. Die Auswahl ist kleiner als in spezialisierten Testfunktions-Bibliotheken, mit Fokus auf Optimierungsmodelle statt Testfunktionen.
+   - **Zugriff auf Funktionen und Ableitungen**: Funktionen werden als Python-Funktionen bereitgestellt, mit numerischer Differentiation über externe Pakete wie NumPy. Analytische Gradienten sind nicht standardmäßig verfügbar, was die Präzision und Performance für gradientenbasierte Optimierung einschränkt.
+   - **Weitere Informationen**: Metadaten sind minimal (z. B. keine standardisierten Minimalstellen, Grenzen oder Eigenschaften). Dokumentation fokussiert auf Optimierungsmodelle, nicht auf Testfunktionen, was für Nutzer, die Benchmarks durchführen, unzureichend ist.
+   - **Referenzen**: Bezieht sich auf allgemeine Optimierungsliteratur (z. B. Molga & Smutnicki, 2005), aber ohne spezifische Verifikation der Testfunktionen gegen diese Quellen.
+   - **Zusätzliche Aspekte**: Starke Integration mit Python-Ökosystem (z. B. SciPy, Pyomo-Solver), breite Community, aber eingeschränkte Benutzerfreundlichkeit für Anfänger. Keine Julia-Kompatibilität, was die Nutzung für unser Zielpublikum einschränkt. Open-Source, aber Dokumentation ist oft zu technisch.
+   - **Vergleich**: Unser Paket bietet eine größere Auswahl an verifizierten Testfunktionen, analytische Gradienten (in-place und nicht-in-place), strukturierte Metadaten (z. B. `:min_position`, `:lb`, `:ub`) und nahtlose Julia-Integration, was Präzision, Benutzerfreundlichkeit und Performance erhöht.
 
-    2. **Numerische Instabilität**:
-       - Problem: Einige Funktionen zeigen numerische Instabilitäten, insbesondere bei der Prüfung des Gradienten im Optimum, was eine großzügige Toleranz (`atol=1e-3`) erforderlich macht. Beispiel: Die Shekel-Funktion hat einen nicht-null Gradienten am Minimum (Norm ≈ 0.223), was eine Toleranz von `atol=0.3` in den Tests erforderlich machte.
-       - Lösungsansatz: Überprüfung der Implementierungen für betroffene Funktionen und Implementierung zusätzlicher Tests für numerische Stabilität.
+2. **MATLAB Optimization Toolbox**:
+   - **Anzahl und Art der Funktionen**: Enthält ca. 10–20 Testfunktionen (z. B. Rosenbrock, Branin, Goldstein-Price), mit einer Mischung aus unimodalen (z. B. Sphere), multimodalen (z. B. Rastrigin), skalierbaren und nicht-skalierbaren Funktionen. Fokus liegt auf klassischen Benchmarks, die in der Optimierungsliteratur häufig verwendet werden.
+   - **Zugriff auf Funktionen und Ableitungen**: Funktionen werden als MATLAB-Funktionen bereitgestellt, mit numerischer Differentiation standardmäßig. Analytische Gradienten müssen manuell implementiert werden, was für Nutzer zeitaufwendig ist und die Präzision einschränken kann.
+   - **Weitere Informationen**: Bietet begrenzte Metadaten (z. B. Minimalstellen für einige Funktionen, aber keine konsistente Struktur wie unser `:meta`-Dictionary). Dokumentation ist umfassend, aber proprietär und auf MATLAB-Nutzer zugeschnitten.
+   - **Referenzen**: Bezieht sich auf Standardquellen wie Molga & Smutnicki (2005) und Michalewicz (1996), ohne explizite Verifikation für jede Funktion, was die Vertrauenswürdigkeit einschränken kann.
+   - **Zusätzliche Aspekte**: Benutzerfreundlich für MATLAB-Nutzer, aber hohe Kosten (proprietäre Software) und keine Open-Source-Lösung. Eingeschränkte Erweiterbarkeit und keine Kompatibilität mit Julia-Ökosystemen wie Optim.jl oder Zygote.
+   - **Vergleich**: Unser Paket ist Open-Source, bietet konsistente Metadaten, analytische Gradienten und ist für Julia optimiert, was es flexibler, kostengünstiger und für unsere Zielgruppe zugänglicher macht.
 
-    3. **Fehlende Tests für höhere Dimensionen**:
-       - Problem: Tests für skalierbare Funktionen in höheren Dimensionen (z. B. `n=10`, `n=100`) fehlen für die Prüfung des Gradienten im Optimum.
-       - Lösungsansatz: Erweiterung der Tests in `test/runtests.jl` um diese Fälle.
+3. **Global Optimization Test Problems (Hedar)**:
+   - **Anzahl und Art der Funktionen**: Bietet über 50 Testfunktionen, darunter unimodale (z. B. Sphere, AxisParallelHyperEllipsoid), multimodale (z. B. Rastrigin, Schwefel) und beschränkte Funktionen, sowohl skalierbare als auch nicht-skalierbare. Die Sammlung ist umfassender als Pyomo oder MATLAB und deckt eine breite Palette an Optimierungsherausforderungen ab.
+   - **Zugriff auf Funktionen und Ableitungen**: Funktionen als MATLAB- oder C-Code verfügbar, ohne standardmäßige analytische Gradienten. Numerische Differentiation ist erforderlich, was die Performance in hochdimensionalen oder gradientenbasierten Szenarien einschränkt.
+   - **Weitere Informationen**: Bietet detaillierte Beschreibungen von Minimalstellen, Grenzen und Eigenschaften (z. B. unimodal, multimodal), aber nicht in einer strukturierten Form wie unser `:meta`-Dictionary. Dokumentation ist technisch und für Anfänger schwer zugänglich.
+   - **Referenzen**: Basiert auf Hedar (2005), mit Verweisen auf Molga & Smutnicki (2005) und andere Quellen (z. B. Jamil & Yang, 2013), mit klarer Dokumentation der Herkunft jeder Funktion.
+   - **Zusätzliche Aspekte**: Frei verfügbar, aber komplexe Integration in moderne Optimierungspakete. Keine Unterstützung für automatische Differentiation oder Julia-Ökosystem. Die Dokumentation ist auf erfahrene Nutzer ausgerichtet, mit wenig Fokus auf Anfängerfreundlichkeit.
+   - **Vergleich**: Unser Paket bietet eine ähnliche Vielfalt an Funktionen, aber mit analytischen Gradienten, strukturierter Metadaten und Julia-Kompatibilität, was die Nutzung und Erweiterbarkeit erleichtert.
 
-    4. **Unvollständige Dokumentation**:
-       - Problem: Docstrings für interne Funktionen und MathJax für mathematische Formeln fehlen teilweise.
-       - Lösungsansatz: Vervollständigung der Docstrings und Integration von MathJax in der Dokumentation.
+4. **CUTEst**:
+   - **Anzahl und Art der Funktionen**: Umfasst über 100 Testprobleme, einschließlich unbeschränkter und beschränkter Optimierung, mit einer breiten Palette an unimodalen (z. B. Rosenbrock), multimodalen (z. B. Griewank, Hartmann), skalierbaren und nicht-skalierbaren Funktionen. Die Sammlung ist eine der umfassendsten in der Forschung.
+   - **Zugriff auf Funktionen und Ableitungen**: Funktionen werden in SIF-Format bereitgestellt, mit analytischen Gradienten für viele Probleme, aber komplexer Zugriff (Fortran/C-basiert). In-place Gradienten sind nicht standardmäßig verfügbar, was die Integration mit modernen Solvern erschwert.
+   - **Weitere Informationen**: Bietet umfassende Metadaten (z. B. Minimalstellen, Grenzen, Einschränkungen), aber in einem Format, das für Anfänger schwer zugänglich ist. Unterstützt beschränkte Optimierung, was unser Paket derzeit nicht abdeckt.
+   - **Referenzen**: Basiert auf Gould et al. (2015), mit Verweisen auf Molga & Smutnicki (2005), Suganthan et al. (2005) und andere Standardquellen, mit rigoroser Verifikation.
+   - **Zusätzliche Aspekte**: Entwickelt für akademische Forschung, mit komplexer Einrichtung (z. B. SIF-Decoder erforderlich) und begrenzter Julia-Integration. Stark in der Forschung, aber weniger benutzerfreundlich für Anfänger oder Entwickler außerhalb von Fortran/C.
+   - **Vergleich**: Unser Paket ist einfacher einzurichten, bietet konsistente Metadaten, analytische Gradienten (in-place und nicht-in-place) und ist speziell für Julia-Nutzer optimiert, was es für unsere Zielgruppe zugänglicher macht.
 
-    5. **Probleme mit Triple-Backticks**:
-       - Problem: Die Verwendung von Triple-Backticks (```) in Codeblöcken oder Textfeldern verursacht erhebliche Probleme bei der Verarbeitung oder Anzeige der Dokumentation, einschließlich des Zwischenberichts und Readme.
-       - Lösungsansatz: Verwendung von 4-Leerzeichen-Einrückung statt Triple-Backticks in allen Dokumentationsdateien, um Rendering-Probleme zu vermeiden.
+## Erkannte Probleme
+Die folgenden Herausforderungen wurden während der Entwicklung identifiziert:
 
-    6. **Kompatibilität mit Optimierungspaketen**:
-       - Problem: Unterschiedliche Anforderungen von Optim.jl und NLopt an Gradienten (in-place vs. nicht-in-place) können zu Verwirrung führen.
-       - Lösungsansatz: Bereitstellung beider Gradiententypen (`grad` und `gradient!`) und klare Beispiele im Readme.
+1. **Dynamische Änderungen**:
+   - Problem: Nahezu tägliche Hinzufügung neuer Funktionen oder Anpassungen erschwert die Aufrechterhaltung einer konsistenten Dokumentation.
+   - Lösungsansatz: Dokumentation (z. B. Zwischenbericht, Readme) ohne spezifische Zahlen oder Funktionslisten gestalten, um Flexibilität zu gewährleisten.
 
-    7. **Fehlende funktionsspezifische Tests**:
-       - Problem: Neue Funktionen wie Shekel erforderten zunächst keine eigenen Tests, was zu unvollständiger Testabdeckung führte (z. B. fehlende `shekel_tests.jl` in `test/include_testfiles.jl`).
-       - Lösungsansatz: Implementierung funktionsspezifischer Testdateien (z. B. `shekel_tests.jl`) und deren Einbindung in `test/include_testfiles.jl`, wie für Shekel erfolgreich umgesetzt.
+2. **Numerische Instabilität**:
+   - Problem: Einige Funktionen zeigen numerische Instabilitäten, insbesondere bei der Prüfung des Gradienten im Optimum, was eine großzügige Toleranz (`atol=1e-3`) erforderlich macht. Beispiel: Die Shekel-Funktion hat einen nicht-null Gradienten am Minimum (Norm ≈ 0.223), was eine Toleranz von `atol=0.3` in den Tests erforderlich machte.
+   - Lösungsansatz: Überprüfung der Implementierungen für betroffene Funktionen und Implementierung zusätzlicher Tests für numerische Stabilität.
 
-    ## Testausführung
-    Tests können wie folgt ausgeführt werden:
-        cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
-        julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
+3. **Fehlende Tests für höhere Dimensionen**:
+   - Problem: Tests für skalierbare Funktionen in höheren Dimensionen (z. B. `n=10`, `n=100`) fehlen für die Prüfung des Gradienten im Optimum.
+   - Lösungsansatz: Erweiterung der Tests in `test/runtests.jl` um diese Fälle.
 
-    ## Literatur
-    - Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. https://arxiv.org/abs/1308.4008
-    - Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
-    - Gould, N. I. M., Orban, D., & Toint, P. L. (2015). CUTEst: A constrained and unconstrained testing environment with safe threads for mathematical optimization. http://doi.org/10.1007/s10589-014-9689-3
-    - Michalewicz, Z. (1996). Genetic Algorithms + Data Structures = Evolution Programs, Third Edition. ISBN: 3-540-60676-9
-    - Hedar, A.-R. (2005). Global optimization test problems. http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm
-    - Suganthan, P. N., et al. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website.
-    - Al-Roomi (o. J.). Test Functions Repository. Verfügbar unter: https://www.al-roomi.org.
+4. **Unvollständige Dokumentation**:
+   - Problem: Docstrings für interne Funktionen und MathJax für mathematische Formeln fehlen teilweise.
+   - Lösungsansatz: Vervollständigung der Docstrings und Integration von MathJax in der Dokumentation.
+
+5. **Probleme mit Triple-Backticks**:
+   - Problem: Die Verwendung von Triple-Backticks (```) in Codeblöcken oder Textfeldern verursacht erhebliche Probleme bei der Verarbeitung oder Anzeige der Dokumentation, einschließlich des Zwischenberichts und Readme.
+   - Lösungsansatz: Verwendung von 4-Leerzeichen-Einrückung statt Triple-Backticks in allen Dokumentationsdateien, um Rendering-Probleme zu vermeiden.
+
+6. **Kompatibilität mit Optimierungspaketen**:
+   - Problem: Unterschiedliche Anforderungen von Optim.jl und NLopt an Gradienten (in-place vs. nicht-in-place) können zu Verwirrung führen.
+   - Lösungsansatz: Bereitstellung beider Gradiententypen (`grad` und `gradient!`) und klare Beispiele im Readme.
+
+7. **Fehlende funktionsspezifische Tests**:
+   - Problem: Neue Funktionen wie Shekel erforderten zunächst keine eigenen Tests, was zu unvollständiger Testabdeckung führte (z. B. fehlende `shekel_tests.jl` in `test/include_testfiles.jl`).
+   - Lösungsansatz: Implementierung funktionsspezifischer Testdateien (z. B. `shekel_tests.jl`) und deren Einbindung in `test/include_testfiles.jl`, wie für Shekel erfolgreich umgesetzt.
+
+## Testausführung
+Tests können wie folgt ausgeführt werden:
+    cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
+    julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
+
+## Literatur
+- Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. https://arxiv.org/abs/1308.4008
+- Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
+- Gould, N. I. M., Orban, D., & Toint, P. L. (2015). CUTEst: A constrained and unconstrained testing environment with safe threads for mathematical optimization. http://doi.org/10.1007/s10589-014-9689-3
+- Michalewicz, Z. (1996). Genetic Algorithms + Data Structures = Evolution Programs, Third Edition. ISBN: 3-540-60676-9
+- Hedar, A.-R. (2005). Global optimization test problems. http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm
+- Suganthan, P. N., et al. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website.
+- Al-Roomi (o. J.). Test Functions Repository. Verfügbar unter: https://www.al-roomi.org.
+
+## Schlussbemerkung
+Der Zwischenbericht dient als lebendiges Dokument, das mit dem Projekt wächst. Jede neue Funktion, jeder behobene Fehler und jede Designentscheidung sollte hier reflektiert werden, um eine klare Historie und Orientierung für uns beide zu bieten. Bei der nächsten Aktualisierung sollten wir prüfen, ob neue Probleme (z. B. bei den geplanten Funktionen) aufgetreten sind und ob bestehende Designentscheidungen angepasst werden müssen.

@@ -20,3 +20,5 @@ include("sixhumpcamelback_tests.jl")
 include("langermann_tests.jl")
 include("easom_tests.jl")
 include("shekel_tests.jl")
+include("hartmann_tests.jl")
+

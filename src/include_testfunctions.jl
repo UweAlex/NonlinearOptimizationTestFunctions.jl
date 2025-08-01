@@ -18,4 +18,5 @@ include("functions/sixhumpcamelback.jl")
 include("functions/langermann.jl")
 include("functions/easom.jl")
 include("functions/shekel.jl")
+include("functions/hartmann.jl")
 
