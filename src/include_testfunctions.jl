@@ -19,4 +19,14 @@ include("functions/langermann.jl")
 include("functions/easom.jl")
 include("functions/shekel.jl")
 include("functions/hartmann.jl")
+include("functions/bohachevsky.jl")
+include("functions/dixonprice.jl")
+include("functions/styblinskitang.jl")
+include("functions/levy.jl")
+include("functions/beale.jl")
+include("functions/mccormick.jl")
+include("functions/bukin6.jl")
+
+
+
 

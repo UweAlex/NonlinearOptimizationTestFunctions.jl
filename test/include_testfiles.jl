@@ -21,4 +21,16 @@ include("langermann_tests.jl")
 include("easom_tests.jl")
 include("shekel_tests.jl")
 include("hartmann_tests.jl")
+include("bohachevsky_tests.jl")
+include("dixonprice_tests.jl")
+include("styblinskitang_tests.jl")
+include("levy_tests.jl")
+include("beale_tests.jl")
+include("mccormick_tests.jl")
+include("bukin6_tests.jl")
+
+
+
+
+
 
