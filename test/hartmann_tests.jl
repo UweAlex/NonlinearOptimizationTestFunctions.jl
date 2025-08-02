@@ -1,10 +1,10 @@
 # test/hartmann_tests.jl
 # Purpose: Tests for the Hartmann function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 01 August 2025
 
 using Test, Optim
-using NonlinearOptimizationTestFunctionsInJulia: HARTMANN_FUNCTION, hartmann
+using NonlinearOptimizationTestFunctions: HARTMANN_FUNCTION, hartmann
 
 @testset "Hartmann Tests" begin
     tf = HARTMANN_FUNCTION

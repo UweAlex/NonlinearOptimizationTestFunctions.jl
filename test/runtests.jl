@@ -1,10 +1,10 @@
 # test/runtests.jl
-# Purpose: Entry point for running all tests in NonlinearOptimizationTestFunctionsInJulia.
+# Purpose: Entry point for running all tests in NonlinearOptimizationTestFunctions.
 # Context: Contains cross-function tests and includes function-specific tests via include_testfiles.jl.
 # Last modified: 19 July 2025
 
 using Test, ForwardDiff, Zygote
-using NonlinearOptimizationTestFunctionsInJulia
+using NonlinearOptimizationTestFunctions
 using Optim
 using Random
 

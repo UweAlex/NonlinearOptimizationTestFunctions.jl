@@ -1,10 +1,10 @@
 # test/shubert_tests.jl
 # Purpose: Tests for the Shubert function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 19. Juli 2025
 
 using Test, LinearAlgebra
-using NonlinearOptimizationTestFunctionsInJulia: SHUBERT_FUNCTION, shubert, shubert_gradient
+using NonlinearOptimizationTestFunctions: SHUBERT_FUNCTION, shubert, shubert_gradient
 
 @testset "Shubert Tests" begin
     tf = SHUBERT_FUNCTION

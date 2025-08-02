@@ -1,6 +1,6 @@
 # src/functions/sixhumpcamelback.jl
 # Purpose: Implements the Six-Hump Camelback test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 19 July 2025
 
 export SIXHUMPCAMELBACK_FUNCTION, sixhumpcamelback, sixhumpcamelback_gradient

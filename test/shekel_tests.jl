@@ -1,10 +1,10 @@
 # test/shekel_tests.jl
 # Purpose: Tests for the Shekel function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 31 July 2025
 
 using Test, Optim
-using NonlinearOptimizationTestFunctionsInJulia: SHEKEL_FUNCTION, shekel
+using NonlinearOptimizationTestFunctions: SHEKEL_FUNCTION, shekel
 
 @testset "Shekel Tests" begin
     tf = SHEKEL_FUNCTION

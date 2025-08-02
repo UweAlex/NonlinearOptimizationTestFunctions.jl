@@ -1,6 +1,6 @@
 # src/include_testfunctions.jl
 # Purpose: Includes all test function definitions.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia, enables modular function loading.
+# Context: Part of NonlinearOptimizationTestFunctions, enables modular function loading.
 # Last modified: 19. Juli 2025
 
 include("functions/rosenbrock.jl")

@@ -1,10 +1,10 @@
 # test/michalewicz_tests.jl
 # Purpose: Tests for the Michalewicz function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 17. Juli 2025
 
 using Test, Optim, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctionsInJulia: MICHALEWICZ_FUNCTION, michalewicz, michalewicz_gradient
+using NonlinearOptimizationTestFunctions: MICHALEWICZ_FUNCTION, michalewicz, michalewicz_gradient
 
 function finite_difference_gradient(f, x, h=1e-6)
     n = length(x)

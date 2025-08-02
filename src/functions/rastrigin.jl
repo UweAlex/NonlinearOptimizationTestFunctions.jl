@@ -1,6 +1,6 @@
 # src/functions/rastrigin.jl
 # Purpose: Implements the Rastrigin test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia, used in optimization demos and tests.
+# Context: Part of NonlinearOptimizationTestFunctions, used in optimization demos and tests.
 # Last modified: 16. Juli 2025, 07:19 AM CEST
 
     """

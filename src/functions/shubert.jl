@@ -1,6 +1,6 @@
 # src/functions/shubert.jl
 # Purpose: Implements the Shubert test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 19. Juli 2025
 
 export SHUBERT_FUNCTION, shubert, shubert_gradient

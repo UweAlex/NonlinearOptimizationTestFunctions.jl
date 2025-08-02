@@ -1,10 +1,10 @@
 # test/rastrigin_tests.jl
-# Purpose: Tests for the Rastrigin function in NonlinearOptimizationTestFunctionsInJulia.
+# Purpose: Tests for the Rastrigin function in NonlinearOptimizationTestFunctions.
 # Context: Verifies function values, gradients, and optimization.
 # Last modified: 16. Juli 2025, 14:00 PM CEST
 
 using Test, Optim, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctionsInJulia: RASTRIGIN_FUNCTION, rastrigin, rastrigin_gradient
+using NonlinearOptimizationTestFunctions: RASTRIGIN_FUNCTION, rastrigin, rastrigin_gradient
 
 function finite_difference_gradient(f, x, h=1e-6)
     n = length(x)

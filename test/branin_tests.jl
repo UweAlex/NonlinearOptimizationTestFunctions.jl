@@ -1,10 +1,10 @@
 # test/branin_tests.jl
 # Purpose: Tests for the Branin function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 18. Juli 2025
 
 using Test, Optim
-using NonlinearOptimizationTestFunctionsInJulia: BRANIN_FUNCTION, branin
+using NonlinearOptimizationTestFunctions: BRANIN_FUNCTION, branin
 
 @testset "Branin Tests" begin
     tf = BRANIN_FUNCTION

@@ -1,10 +1,10 @@
 # test/ackley_tests.jl
-# Purpose: Tests for the Ackley function in NonlinearOptimizationTestFunctionsInJulia.
+# Purpose: Tests for the Ackley function in NonlinearOptimizationTestFunctions.
 # Context: Verifies function values, gradients, and optimization.
 # Last modified: 16. Juli 2025, 13:00 PM CEST
 
 using Test, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctionsInJulia: ACKLEY_FUNCTION, ackley, ackley_gradient
+using NonlinearOptimizationTestFunctions: ACKLEY_FUNCTION, ackley, ackley_gradient
 using Optim
 
 function finite_difference_gradient(f, x, h=1e-6)

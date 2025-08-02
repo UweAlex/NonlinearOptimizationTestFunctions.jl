@@ -1,9 +1,9 @@
 # test/griewank_tests.jl
 # Purpose: Specific tests for the Griewank test function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 17. Juli 2025
 
-using Test, NonlinearOptimizationTestFunctionsInJulia, ForwardDiff, Optim
+using Test, NonlinearOptimizationTestFunctions, ForwardDiff, Optim
 
 @testset "Griewank Tests" begin
     @test griewank([0.0, 0.0]) ≈ 0.0 atol=1e-6

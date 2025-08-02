@@ -1,11 +1,11 @@
 # examples/Optimize_with_nlopt.jl
 # Purpose: Demonstrates optimization of the Rosenbrock function using NLopt's LD_LBFGS algorithm.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia, highlighting TestFunction integration with NLopt.
+# Context: Part of NonlinearOptimizationTestFunctions, highlighting TestFunction integration with NLopt.
 # Last modified: 11. Juli 2025, 14:10 PM CEST
 using NonlinearOptimizationTestFunctionsInJulia
 if isdefined(Main, :NLopt)
     using NLopt
-    tf = NonlinearOptimizationTestFunctionsInJulia.ROSENBROCK_FUNCTION
+    tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
     n = 2
     opt = Opt(:LD_LBFGS, n)
     NLopt.ftol_rel!(opt, 1e-6)

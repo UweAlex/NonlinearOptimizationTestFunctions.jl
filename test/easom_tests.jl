@@ -1,10 +1,10 @@
 # test/easom_tests.jl
 # Purpose: Tests for the Easom function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 21 July 2025
 
 using Test, Optim
-using NonlinearOptimizationTestFunctionsInJulia: EASOM_FUNCTION, easom
+using NonlinearOptimizationTestFunctions: EASOM_FUNCTION, easom
 
 @testset "Easom Tests" begin
     tf = EASOM_FUNCTION

@@ -1,10 +1,10 @@
 # test/sixhumpcamelback_tests.jl
 # Purpose: Tests for the Six-Hump Camelback function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 19 July 2025
 
 using Test, Optim
-using NonlinearOptimizationTestFunctionsInJulia: SIXHUMPCAMELBACK_FUNCTION, sixhumpcamelback
+using NonlinearOptimizationTestFunctions: SIXHUMPCAMELBACK_FUNCTION, sixhumpcamelback
 
 @testset "Six-Hump Camelback Tests" begin
     tf = SIXHUMPCAMELBACK_FUNCTION

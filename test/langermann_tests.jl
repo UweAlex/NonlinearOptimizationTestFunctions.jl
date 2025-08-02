@@ -1,6 +1,6 @@
 # test/langermann_tests.jl
 using Test
-using NonlinearOptimizationTestFunctionsInJulia
+using NonlinearOptimizationTestFunctions
 using Optim
 using LinearAlgebra
 

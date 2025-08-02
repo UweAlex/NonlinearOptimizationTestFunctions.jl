@@ -1,6 +1,6 @@
 # src/functions/rosenbrock.jl
 # Purpose: Implements the Rosenbrock test function for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia, follows guidelines from Anleitung_neue_Testfunktion.txt.
+# Context: Part of NonlinearOptimizationTestFunctions, follows guidelines from Anleitung_neue_Testfunktion.txt.
 # Last modified: 19. Juli 2025
 
 export ROSENBROCK_FUNCTION, rosenbrock, rosenbrock_gradient

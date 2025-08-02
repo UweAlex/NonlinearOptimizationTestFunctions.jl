@@ -1,10 +1,10 @@
 # test/schwefel_tests.jl
-# Purpose: Tests for the Schwefel function in NonlinearOptimizationTestFunctionsInJulia.
+# Purpose: Tests for the Schwefel function in NonlinearOptimizationTestFunctions.
 # Context: Part of the test suite to verify the correctness of the Schwefel function, its gradient, metadata, and optimization behavior. Ensures compatibility with ForwardDiff and Optim.jl, and tests edge cases and scalability as per the requirements in the project documentation.
 # Last modified: 17. Juli 2025, 16:29 PM CEST
 
 using Test, Optim, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctionsInJulia: SCHWEFEL_FUNCTION, schwefel, schwefel_gradient
+using NonlinearOptimizationTestFunctions: SCHWEFEL_FUNCTION, schwefel, schwefel_gradient
 
 function finite_difference_gradient(f, x, h=1e-6)
     n = length(x)

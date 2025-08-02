@@ -1,9 +1,9 @@
-# src/NonlinearOptimizationTestFunctionsInJulia.jl
+# src/NonlinearOptimizationTestFunctions.jl
 # Purpose: Defines the core module for nonlinear optimization test functions.
 # Context: Provides TestFunction structure, metadata validation, and function registry.
 # Last modified: 20 July 2025
 
-module NonlinearOptimizationTestFunctionsInJulia
+module NonlinearOptimizationTestFunctions
 
 using LinearAlgebra
 using ForwardDiff

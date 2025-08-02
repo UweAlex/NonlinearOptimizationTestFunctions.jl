@@ -1,4 +1,4 @@
-name = "NonlinearOptimizationTestFunctionsInJulia"
+name = "NonlinearOptimizationTestFunctions"
 uuid = "3180b13f-e8d1-40aa-806b-3e6ce7522c6b"
 authors = ["aox"]
 version = "0.1.0"
@@ -19,6 +19,7 @@ Optim = "1.13.2"
 Test = "1.11.0"
 Zygote = "0.7.10"
 julia = "1"
+
 
 [extras]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"

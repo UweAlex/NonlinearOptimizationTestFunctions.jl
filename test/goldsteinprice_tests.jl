@@ -1,10 +1,10 @@
 # test/goldsteinprice_tests.jl
 # Purpose: Tests for the Goldstein-Price function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 18. Juli 2025
 
 using Test, Optim
-using NonlinearOptimizationTestFunctionsInJulia: GOLDSTEINPRICE_FUNCTION, goldsteinprice
+using NonlinearOptimizationTestFunctions: GOLDSTEINPRICE_FUNCTION, goldsteinprice
 
 @testset "Goldstein-Price Tests" begin
     tf = GOLDSTEINPRICE_FUNCTION

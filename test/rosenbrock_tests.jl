@@ -4,7 +4,7 @@
 # Last modified: 16. Juli 2025, 11:36 AM CEST
 
 using Test, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctionsInJulia: ROSENBROCK_FUNCTION, rosenbrock, rosenbrock_gradient
+using NonlinearOptimizationTestFunctions: ROSENBROCK_FUNCTION, rosenbrock, rosenbrock_gradient
 using Optim
 
 function finite_difference_gradient(f, x, h=1e-6)

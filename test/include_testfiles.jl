@@ -1,9 +1,9 @@
 # test/include_testfiles.jl
-# Purpose: Includes all function-specific test files for NonlinearOptimizationTestFunctionsInJulia.
+# Purpose: Includes all function-specific test files for NonlinearOptimizationTestFunctions.
 # Context: Part of the test suite, enables modular test loading for individual test functions.
 # Last modified: 18. Juli 2025
 
-using Test, NonlinearOptimizationTestFunctionsInJulia, ForwardDiff, Optim, Zygote
+using Test, NonlinearOptimizationTestFunctions, ForwardDiff, Optim, Zygote
 
 include("rosenbrock_tests.jl")
 include("sphere_tests.jl")

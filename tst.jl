@@ -1,9 +1,9 @@
 # tst.jl
 # Purpose: Debug the Easom function by computing its values at three points.
-# Context: Standalone test for NonlinearOptimizationTestFunctionsInJulia.
+# Context: Standalone test for NonlinearOptimizationTestFunctions.
 # Last modified: 21 July 2025
 
-using NonlinearOptimizationTestFunctionsInJulia: easom
+using NonlinearOptimizationTestFunctions: easom
 
 # Test points
 points = [

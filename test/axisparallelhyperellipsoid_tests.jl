@@ -1,10 +1,10 @@
 # test/axis_parallel_hyper_ellipsoid_tests.jl
 # Purpose: Tests for the axis-parallel hyper-ellipsoid function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 16. Juli 2025, 08:20 AM CEST
 
 using Test, Optim, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctionsInJulia: AXISPARALLELHYPERELLIPSOID_FUNCTION, axisparallelhyperellipsoid, axisparallelhyperellipsoid_gradient
+using NonlinearOptimizationTestFunctions: AXISPARALLELHYPERELLIPSOID_FUNCTION, axisparallelhyperellipsoid, axisparallelhyperellipsoid_gradient
 
 function finite_difference_gradient(f, x, h=1e-6)
     n = length(x)

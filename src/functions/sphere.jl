@@ -1,6 +1,6 @@
 # src/functions/sphere.jl
 # Purpose: Implements the Sphere test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia, used in optimization demos and tests.
+# Context: Part of NonlinearOptimizationTestFunctions, used in optimization demos and tests.
 # Last modified: 14. Juli 2025, 10:24 AM CEST
 
 function sphere(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}}

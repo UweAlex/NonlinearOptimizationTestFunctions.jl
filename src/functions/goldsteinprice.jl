@@ -1,6 +1,6 @@
 # src/functions/goldsteinprice.jl
 # Purpose: Implements the Goldstein-Price test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 18. Juli 2025
 
 export GOLDSTEINPRICE_FUNCTION, goldsteinprice, goldsteinprice_gradient

@@ -1,10 +1,10 @@
 # test/sphere_tests.jl
-# Purpose: Tests for the Sphere function in NonlinearOptimizationTestFunctionsInJulia.
+# Purpose: Tests for the Sphere function in NonlinearOptimizationTestFunctions.
 # Context: Verifies function values, gradients, and optimization.
 # Last modified: 16. Juli 2025, 11:36 AM CEST
 
 using Test, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctionsInJulia: SPHERE_FUNCTION, sphere, sphere_gradient
+using NonlinearOptimizationTestFunctions: SPHERE_FUNCTION, sphere, sphere_gradient
 using Optim
 
 function finite_difference_gradient(f, x, h=1e-6)

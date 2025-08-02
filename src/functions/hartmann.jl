@@ -1,6 +1,6 @@
 # src/functions/hartmann.jl
 # Purpose: Implements the Hartmann test function (n=3) with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 01 August 2025
 
 export HARTMANN_FUNCTION, hartmann, hartmann_gradient

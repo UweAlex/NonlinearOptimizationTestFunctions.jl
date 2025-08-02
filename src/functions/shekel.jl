@@ -1,6 +1,6 @@
 # src/functions/shekel.jl
 # Purpose: Implements the Shekel test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 31 July 2025
 
 export SHEKEL_FUNCTION, shekel, shekel_gradient
