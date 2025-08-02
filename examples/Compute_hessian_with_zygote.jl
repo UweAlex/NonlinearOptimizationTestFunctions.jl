@@ -1,9 +1,9 @@
 # examples/Compute_hessian_with_zygote.jl
 # Purpose: Shows 3 Newton steps on Rosenbrock using analytical gradients and Zygote's Hessian.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia, for experts.
+# Context: Part of NonlinearOptimizationTestFunctions, for experts.
 # Last modified: 11. Juli 2025, 14:10 PM CEST
-using NonlinearOptimizationTestFunctionsInJulia, Zygote, LinearAlgebra
-tf = NonlinearOptimizationTestFunctionsInJulia.ROSENBROCK_FUNCTION
+using NonlinearOptimizationTestFunctions, Zygote, LinearAlgebra
+tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
 n = 2
 x = tf.meta[:start](n)
 x = x - inv(Zygote.hessian(tf.f, x)) * tf.grad(x)

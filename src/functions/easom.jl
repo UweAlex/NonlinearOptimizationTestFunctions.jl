@@ -1,6 +1,6 @@
 # src/functions/easom.jl
 # Purpose: Implements the Easom test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 21 July 2025
 
 export EASOM_FUNCTION, easom, easom_gradient

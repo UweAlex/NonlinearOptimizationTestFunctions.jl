@@ -1,6 +1,6 @@
 # src/functions/ackley.jl
 # Purpose: Implements the Ackley test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 14. Juli 2025, 17:05 PM CEST
 
 """

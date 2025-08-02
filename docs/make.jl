@@ -1,14 +1,14 @@
 # docs/make.jl
 using Documenter
-using NonlinearOptimizationTestFunctionsInJulia
+using NonlinearOptimizationTestFunctions
 
 makedocs(
-    sitename = "NonlinearOptimizationTestFunctionsInJulia",
+    sitename = "NonlinearOptimizationTestFunctions",
     authors = "aox",
-    modules = [NonlinearOptimizationTestFunctionsInJulia],
+    modules = [NonlinearOptimizationTestFunctions],
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-        canonical = "https://yourusername.github.io/NonlinearOptimizationTestFunctionsInJulia/stable",
+        canonical = "https://yourusername.github.io/NonlinearOptimizationTestFunctions/stable",
         assets = ["assets/custom.css"]
     ),
     pages = [
@@ -24,7 +24,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/yourusername/NonlinearOptimizationTestFunctionsInJulia.jl.git",
+    repo = "github.com/yourusername/NonlinearOptimizationTestFunctions.jl.git",
     devbranch = "main",
     push_preview = true
 )

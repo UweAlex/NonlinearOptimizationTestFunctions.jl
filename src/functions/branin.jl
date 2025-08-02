@@ -1,6 +1,6 @@
 # src/functions/branin.jl
 # Purpose: Implements the Branin test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 18. Juli 2025
 
 export BRANIN_FUNCTION, branin, branin_gradient

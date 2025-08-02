@@ -1,6 +1,6 @@
 # src/functions/langermann.jl
 # Purpose: Implements the Langermann test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 20 July 2025
 
 export LANGERMANN_FUNCTION, langermann, langermann_gradient

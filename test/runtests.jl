@@ -24,7 +24,7 @@ end
 
 
 
-@testset "NonlinearOptimizationTestFunctionsInJulia Cross-Function Tests" begin
+@testset "NonlinearOptimizationTestFunctions Cross-Function Tests" begin
  @testset "Filter and Properties Tests" begin
     @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 12 
     @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 2

@@ -2,7 +2,7 @@
 # Purpose: Demonstrates optimization of the Rosenbrock function using NLopt's LD_LBFGS algorithm.
 # Context: Part of NonlinearOptimizationTestFunctions, highlighting TestFunction integration with NLopt.
 # Last modified: 11. Juli 2025, 14:10 PM CEST
-using NonlinearOptimizationTestFunctionsInJulia
+using NonlinearOptimizationTestFunctions
 if isdefined(Main, :NLopt)
     using NLopt
     tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION

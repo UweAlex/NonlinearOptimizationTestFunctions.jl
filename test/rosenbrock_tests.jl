@@ -1,5 +1,5 @@
 # test/rosenbrock_tests.jl
-# Purpose: Tests for the Rosenbrock function in NonlinearOptimizationTestFunctionsInJulia.
+# Purpose: Tests for the Rosenbrock function in NonlinearOptimizationTestFunctions.
 # Context: Verifies function values, gradients, and optimization.
 # Last modified: 16. Juli 2025, 11:36 AM CEST
 

@@ -1,6 +1,6 @@
 # src/functions/griewank.jl
 # Purpose: Implements the Griewank test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia, used in optimization demos and tests.
+# Context: Part of NonlinearOptimizationTestFunctions, used in optimization demos and tests.
 # Last modified: 17. Juli 2025
 
 using Base: prod
