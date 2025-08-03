@@ -10,7 +10,8 @@ using Base: prod
 Computes the Griewank function value at point `x`. Requires at least 1 dimension.
 Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 """
-function griewank(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function griewank(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+
     length(x) >= 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)

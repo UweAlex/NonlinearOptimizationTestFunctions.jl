@@ -8,7 +8,7 @@
 Computes the Schwefel function value at point `x`. Requires at least 1 dimension.
 Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 """
-function schwefel(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function schwefel(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) >= 1 || throw(ArgumentError("Schwefel requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
@@ -32,7 +32,11 @@ function schwefel_gradient(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}
         abs_xi = abs(xi)
         sqrt_abs_xi = sqrt(abs_xi)
         sign_xi = xi >= 0 ? 1 : -1
-        result[i] = -sin(sqrt_abs_xi) - (xi * cos(sqrt_abs_xi) * sign_xi) / (2 * sqrt_abs_xi)
+        if abs_xi == 0
+    result[i] = 0
+else
+    result[i] = -sin(sqrt_abs_xi) - (xi * cos(sqrt_abs_xi) * sign_xi) / (2 * sqrt_abs_xi)
+end
     end
     return result
 end

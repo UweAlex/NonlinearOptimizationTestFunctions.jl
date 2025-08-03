@@ -26,9 +26,9 @@ end
 
 @testset "NonlinearOptimizationTestFunctions Cross-Function Tests" begin
  @testset "Filter and Properties Tests" begin
-    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 18
+    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 20
     @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 2
-    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 23
+    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 24
     @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
 end
 
@@ -61,7 +61,7 @@ end
 @testset "Gradient Comparison for Differentiable Functions" begin
     Random.seed!(1234)
     differentiable_functions = filter_testfunctions(tf -> has_property(tf, "differentiable"))
-    @test length(differentiable_functions) == 23
+    @test length(differentiable_functions) == 24
     for tf in differentiable_functions
         n = try
             length(tf.meta[:min_position](2))

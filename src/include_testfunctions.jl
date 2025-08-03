@@ -26,6 +26,7 @@ include("functions/levy.jl")
 include("functions/beale.jl")
 include("functions/mccormick.jl")
 include("functions/bukin6.jl")
+include("functions/himmelblau.jl")
 
 
 
