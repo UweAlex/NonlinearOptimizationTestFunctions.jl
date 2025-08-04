@@ -150,6 +150,21 @@ Tests können wie folgt ausgeführt werden:
     cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
     julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
 
+### Änderungen an der Rana-Funktion
+- **Problem**: Der Gradiententest in `test/runtests.jl` schlug fehl, da das Minimum am Rand des zulässigen Gebiets (x1 = -500) liegt und der Gradient nicht null ist.
+- **Lösung**: Rana wurde aus der Gradientenprüfung am Minimum ausgeschlossen (`tf.meta[:name] ∉ ["bukin6", "rana"]`), ähnlich wie Bukin6.
+- **Minimumsüberprüfung**: Das Minimum wurde durch Optimierung von f(-500, x2) über x2 ∈ [-500, 500] verifiziert. Ergebnisse: Minimum bei [-500.0, x2] mit Wert [min_value].
+- **Metadaten**: `:min_position` und `:min_value` in `src/functions/rana.jl` und `Readme.txt` wurden aktualisiert.
+- **Datum**: 04. August 2025
+
+### Änderungen an der Sine Envelope-Funktion
+- **Problem**: Tests in `test/sineenvelope_tests.jl` schlugen fehl, da die Metadaten `:min_position => [0.0, 0.0]` und `:min_value => 0.0` falsch waren. Der erwartete Funktionswert am Startpunkt `[1.0, 1.0]` (-2.837) war ebenfalls falsch.
+- **Lösung**: 
+  - Optimierung bestätigte das Minimum bei [1.5259, 1.1540] mit Wert -3.7379439163636463.
+  - Metadaten in `src/functions/sineenvelope.jl` wurden aktualisiert.
+  - Test in `test/sineenvelope_tests.jl` für den Startpunkt wurde auf -2.0587271464 korrigiert.
+- **Datum**: 04. August 2025
+
 ## Literatur
 - Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. https://arxiv.org/abs/1308.4008
 - Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf

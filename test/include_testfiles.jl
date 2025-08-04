@@ -29,6 +29,9 @@ include("beale_tests.jl")
 include("mccormick_tests.jl")
 include("bukin6_tests.jl")
 include("himmelblau_tests.jl")
+include("sumofpowers_tests.jl")
+include("sineenvelope_tests.jl")
+
 
 
 

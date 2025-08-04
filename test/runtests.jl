@@ -26,9 +26,9 @@ end
 
 @testset "NonlinearOptimizationTestFunctions Cross-Function Tests" begin
  @testset "Filter and Properties Tests" begin
-    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 20
-    @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 2
-    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 24
+    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 22
+    @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 3
+    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 27
     @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
 end
 
@@ -61,7 +61,7 @@ end
 @testset "Gradient Comparison for Differentiable Functions" begin
     Random.seed!(1234)
     differentiable_functions = filter_testfunctions(tf -> has_property(tf, "differentiable"))
-    @test length(differentiable_functions) == 24
+    @test length(differentiable_functions) == 27
     for tf in differentiable_functions
         n = try
             length(tf.meta[:min_position](2))
@@ -73,8 +73,8 @@ end
         @testset "$(tf.meta[:name]) Gradient Tests" begin
             min_pos = tf.meta[:min_position](n)
             atol = (tf.meta[:name] in ["langermann", "shekel"]) ? 0.3 : 0.001  # Shekel mit atol=0.3 hinzugefügt
-     if tf.meta[:name] != "bukin6"  
-		@test tf.grad(min_pos) ≈ zeros(n) atol=atol
+     if tf.meta[:name] ∉ ["bukin6", "rana"]  # Rana hinzugefügt
+    @test tf.grad(min_pos) ≈ zeros(n) atol=atol
 	end
             for _ in 1:20
                 x = lb + (ub - lb) .* rand(n)

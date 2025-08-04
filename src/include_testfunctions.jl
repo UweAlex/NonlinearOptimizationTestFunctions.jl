@@ -27,6 +27,11 @@ include("functions/beale.jl")
 include("functions/mccormick.jl")
 include("functions/bukin6.jl")
 include("functions/himmelblau.jl")
+include("functions/sumofpowers.jl")
+include("functions/sineenvelope.jl")
+include("functions/rana.jl")
+
+
 
 
 
