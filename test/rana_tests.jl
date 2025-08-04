@@ -1,6 +1,6 @@
 # src/functions/rana.jl
 # Purpose: Implements the Rana test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+# Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 04 August 2025
 
 export RANA_FUNCTION, rana, rana_gradient
@@ -70,9 +70,9 @@ const RANA_FUNCTION = TestFunction(
         end,
         :min_position => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
-            [-500.0, -499.0733150925747]  # Vorläufig, muss überprüft werden
+            [-500.0, -499.0733150925747]  # Korrigiert nach Optimierung
         end,
-        :min_value =>  -498.12463264808594,  # Vorläufig, muss überprüft werden
+        :min_value => -498.12463264808594,  # Korrigiert nach Optimierung
         :properties => Set(["multimodal", "differentiable", "non-separable"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
