@@ -30,6 +30,8 @@ include("functions/himmelblau.jl")
 include("functions/sumofpowers.jl")
 include("functions/sineenvelope.jl")
 include("functions/rana.jl")
+include("functions/eggholder.jl")
+
 
 
 

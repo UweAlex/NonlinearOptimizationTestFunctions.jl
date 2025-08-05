@@ -32,6 +32,8 @@ include("himmelblau_tests.jl")
 include("sumofpowers_tests.jl")
 include("sineenvelope_tests.jl")
 include("rana_tests.jl")
+include("eggholder_tests.jl")
+
 
 
 

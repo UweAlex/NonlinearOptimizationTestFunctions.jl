@@ -5,7 +5,9 @@
 
 ## Ziel
 
-Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tests mit lowercase-Namenskonventionen und ohne Debugging-Ausgaben. Alle Tests (funktionsspezifische und übergreifende) sind in `test/runtests.jl` konsolidiert, um Redundanzen und Inkonsistenzen zu vermeiden. Die frühere Datei `test/test_project.jl` wurde entfernt, da ihre Tests in `test/runtests.jl` und funktionsspezifische Testdateien (`test/<functionname>_tests.jl`) integriert wurden. Gradiententests, einschließlich der Prüfung, ob der Gradient im bekannten Optimum numerisch null ist (mit Toleranz `atol=1e-3` aufgrund numerischer Instabilität einiger Funktionen wie Schwefel, Ackley, Rastrigin), sowie Vergleiche mit numerischen und ForwardDiff-Gradienten an 20 zufälligen Punkten, finden ausschließlich in `test/runtests.jl` statt, um Konsistenz zu gewährleisten.
+Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tests mit lowercase-Namenskonventionen und ohne Debugging-Ausgaben. Alle Tests (funktionsspezifische und übergreifende) sind in `test/runtests.jl` konsolidiert, um Redundanzen und Inkonsistenzen zu vermeiden. Gradiententests, einschließlich der Prüfung, ob der Gradient im bekannten Optimum numerisch null ist (mit Toleranz `atol=1e-3` aufgrund numerischer Instabilität einiger Funktionen wie Schwefel, Ackley, Rastrigin), sowie Vergleiche mit numerischen und ForwardDiff-Gradienten an 20 zufälligen Punkten, finden ausschließlich in `test/runtests.jl` statt, um Konsistenz zu gewährleisten.
+
+Die Testfunktionen die schon implementiert sind erkennt man sicher na der Datei : src/include_testfunctions.jl . Zwischenbericht und readme sind oft nicht aktuell.
 
 **WICHTIGES VERBOT**: Die `gradient!`-Funktion darf *unter keinen Umständen* explizit in einer Testfunktion definiert werden. Sie wird automatisch vom `TestFunction`-Konstruktor in `src/NonlinearOptimizationTestFunctionsInJulia.jl` als `(G, x) -> copyto!(G, grad(x))` generiert. Eine explizite Definition führt zu Redundanzen, Inkonsistenzen und Verstößen gegen die Projektstruktur.
 

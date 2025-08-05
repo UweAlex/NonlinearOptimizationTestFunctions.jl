@@ -12,7 +12,7 @@ const VALID_PROPERTIES = Set([
     "unimodal", "multimodal", "highly multimodal", "deceptive",
     "convex", "non-convex", "quasi-convex", "strongly convex",
     "separable", "non-separable", "partially separable", "fully non-separable",
-    "differentiable", "scalable", "continuous", "bounded", "has_constraints",
+    "differentiable","partially differentiable", "scalable", "continuous", "bounded", "has_constraints",
     "controversial"  # Neue Eigenschaft hinzugefügt
 ])
 
