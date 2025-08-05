@@ -119,6 +119,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - Griewank: Multimodal, non-convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-600, 600]^n. Dimensions: Any n ≥ 1.
 - Hartmann: Multimodal, non-convex, non-separable, differentiable. Minimum: -3.86278214782076 at (0.114614, 0.555649, 0.852547). Bounds: [0, 1]^3. Dimensions: n=3.
 - Himmelblau: Multimodal, non-convex, differentiable, bounded. Minimum: 0.0 at (3.0, 2.0), (-2.805118, 3.131312), (-3.779310, -3.283186), (3.584428, -1.848126). Bounds: [-5, 5]^2. Dimensions: n=2.
+- Keane: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.673667521146855 at (0.0, 1.393249070031784), (1.393249070031784, 0.0). Bounds: [-10, 10]^2. Dimensions: n=2.
 - Langermann: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: approximately -5.1621259 at (2.002992, 1.006096). Bounds: [0, 10]^2. Dimensions: n=2.
 - Levy: Multimodal, non-convex, differentiable, separable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-10, 10]^n. Dimensions: Any n ≥ 1.
 - McCormick: Multimodal, non-convex, differentiable. Minimum: -1.913222954981037 at (-0.547197553, -1.547197553). Bounds: [-1.5, 4] × [-3, 4]. Dimensions: n=2.
