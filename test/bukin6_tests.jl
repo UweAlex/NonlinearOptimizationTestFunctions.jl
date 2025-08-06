@@ -23,7 +23,7 @@ using NonlinearOptimizationTestFunctions: BUKIN6_FUNCTION, bukin6
     @test tf.meta[:lb](n) == [-15.0, -3.0]
     @test tf.meta[:ub](n) == [-5.0, 3.0]
    @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["differentiable", "non-convex", "multimodal"])
+    @test Set(tf.meta[:properties]) == Set(["partially differentiable", "non-convex", "multimodal"])
     @testset "Optimization Tests" begin
         start = [-10.0, 1.0]  # Changed from [-10.0, 0.99] to the exact minimum
         result = optimize(tf.f, tf.gradient!, tf.meta[:lb](n), tf.meta[:ub](n), start, Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6))

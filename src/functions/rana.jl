@@ -73,7 +73,7 @@ const RANA_FUNCTION = TestFunction(
             [-500.0, -499.0733150925747]  # Vorläufig, muss überprüft werden
         end,
         :min_value =>  -498.12463264808594,  # Vorläufig, muss überprüft werden
-        :properties => Set(["multimodal", "differentiable", "non-separable"]),
+        :properties => Set(["multimodal", "partially differentiable", "non-separable"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
             [-500.0, -500.0]
@@ -83,7 +83,7 @@ const RANA_FUNCTION = TestFunction(
             [500.0, 500.0]
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Rana function: A multimodal, differentiable, non-separable function with multiple local minima, defined only for 2 dimensions.",
+        :description => "Rana function: A multimodal, partially differentiable, non-separable function with multiple local minima, defined only for 2 dimensions.",
         :math => "x_1 \\sin(\\sqrt{|x_2 + x_1 + 1|}) \\cos(\\sqrt{|x_2 - x_1 + 1|}) + (x_2 + 1) \\cos(\\sqrt{|x_2 + x_1 + 1|}) \\sin(\\sqrt{|x_2 - x_1 + 1|})"
     )
 )

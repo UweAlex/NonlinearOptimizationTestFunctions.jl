@@ -32,6 +32,8 @@ include("functions/sineenvelope.jl")
 include("functions/rana.jl")
 include("functions/eggholder.jl")
 include("functions/keane.jl")
+include("functions/crossintray.jl")
+include("functions/dropwave.jl")
 
 
 

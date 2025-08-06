@@ -5,6 +5,9 @@
 
 using Test, NonlinearOptimizationTestFunctions, ForwardDiff, Optim, Zygote
 
+
+
+
 include("rosenbrock_tests.jl")
 include("sphere_tests.jl")
 include("ackley_tests.jl")
@@ -34,6 +37,10 @@ include("sineenvelope_tests.jl")
 include("rana_tests.jl")
 include("eggholder_tests.jl")
 include("keane_tests.jl")
+include("crossintray_tests.jl")
+include("dropwave_tests.jl")
+
+
 
 
 

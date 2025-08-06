@@ -1,8 +1,8 @@
-# NonlinearOptimizationTestFunctionsInJulia
+# NonlinearOptimizationTestFunctions
 
 ## Introduction
 
-NonlinearOptimizationTestFunctionsInJulia is a Julia package designed for testing and benchmarking nonlinear optimization algorithms. It provides a comprehensive collection of standard test functions, each equipped with analytical gradients, metadata, and validation mechanisms. The package supports scalable and non-scalable functions, ensuring compatibility with high-dimensional optimization problems and automatic differentiation tools like ForwardDiff. Key features include:
+NonlinearOptimizationTestFunctions is a Julia package designed for testing and benchmarking nonlinear optimization algorithms. It provides a comprehensive collection of standard test functions, each equipped with analytical gradients, metadata, and validation mechanisms. The package supports scalable and non-scalable functions, ensuring compatibility with high-dimensional optimization problems and automatic differentiation tools like ForwardDiff. Key features include:
 
 - Standardized Test Functions: A curated set of well-known optimization test functions (e.g., Rosenbrock, Ackley, Branin) with consistent interfaces.
 - Analytical Gradients: Each function includes an analytical gradient for efficient optimization and testing.
@@ -16,8 +16,8 @@ The package is ideal for researchers, developers, and students evaluating optimi
 
 To install the package, clone the repository and instantiate the environment:
 
-    git clone https://github.com/your-repo/NonlinearOptimizationTestFunctionsInJulia.git
-    cd NonlinearOptimizationTestFunctionsInJulia
+    git clone https://github.com/your-repo/NonlinearOptimizationTestFunctions.git
+    cd NonlinearOptimizationTestFunctions
     julia --project=. -e 'using Pkg; Pkg.instantiate()'
 
 Ensure dependencies like LinearAlgebra, ForwardDiff, and Optim are installed. For specific examples, additional packages (e.g., NLopt, Zygote) may be required.
@@ -104,50 +104,48 @@ The package provides a TestFunction structure containing the function (f), gradi
 
 ## Test Functions
 
-The package includes a variety of test functions for nonlinear optimization, each defined in src/functions/<functionname>.jl. Below is a complete list of available functions, their properties, minima, bounds, and supported dimensions, based on precise values from sources like al-roomi.org, sfu.ca, and Molga & Smutnicki (2005).
+The package includes a variety of test functions for nonlinear optimization, each defined in src/functions/<functionname>.jl. Below is a complete list of available functions, their properties, minima, bounds, and supported dimensions, based on precise values from sources like al-roomi.org, sfu.ca, and Molga & Smutnicki (2005). Note: Some functions lack full implementation details in the provided documentation; their properties are based on standard literature.
 
-- Ackley: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 5]^n (default) or [-32.768, 32.768]^n (benchmark). Dimensions: Any n ≥ 1.
-- AxisParallelHyperEllipsoid: Convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-Inf, Inf]^n. Dimensions: Any n ≥ 1.
-- Beale: Multimodal, non-convex, differentiable. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2.
-- Bohachevsky: Multimodal, non-convex, differentiable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-10, 10]^n. Dimensions: Any n ≥ 2.
-- Branin: Multimodal, differentiable, non-convex, non-separable, bounded. Minimum: 0.397887 at (-π, 12.275), (π, 2.275), (9.424778, 2.475). Bounds: [-5, 10] × [0, 15]. Dimensions: n=2.
-- Bukin6: Multimodal, non-convex, differentiable. Minimum: 0.0 at (-10.0, 1.0). Bounds: [-15, -5] × [-3, 3]. Dimensions: n=2.
-- DixonPrice: Unimodal, non-convex, differentiable, scalable. Minimum: 0.0 at (2^(-(2^i - 2)/2^i), ..., 2^(-(2^n - 2)/2^n)). Bounds: [-10, 10]^n. Dimensions: Any n ≥ 1.
-- Easom: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (π, π). Bounds: [-100, 100]^2. Dimensions: n=2.
-- Eggholder: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -959.6406627208506 at (512.0, 404.2318058008512). Bounds: [-512, 512]^2. Dimensions: n=2.
-- GoldsteinPrice: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 3.0 at (0, -1). Bounds: [-2, 2]^2. Dimensions: n=2.
-- Griewank: Multimodal, non-convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-600, 600]^n. Dimensions: Any n ≥ 1.
-- Hartmann: Multimodal, non-convex, non-separable, differentiable. Minimum: -3.86278214782076 at (0.114614, 0.555649, 0.852547). Bounds: [0, 1]^3. Dimensions: n=3.
-- Himmelblau: Multimodal, non-convex, differentiable, bounded. Minimum: 0.0 at (3.0, 2.0), (-2.805118, 3.131312), (-3.779310, -3.283186), (3.584428, -1.848126). Bounds: [-5, 5]^2. Dimensions: n=2.
-- Keane: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.673667521146855 at (0.0, 1.393249070031784), (1.393249070031784, 0.0). Bounds: [-10, 10]^2. Dimensions: n=2.
-- Langermann: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: approximately -5.1621259 at (2.002992, 1.006096). Bounds: [0, 10]^2. Dimensions: n=2.
-- Levy: Multimodal, non-convex, differentiable, separable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-10, 10]^n. Dimensions: Any n ≥ 1.
-- McCormick: Multimodal, non-convex, differentiable. Minimum: -1.913222954981037 at (-0.547197553, -1.547197553). Bounds: [-1.5, 4] × [-3, 4]. Dimensions: n=2.
-- Michalewicz: Multimodal, non-separable, differentiable, scalable, bounded. Minimum: -1.8013 (n=2), -4.687658 (n=5), -9.66015 (n=10). Bounds: [0, π]^n. Dimensions: Any n ≥ 2.
-- Rana: Multimodal, differentiable, non-separable. Minimum: -498.12463264808594 at (-500.0, -499.0733150925747). Bounds: [-500, 500]^2. Dimensions: n=2.
-- Rastrigin: Multimodal, non-convex, differentiable, separable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n ≥ 1.
-- Rosenbrock: Unimodal, non-convex, differentiable, non-separable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-5, 5]^n. Dimensions: Any n ≥ 2.
-- Schwefel: Multimodal, non-convex, differentiable, separable, scalable, bounded. Minimum: 0.0 at (420.9687, ..., 420.9687). Bounds: [-500, 500]^n. Dimensions: Any n ≥ 1.
-- Shekel: Multimodal, non-convex, non-separable, differentiable. Minimum: -10.536409825004505 at (4.0, 4.0, 4.0, 4.0) for m=10. Bounds: [0, 10]^4. Dimensions: n=4.
-- Shubert: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -186.7309 at multiple points, e.g., (-1.4251286, -0.800321). Bounds: [-10, 10]^2. Dimensions: n=2.
-- SineEnvelope: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2.
-- SixHumpCamelback: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.031628453489877 at (±0.08984201368301331, ±0.7126564032704135). Bounds: [-3, 3] × [-2, 2]. Dimensions: n=2.
-- Sphere: Unimodal, convex, differentiable, separable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n ≥ 2.
-- StyblinskiTang: Multimodal, non-convex, differentiable, scalable. Minimum: -39.166165*n at (-2.903534, ..., -2.903534). Bounds: [-5, 5]^n. Dimensions: Any n ≥ 1.
-- SumOfPowers: Unimodal, convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: Any n ≥ 1.
+- **Ackley**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 5]^n (default) or [-32.768, 32.768]^n (benchmark). Dimensions: Any n ≥ 1.
+- **AxisParallelHyperEllipsoid**: Convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-Inf, Inf]^n. Dimensions: Any n ≥ 1.
+- **Beale**: Multimodal, non-convex, differentiable. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2.
+- **Bohachevsky**: Multimodal, non-convex, differentiable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-10, 10]^n. Dimensions: Any n ≥ 2.
+- **Branin**: Multimodal, differentiable, non-convex, non-separable, bounded. Minimum: 0.397887 at (-π, 12.275), (π, 2.275), (9.424778, 2.475). Bounds: [-5, 10] × [0, 15]. Dimensions: n=2.
+- **Bukin6**: Multimodal, non-convex, partially differentiable, bounded. Minimum: 0.0 at (-10.0, 1.0). Bounds: [-15, -5] × [-3, 3]. Dimensions: n=2.
+- **CrossInTray**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -2.06261 at (1.3491, 1.3491), (-1.3491, 1.3491), (1.3491, -1.3491), (-1.3491, -1.3491). Bounds: [-10, 10]^2. Dimensions: n=2.
+- **DixonPrice**: Unimodal, non-convex, differentiable, scalable. Minimum: 0.0 at (2^(-(2^i - 2)/2^i), ..., 2^(-(2^n - 2)/2^n)). Bounds: [-10, 10]^n. Dimensions: Any n ≥ 1. (Note: Implementation details incomplete in provided files.)
+- **DropWave**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0, 0). Bounds: [-5.12, 5.12]^2. Dimensions: n=2. (Note: Implementation details incomplete in provided files.)
+- **Easom**: Unimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (π, π). Bounds: [-100, 100]^2. Dimensions: n=2. (Note: Implementation details incomplete in provided files.)
+- **Eggholder**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -959.6406627208506 at (512.0, 404.2318058008512). Bounds: [-512, 512]^2. Dimensions: n=2.
+- **GoldsteinPrice**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 3.0 at (0, -1). Bounds: [-2, 2]^2. Dimensions: n=2. (Note: Implementation details incomplete in provided files.)
+- **Griewank**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-600, 600]^n. Dimensions: Any n ≥ 1. (Note: Implementation details incomplete in provided files.)
+- **Hartmann**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -3.86278214782076 at (0.114614, 0.555649, 0.852547) for n=3. Bounds: [0, 1]^n. Dimensions: n=3, 4, 6. (Note: Implementation details incomplete in provided files.)
+- **Himmelblau**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at (3.0, 2.0), (-2.805118, 3.131312), (-3.779310, -3.283186), (3.584428, -1.848126). Bounds: [-5, 5]^2. Dimensions: n=2. (Note: Implementation details incomplete in provided files.)
+- **Keane**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.673667521146855 at (0.0, 1.393249070031784), (1.393249070031784, 0.0). Bounds: [0, 10]^2. Dimensions: n=2. (Note: Implementation details incomplete in provided files.)
+- **Langermann**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: approximately -5.1621259 at (2.002992, 1.006096). Bounds: [0, 10]^2. Dimensions: n=2. (Note: Implementation details incomplete in provided files.)
+- **Levy**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-10, 10]^n. Dimensions: Any n ≥ 1. (Note: Implementation details incomplete in provided files.)
+- **McCormick**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.913222954981037 at (-0.547197553, -1.547197553). Bounds: [-1.5, 4] × [-3, 4]. Dimensions: n=2. (Note: Implementation details incomplete in provided files.)
+- **Michalewicz**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: -1.8013 (n=2), -4.687658 (n=5), -9.66015 (n=10). Bounds: [0, π]^n. Dimensions: Any n ≥ 1. (Note: Implementation details incomplete in provided files.)
+- **Rana**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -498.12463264808594 at (-500.0, -499.0733150925747). Bounds: [-500, 500]^2. Dimensions: n=2. (Note: Implementation details incomplete in provided files.)
+- **Rastrigin**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n ≥ 1. (Note: Implementation details incomplete in provided files.)
+- **Rosenbrock**: Unimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-5, 5]^n. Dimensions: Any n ≥ 2. (Note: Implementation details incomplete in provided files, but confirmed via tests and examples.)
+- **Schwefel**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (420.9687, ..., 420.9687). Bounds: [-500, 500]^n. Dimensions: Any n ≥ 1. (Note: Implementation details incomplete in provided files.)
+- **Shekel**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -10.536409825004505 at (4.0, 4.0, 4.0, 4.0) for m=10. Bounds: [0, 10]^4. Dimensions: n=4.
+- **Shubert**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -186.7309 at multiple points, e.g., (-1.4251286, -0.800321). Bounds: [-10, 10]^2. Dimensions: n=2.
+- **SineEnvelope**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2.
+- **SixHumpCamelback**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.031628453489877 at (±0.08984201368301331, ±0.7126564032704135). Bounds: [-3, 3] × [-2, 2]. Dimensions: n=2.
+- **Sphere**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n ≥ 2.
+- **StyblinskiTang**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: -39.166165*n at (-2.903534, ..., -2.903534). Bounds: [-5, 5]^n. Dimensions: Any n ≥ 1.
+- **SumOfPowers**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: Any n ≥ 1.
 
 ## Running Tests
 
 To run the test suite, execute:
 
-    cd /path/to/NonlinearOptimizationTestFunctionsInJulia
+    cd /path/to/NonlinearOptimizationTestFunctions
     julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
 
 Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-308), and optimization with Optim.jl. Gradient tests are centralized in test/runtests.jl for consistency.
-
-## Contributing
-
-Contributions are welcome! Please submit pull requests with new test functions, tests, or improvements. Ensure all tests pass and documentation is updated.
 
 ## License
 
