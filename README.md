@@ -135,6 +135,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **SineEnvelope**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2.
 - **SixHumpCamelback**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.031628453489877 at (±0.08984201368301331, ±0.7126564032704135). Bounds: [-3, 3] × [-2, 2]. Dimensions: n=2.
 - **Sphere**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n ≥ 2.
+- **Step (De Jong F3)**: Unimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n ≥ 1.
 - **StyblinskiTang**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: -39.166165*n at (-2.903534, ..., -2.903534). Bounds: [-5, 5]^n. Dimensions: Any n ≥ 1.
 - **SumOfPowers**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: Any n ≥ 1.
 

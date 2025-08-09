@@ -34,6 +34,8 @@ include("functions/eggholder.jl")
 include("functions/keane.jl")
 include("functions/crossintray.jl")
 include("functions/dropwave.jl")
+include("functions/step.jl")
+
 
 
 

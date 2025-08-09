@@ -39,6 +39,8 @@ include("eggholder_tests.jl")
 include("keane_tests.jl")
 include("crossintray_tests.jl")
 include("dropwave_tests.jl")
+include("step_tests.jl")
+
 
 
 
