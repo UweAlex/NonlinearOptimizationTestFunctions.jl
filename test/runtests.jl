@@ -1,7 +1,7 @@
 # test/runtests.jl
 # Purpose: Entry point for running all tests in NonlinearOptimizationTestFunctions.
 # Context: Contains cross-function tests and includes function-specific tests via include_testfiles.jl.
-# Last modified: 05 August 2025
+# Last modified: 11 August 2025
 
 using Test, ForwardDiff, Zygote
 using NonlinearOptimizationTestFunctions
@@ -22,37 +22,37 @@ function finite_difference_gradient(f, x; h=1e-6)
     return grad
 end
 
-@testset "NonlinearOptimizationTestFunctions Cross-Function Tests" begin
-    @testset "Filter and Properties Tests" begin
-        @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 26
-        @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 4
-        @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 30
-        @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
-    end
+@testset "Filter and Properties Tests" begin
+    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 26
+    @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 5  # +1 für De Jong F4
+    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 30
+    @test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4
+    @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 4  # Bukin6, De Jong F3, De Jong F4, und eine weitere
+    @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
+end
 
-    @testset "Edge Cases" begin
-        for tf in values(TEST_FUNCTIONS)
-            n = try
-                length(tf.meta[:min_position](2))
-            catch
-                length(tf.meta[:min_position]())
-            end
-            @test_throws ArgumentError tf.f(Float64[])
-            @test isnan(tf.f(fill(NaN, n)))
-            @test isinf(tf.f(fill(Inf, n)))
-            @test isfinite(tf.f(fill(1e-308, n)))
+@testset "Edge Cases" begin
+    for tf in values(TEST_FUNCTIONS)
+        n = try
+            length(tf.meta[:min_position](2))
+        catch
+            length(tf.meta[:min_position]())
         end
+        @test_throws ArgumentError tf.f(Float64[])
+        @test isnan(tf.f(fill(NaN, n)))
+        @test isinf(tf.f(fill(Inf, n)))
+        @test isfinite(tf.f(fill(1e-308, n)))
     end
+end
 
-    @testset "Zygote Hessian" begin
-        for tf in [ROSENBROCK_FUNCTION, SPHERE_FUNCTION, AXISPARALLELHYPERELLIPSOID_FUNCTION]
-            x = tf.meta[:start](2)
-            H = Zygote.hessian(tf.f, x)
-            @test size(H) == (2, 2)
-            @test all(isfinite, H)
-        end
+@testset "Zygote Hessian" begin
+    for tf in [ROSENBROCK_FUNCTION, SPHERE_FUNCTION, AXISPARALLELHYPERELLIPSOID_FUNCTION]
+        x = tf.meta[:start](2)
+        H = Zygote.hessian(tf.f, x)
+        @test size(H) == (2, 2)
+        @test all(isfinite, H)
     end
-
+end
 
 @testset "Gradient Comparison for Differentiable Functions" begin
     Random.seed!(1234)
@@ -84,5 +84,5 @@ end
         end
     end
 end
-end
+
 include("include_testfiles.jl")

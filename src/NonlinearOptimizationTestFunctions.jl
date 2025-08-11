@@ -13,7 +13,7 @@ const VALID_PROPERTIES = Set([
     "convex", "non-convex", "quasi-convex", "strongly convex",
     "separable", "non-separable", "partially separable", "fully non-separable",
     "differentiable","partially differentiable", "scalable", "continuous", "bounded", "has_constraints",
-    "controversial"  # Neue Eigenschaft hinzugefügt
+    "controversial", "has_noise"   
 ])
 
 struct TestFunction

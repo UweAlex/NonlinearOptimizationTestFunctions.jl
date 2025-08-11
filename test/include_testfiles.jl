@@ -41,6 +41,7 @@ include("crossintray_tests.jl")
 include("dropwave_tests.jl")
 include("step_tests.jl")
 include("quadratic_tests.jl")
+include("dejongf4_tests.jl")
 
 
 

@@ -36,6 +36,7 @@ include("functions/crossintray.jl")
 include("functions/dropwave.jl")
 include("functions/step.jl")
 include("functions/quadratic.jl")
+include("functions/dejongf4.jl")
 
 
 
