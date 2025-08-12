@@ -24,8 +24,8 @@ end
 
 @testset "Filter and Properties Tests" begin
     @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 26
-    @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 5  # +1 für De Jong F4
-    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 30
+    @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 6  # +1 für De Jong F4
+    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 31
     @test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4
     @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 4  # Bukin6, De Jong F3, De Jong F4, und eine weitere
     @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
@@ -57,7 +57,7 @@ end
 @testset "Gradient Comparison for Differentiable Functions" begin
     Random.seed!(1234)
     differentiable_functions = filter_testfunctions(tf -> has_property(tf, "differentiable"))
-    @test length(differentiable_functions) == 30
+    @test length(differentiable_functions) == 31
     for tf in differentiable_functions
         n = try
             length(tf.meta[:min_position](2))

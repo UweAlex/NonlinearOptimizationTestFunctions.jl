@@ -138,6 +138,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **Step (De Jong F3)**: Unimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n >= 1.
 - **StyblinskiTang**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: -39.166165*n at (-2.903534, ..., -2.903534). Bounds: [-5, 5]^n. Dimensions: Any n >= 1.
 - **SumOfPowers**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: Any n >= 1.
+- **Zakharov**: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 10]^n. Dimensions: Any n >= 1.
 
 ## Running Tests
 
@@ -151,3 +152,12 @@ Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-
 ## License
 
 This package is licensed under the MIT License. See LICENSE for details.
+
+## References
+
+    - Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
+    - Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. https://arxiv.org/abs/1308.4008
+    - Hedar, A.-R. (2005). Global optimization test problems. http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm
+    - Suganthan, P. N., et al. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website.
+    - Al-Roomi (o. J.). Test Functions Repository. https://www.al-roomi.org
+	

@@ -37,6 +37,7 @@ include("functions/dropwave.jl")
 include("functions/step.jl")
 include("functions/quadratic.jl")
 include("functions/dejongf4.jl")
+include("functions/zakharov.jl")
 
 
 
