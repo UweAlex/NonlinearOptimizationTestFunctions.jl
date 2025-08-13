@@ -1,7 +1,7 @@
 # Anleitung_neue_Testfunktion.txt
 # Purpose: Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tests in NonlinearOptimizationTestFunctionsInJulia.
 # Context: Teil des Projekts NonlinearOptimizationTestFunctionsInJulia. Stellt sicher, dass neue Funktionen korrekt implementiert und getestet werden, konsistent mit bestehenden Funktionen wie `ackley.jl`, `rosenbrock.jl`, `branin.jl`.
-# Last modified: **09 August 2025, 14:11 PM CEST**
+# Last modified: **13 August 2025, 08:42 AM CEST**
 
 ## Ziel
 
@@ -20,16 +20,18 @@ WICHTIGER HINWEIS ZU TESTWERTEN: Überprüfe die erwarteten Funktionswerte in de
 WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Minima und den minimalen Funktionswert zu ermitteln, recherchiere unbedingt an verschiedenen Stellen im Internet (z. B. wissenschaftliche Publikationen, Optimierungs-Benchmarks wie al-roomi.org, sfu.ca, oder andere zuverlässige Quellen). Literaturangaben (z. B. Molga & Smutnicki, 2005) verwenden häufig gerundete Werte, die in präzisen numerischen Tests (z. B. mit `atol=1e-6`) fehlschlagen können. Beispiel: Die Six-Hump Camelback-Funktion hat in Molga & Smutnicki (2005) einen gerundeten Minimalwert von -1.0316, aber präzisere Quellen (z. B. al-roomi.org) geben -1.031628453489877 an, mit Minima bei ( \pm 0.08984201368301331, \pm 0.7126564032704135 ).
 
 **NEUER HINWEIS ZU ABHÄNGIGKEITEN: Wenn die Implementierung neue Bibliotheken (z. B. `Random`, `Statistics`) verwendet, müssen diese in `Project.toml` unter `[deps]` eingetragen werden. Beispiel: Für die Verwendung von `Random.seed!` oder `rand` in `Random` muss `Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"` hinzugefügt werden. Führe nach Änderungen an `Project.toml` `Pkg.resolve()` und `Pkg.instantiate()` aus, um die Umgebung zu aktualisieren:**
-julia --project=. -e 'using Pkg; Pkg.resolve(); Pkg.instantiate()'
+    julia --project=. -e 'using Pkg; Pkg.resolve(); Pkg.instantiate()'
 **Andernfalls kann ein Precompilation-Fehler auftreten (z. B. `Package does not have Random in its dependencies`). Wenn keine neuen Abhängigkeiten gewünscht sind, vermeide die Verwendung von Bibliotheken wie `Random` und nutze Standardfunktionen wie `randn` oder `rand`, die in der Julia-Standardumgebung verfügbar sind.**
 
 **NEUER HINWEIS ZU TOP-LEVEL-SYMBOLEN: Funktionen und Gradienten (`<functionname>`, `<functionname>_gradient`) müssen als Top-Level-Symbole im Modul-Namespace definiert werden, um korrekt exportiert zu werden. Verwende keine Closures oder Funktionen, die innerhalb anderer Funktionen definiert sind (z. B. in einer `create_<functionname>`-Funktion), da dies zu Importfehlern führt (z. B. `isdefined(NonlinearOptimizationTestFunctions, :quadratic)` schlägt fehl). Überprüfe nach der Implementierung in einer REPL:**
-using NonlinearOptimizationTestFunctions
-@test isdefined(NonlinearOptimizationTestFunctions, :functionname)
+    using NonlinearOptimizationTestFunctions
+    @test isdefined(NonlinearOptimizationTestFunctions, :functionname)
 
 **NEUER HINWEIS ZU DETERMINISTISCHEN TESTS: Verwende in Tests deterministische Werte oder Matrizen, insbesondere für skalierbare Funktionen wie die quadratische Funktion, um numerische Instabilitäten oder nicht-deterministische Ergebnisse zu vermeiden. Beispiel: Statt zufälliger Matrizen (`randn(n, n)' * randn(n, n) + I`) verwende explizite positiv definite Matrizen wie `Symmetric(Matrix(Diagonal(fill(2.0, n))))`, um konsistente Testergebnisse zu gewährleisten.**
 
 **NEUER HINWEIS ZU POSITIV DEFINITEN MATRIZEN: Bei skalierbaren Funktionen, die Matrizen verwenden (z. B. quadratische Funktion), stelle sicher, dass generierte Matrizen garantiert positiv definit sind, um Fehler wie `ArgumentError: Matrix A must be positive definite` zu vermeiden. Überprüfe dies durch `all(eigvals(A) .> 0)` oder verwende robuste Konstruktionen wie diagonale Matrizen mit positiven Eigenwerten.**
+
+**NEUER HINWEIS ZU ERROR HANDLING: Alle Testfunktionen müssen explizit prüfen, ob der Eingabevektor leer ist (`length(x) == 0`), und in diesem Fall einen `ArgumentError` auslösen, um den "Edge Cases"-Test in `test/runtests.jl` zu bestehen, der erwartet, dass `tf.f(Float64[])` einen `ArgumentError` wirft. Beispiel: `n == 0 && throw(ArgumentError("Input vector cannot be empty"))`. Dies gilt für alle Funktionen, unabhängig davon, ob sie skalierbar sind oder spezifische Dimensionsanforderungen haben (z. B. `n >= 2` für Rosenbrock).**
 
 ## Was SOLL gemacht werden
 
@@ -38,7 +40,7 @@ using NonlinearOptimizationTestFunctions
    - Implementiere die Funktion, den Gradienten und Metadaten gemäß der Struktur bestehender Funktionen (z. B. `ackley.jl`, `rosenbrock.jl`, `branin.jl`).
    - Exportiere gezielt: `export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient`.
    - **Definiere `<functionname>` und `<functionname>_gradient` als Top-Level-Funktionen im Modul-Namespace, keine Closures oder eingebetteten Funktionen, um Exportprobleme zu vermeiden.**
-   - Stelle sicher, dass die Funktion Edge Cases (`NaN`, `Inf`, `1e-308`) behandelt und mit `ForwardDiff` kompatibel ist (Typparameter `T<:Union{Real, ForwardDiff.Dual}`).
+   - Stelle sicher, dass die Funktion Edge Cases (`NaN`, `Inf`, `1e-308`, leere Eingabe) behandelt und mit `ForwardDiff` kompatibel ist (Typparameter `T<:Union{Real, ForwardDiff.Dual}`).
    - Definiere Metadaten (`:name`, `:start`, `:min_position`, `:min_value`, `:properties`, `:lb`, `:ub`, `:in_molga_smutnicki_2005`) korrekt, wobei `:start`, `:min_position`, `:lb`, `:ub` Funktionen sind, die die Dimension `n` akzeptieren.
    - Setze `:in_molga_smutnicki_2005 => true`, wenn die Funktion aus *Test functions for optimization needs* (Molga & Smutnicki, 2005) stammt.
    - Füge `:description` und `:math` (in LaTeX) hinzu, um die Funktion zu dokumentieren.
@@ -52,7 +54,7 @@ using NonlinearOptimizationTestFunctions
 3. Tests in `test/<functionname>_tests.jl` erstellen:
    - Erstelle eine Testdatei mit lowercase-Namen (z. B. `branin_tests.jl`).
    - Verwende gezielte Imports (`using NonlinearOptimizationTestFunctionsInJulia: <FUNCTIONNAME>_FUNCTION, <functionname>`).
-   - Teste Funktionswerte, Metadaten, Edge Cases (`NaN`, `Inf`, `1e-308`, falsche Dimensionen) und Optimierung mit `Optim.jl`.
+   - Teste Funktionswerte, Metadaten, Edge Cases (`NaN`, `Inf`, `1e-308`, leere Eingabe, falsche Dimensionen) und Optimierung mit `Optim.jl`.
    - **Verwende deterministische Werte oder Matrizen in den Tests, um konsistente Ergebnisse zu gewährleisten. Beispiel: Für skalierbare Funktionen wie die quadratische Funktion, verwende explizite positiv definite Matrizen wie `Symmetric(Matrix(Diagonal(fill(2.0, n))))`.**
    - Überprüfe Funktionswerte am Startpunkt und Minimum manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca).
    - Für multimodale Funktionen mit mehreren Minima, prüfe, ob das gefundene Minimum einem der globalen Minima nahe ist (siehe `branin_tests.jl`).
@@ -61,7 +63,7 @@ using NonlinearOptimizationTestFunctions
 4. Tests in `test/include_testfiles.jl` einbinden:
    - Füge `include("<functionname>_tests.jl")` hinzu.
    - Überprüfe die Einbindung durch direkte Ausführung der Testdatei:
-     julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/<functionname>_tests.jl")'
+       julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/<functionname>_tests.jl")'
 
 5. Filtertests in `test/runtests.jl` anpassen:
    - Aktualisiere die Filtertests im Abschnitt `"Filter and Properties Tests"`, um neue Eigenschaften wie `"multimodal"` oder `"differentiable"` zu berücksichtigen. Beispiel: Branin erhöhte `"multimodal"` von 6 auf 7 und `"differentiable"` von 8 auf 9. **Für die quadratische Funktion wurden `"convex"` auf 5 und `"differentiable"` auf 31 erhöht.**
@@ -71,8 +73,8 @@ using NonlinearOptimizationTestFunctions
 
 7. Tests ausführen und überprüfen:
    - Führe die Tests aus:
-     cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
-     julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
+       cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
+       julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
    - Überprüfe, ob die neuen Tests in der Ausgabe erscheinen. Falls nicht, überprüfe die Schreibweise in `test/include_testfiles.jl` und das Vorhandensein der Testdatei.
 
 ## Was soll NICHT gemacht werden
@@ -89,7 +91,7 @@ using NonlinearOptimizationTestFunctions
 4. Keine Gradiententests in funktionsspezifischen Testdateien:
    - Implementiere keine Gradiententests in `test/<functionname>_tests.jl`, da diese ausschließlich in `test/runtests.jl` durchgeführt werden, um Konsistenz zu gewährleisten.
 
-5. Keine falschen Testwerte übernehmen:
+5. Keine falschen Testwerte etwa aus dem Zwischenbericht übernehmen:
    - Übernimm keine erwarteten Funktionswerte (z. B. am Startpunkt oder Minimum) ohne manuelle Überprüfung durch Berechnung oder Ausführen der Funktion, unterstützt durch Recherche an verschiedenen Stellen im Internet. Beispiel: Der falsche Testwert `36.90471446624321` für die Branin-Funktion am Startpunkt `[0.0, 0.0]` führte zu einem Testfehler.
 
 6. Keine Änderung der Namenskonventionen:
@@ -106,6 +108,9 @@ using NonlinearOptimizationTestFunctions
 
 10. **Keine zufälligen Werte in Tests ohne Deterministik:**
     - **Verwende keine zufälligen Werte oder Matrizen in Tests (z. B. `randn(n, n)' * randn(n, n) + I`), ohne Deterministik sicherzustellen, da dies zu numerischen Instabilitäten oder Testfehlern führen kann. Verwende stattdessen explizite Werte oder Matrizen (z. B. `Symmetric(Matrix(Diagonal(fill(2.0, n))))`).**
+
+11. **Keine Vernachlässigung der Prüfung auf leere Eingabevektoren:**
+    - **Versäume nicht, in `<functionname>` und `<functionname>_gradient` zu prüfen, ob der Eingabevektor leer ist (`n == 0`), und in diesem Fall einen `ArgumentError` auszulösen, da dies für den "Edge Cases"-Test in `test/runtests.jl` erforderlich ist.**
 
 ## Schritte zum Hinzufügen einer neuen Testfunktion
 
@@ -124,11 +129,14 @@ using NonlinearOptimizationTestFunctions
 
        """
            <functionname>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-       Computes the <FunctionName> function value at point `x`. Requires exactly <N> dimension(s).
+       Computes the <FunctionName> function value at point `x`. Requires at least <N> dimension(s).
        Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
+       Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
        """
        function <functionname>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-           length(x) == <N> || throw(ArgumentError("<FunctionName> requires exactly <N> dimension(s)"))
+           n = length(x)
+           n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+           n < <N> && throw(ArgumentError("<FunctionName> requires at least <N> dimension(s)"))  # Für skalierbare Funktionen: n < 1
            any(isnan.(x)) && return T(NaN)
            any(isinf.(x)) && return T(Inf)
            # Implementierung der Funktion
@@ -137,12 +145,15 @@ using NonlinearOptimizationTestFunctions
 
        """
            <functionname>_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-       Computes the gradient of the <FunctionName> function. Returns a vector of length <N>.
+       Computes the gradient of the <FunctionName> function. Returns a vector of length n.
+       Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
        """
        function <functionname>_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-           length(x) == <N> || throw(ArgumentError("<FunctionName> requires exactly <N> dimension(s)"))
-           any(isnan.(x)) && return fill(T(NaN), length(x))
-           any(isinf.(x)) && return fill(T(Inf), length(x))
+           n = length(x)
+           n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+           n < <N> && throw(ArgumentError("<FunctionName> requires at least <N> dimension(s)"))  # Für skalierbare Funktionen: n < 1
+           any(isnan.(x)) && return fill(T(NaN), n))
+           any(isinf.(x)) && return fill(T(Inf), n))
            # Implementierung des Gradienten
            return <gradient>
        end
@@ -152,22 +163,22 @@ using NonlinearOptimizationTestFunctions
            <functionname>_gradient,
            Dict(
                :name => "<functionname>",
-               :start => (n::Int=<N>) -> begin
-                   n == <N> || throw(ArgumentError("<FunctionName> requires exactly <N> dimension(s)"))
+               :start => (n::Int) -> begin
+                   n < <N> && throw(ArgumentError("<FunctionName> requires at least <N> dimension(s)"))
                    <startpunkt>
                end,
-               :min_position => (n::Int=<N>) -> begin
-                   n == <N> || throw(ArgumentError("<FunctionName> requires exactly <N> dimension(s)"))
+               :min_position => (n::Int) -> begin
+                   n < <N> && throw(ArgumentError("<FunctionName> requires at least <N> dimension(s)"))
                    <minimalpunkt>
                end,
                :min_value => <minimalwert>,
                :properties => Set(["differentiable", "<weitere Eigenschaften>"]),
-               :lb => (n::Int=<N>) -> begin
-                   n == <N> || throw(ArgumentError("<FunctionName> requires exactly <N> dimension(s)"))
+               :lb => (n::Int) -> begin
+                   n < <N> && throw(ArgumentError("<FunctionName> requires at least <N> dimension(s)"))
                    <untere Schranke>
                end,
-               :ub => (n::Int=<N>) -> begin
-                   n == <N> || throw(ArgumentError("<FunctionName> requires exactly <N> dimension(s)"))
+               :ub => (n::Int) -> begin
+                   n < <N> && throw(ArgumentError("<FunctionName> requires at least <N> dimension(s)"))
                    <obere Schranke>
                end,
                :in_molga_smutnicki_2005 => <true/false>,
@@ -176,7 +187,7 @@ using NonlinearOptimizationTestFunctions
            )
        )
 
-   - Stelle sicher, dass `:min_position(n)` das globale Minimum für Dimension `n` liefert, wo der Funktionswert `:min_value` ist. Recherchiere an verschiedenen Stellen im Internet (z. B. al-roomi.org, sfu.ca, geatbx.com), um die präzisesten Werte zu finden, und überprüfe sie durch manuelle Berechnung oder Ausführen der Funktion.
+   - Stelle sicher, dass `:min_position(n)` das globale Minimum für Dimension `n` liefert, wo der Funktionswert `:min_value` ist. Recherchiere an verschiedenen Stellen im Internet (z. B. al-roomi.org, sfu.ca, geatbx.com, indusmic.com), um die präzisesten Werte zu finden, und überprüfe diese durch manuelle Berechnung oder Ausführen der Funktion.
    - Stelle sicher, dass `:start(n)` einen geeigneten Startpunkt liefert.
    - Stelle sicher, dass `:lb(n)` und `:ub(n)` die untere bzw. obere Schranke für Dimension `n` liefern.
    - Füge relevante Eigenschaften zu `:properties` hinzu, z. B. `"differentiable"`, `"multimodal"`, `"convex"`, `"non-separable"`, aus `VALID_PROPERTIES` in `src/NonlinearOptimizationTestFunctionsInJulia.jl`.
@@ -184,77 +195,35 @@ using NonlinearOptimizationTestFunctions
    - Beispiel: Die Branin-Funktion (`src/functions/branin.jl`) ist ein gutes Beispiel für eine nicht-skalierbare Funktion (nur `n=2`) mit mehreren globalen Minima.
 
 2. Funktion in `src/include_testfunctions.jl` einbinden:
-   Bearbeite `src/include_testfunctions.jl` und füge die neue Funktion hinzu:
-       include("functions/<functionname>.jl")
-   Die Funktion wird automatisch in das `TEST_FUNCTIONS`-Dictionary in `src/NonlinearOptimizationTestFunctionsInJulia.jl` aufgenommen, indem alle Konstanten mit dem Suffix `_FUNCTION` erkannt werden.
+   - Füge `include("functions/<functionname>.jl")` hinzu, damit die Funktion in `TEST_FUNCTIONS` registriert wird.
 
-3. Tests erstellen:
-   Erstelle `test/<functionname>_tests.jl` mit lowercase-Symbolen. Verwende gezielte Imports (`using NonlinearOptimizationTestFunctionsInJulia: <FUNCTIONNAME>_FUNCTION, <functionname>`). Teste Funktionswerte, Metadaten, Edge Cases und Optimierung mit `Optim.jl`.
-
-       # test/<functionname>_tests.jl
-       # Purpose: Tests for the <FunctionName> function.
-       # Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
-       # Last modified: <Datum>
-
-       using Test, Optim
-       using NonlinearOptimizationTestFunctionsInJulia: <FUNCTIONNAME>_FUNCTION, <functionname>
-
-       @testset "<FunctionName> Tests" begin
-           tf = <FUNCTIONNAME>_FUNCTION
-           n = <N>  # Standarddimension, z. B. 2
-           @test_throws ArgumentError <functionname>(Float64[])
-           @test isnan(<functionname>(fill(NaN, n)))
-           @test isinf(<functionname>(fill(Inf, n)))
-           @test isfinite(<functionname>(fill(1e-308, n)))
-           @test <functionname>(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-6
-           @test <functionname>(tf.meta[:start](n)) ≈ <erwarteter Wert> atol=1e-6
-           @test tf.meta[:name] == "<functionname>"
-           @test tf.meta[:start](n) == <erwarteter Startpunkt>
-           @test tf.meta[:min_position](n) == <erwartetes Minimum>
-           @test tf.meta[:min_value] ≈ <erwarteter Minimalwert> atol=1e-6
-           @test tf.meta[:lb](n) == <erwartete untere Schranke>
-           @test tf.meta[:ub](n) == <erwartete obere Schranke>
-           @test tf.meta[:in_molga_smutnicki_2005] == <true/false>
-           @test Set(tf.meta[:properties]) == Set(["differentiable", "<weitere Eigenschaften>"])
-           @testset "Optimization Tests" begin
-               start = has_property(tf, "multimodal") ? tf.meta[:min_position](n) + 0.01 * randn(n) : tf.meta[:start](n)
-               result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))
-               @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
-               @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=1e-3
-               # Für multimodale Funktionen mit mehreren Minima:
-               # minima = [<Liste der Minima>]
-               # @test any(norm(Optim.minimizer(result) - m) < 1e-3 for m in minima)
-           end
-       end
-
-   - Berechne oder überprüfe Funktionswerte (z. B. am Startpunkt oder Minimum) manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca).
-   - Tests für höhere Dimensionen (`n=10`, `n=100`) sind nur erforderlich, wenn die Funktion skalierbar ist; andernfalls beschränke Tests auf die unterstützte Dimension (z. B. `n=2` für Branin).
+3. Tests in `test/<functionname>_tests.jl` erstellen:
+   - Erstelle eine Testdatei mit lowercase-Namen (z. B. `branin_tests.jl`).
+   - Verwende gezielte Imports (`using NonlinearOptimizationTestFunctionsInJulia: <FUNCTIONNAME>_FUNCTION, <functionname>`).
+   - Teste Funktionswerte, Metadaten, Edge Cases (`NaN`, `Inf`, `1e-308`, leere Eingabe, falsche Dimensionen) und Optimierung mit `Optim.jl`.
+   - **Verwende deterministische Werte oder Matrizen in den Tests, um konsistente Ergebnisse zu gewährleisten. Beispiel: Für skalierbare Funktionen wie die quadratische Funktion, verwende explizite positiv definite Matrizen wie `Symmetric(Matrix(Diagonal(fill(2.0, n))))`.**
+   - Überprüfe Funktionswerte am Startpunkt und Minimum manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca).
+   - Für multimodale Funktionen mit mehreren Minima, prüfe, ob das gefundene Minimum einem der globalen Minima nahe ist (siehe `branin_tests.jl`).
+   - Verwende die recherchierten, präzisen Werte für `:min_position` und `:min_value` in den Tests, um Testfehler durch gerundete Literaturwerte zu vermeiden.
 
 4. Tests in `test/include_testfiles.jl` einbinden:
-   Bearbeite `test/include_testfiles.jl` und füge die neue Testdatei hinzu:
-       include("<functionname>_tests.jl")
-   Überprüfe die Einbindung durch direkte Ausführung der Testdatei:
+   - Füge `include("<functionname>_tests.jl")` hinzu.
+   - Überprüfe die Einbindung durch direkte Ausführung der Testdatei:
        julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/<functionname>_tests.jl")'
 
-5. Tests in `test/runtests.jl` ergänzen:
-   Die Gradiententests sind bereits in `test/runtests.jl` enthalten. Stelle sicher, dass die neue Funktion als `"differentiable"` markiert ist, falls zutreffend, damit sie automatisch in die Gradiententests einbezogen wird. Aktualisiere die Filtertests im Abschnitt `"Filter and Properties Tests"`:
-       @testset "Filter and Properties Tests" begin
-           @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == <neue Anzahl>
-           @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == <neue Anzahl>
-           @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == <neue Anzahl>
-           @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
-       end
+5. Filtertests in `test/runtests.jl` anpassen:
+   - Aktualisiere die Filtertests im Abschnitt `"Filter and Properties Tests"`, um neue Eigenschaften wie `"multimodal"` oder `"differentiable"` zu berücksichtigen. Beispiel: Branin erhöhte `"multimodal"` von 6 auf 7 und `"differentiable"` von 8 auf 9. **Für die quadratische Funktion wurden `"convex"` auf 5 und `"differentiable"` auf 31 erhöht.**
 
 6. Dokumentation in `Readme.txt` aktualisieren:
-   Füge die neue Funktion im Abschnitt `Test Functions` hinzu, mit Angaben zu Eigenschaften, Minimum, Schranken und Dimensionen, basierend auf den präzisen, recherchierten Werten.
+   - Füge die neue Funktion im Abschnitt `Test Functions` hinzu, mit Angaben zu Eigenschaften, Minimum, Schranken und Dimensionen, basierend auf den präzisen, recherchierten Werten (siehe Branin-Beispiel).
 
 7. Tests ausführen und überprüfen:
-   Führe die Tests aus:
+   - Führe die Tests aus:
        cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
        julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
-   Überprüfe, ob die neuen Tests in der Ausgabe erscheinen. Falls nicht, überprüfe die Schreibweise in `test/include_testfiles.jl` und das Vorhandensein der Testdatei.
+   - Überprüfe, ob die neuen Tests in der Ausgabe erscheinen. Falls nicht, überprüfe die Schreibweise in `test/include_testfiles.jl` und das Vorhandensein der Testdatei.
 
 ## Testausführung
 Führe die Tests aus:
-cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
-julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
+    cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
+    julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'

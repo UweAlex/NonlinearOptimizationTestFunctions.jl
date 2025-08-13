@@ -1,4 +1,5 @@
 # NonlinearOptimizationTestFunctions
+# Last modified: 13 August 2025, 09:04 AM CEST
 
 ## Introduction
 
@@ -103,7 +104,7 @@ The package provides a TestFunction structure containing the function (f), gradi
 
 ## Test Functions
 
-The package includes a variety of test functions for nonlinear optimization, each defined in src/functions/<functionname>.jl. Below is a complete list of available functions, their properties, minima, bounds, and supported dimensions, based on precise values from sources like al-roomi.org, sfu.ca, and Molga & Smutnicki (2005). **All functions are fully implemented with function evaluations, analytical gradients, and metadata, validated through the test suite.**
+The package includes a variety of test functions for nonlinear optimization, each defined in src/functions/<functionname>.jl. Below is a complete list of available functions, their properties, minima, bounds, and supported dimensions, based on precise values from sources like al-roomi.org, sfu.ca, and Molga & Smutnicki (2005). **All functions are fully implemented with function evaluations, analytical gradients, and metadata, validated through the test suite, including checks for empty input vectors, NaN, Inf, and small inputs (e.g., 1e-308).**
 
 - **Ackley**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 5]^n (default) or [-32.768, 32.768]^n (benchmark). Dimensions: Any n >= 1.
 - **AxisParallelHyperEllipsoid**: Convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1.
@@ -125,10 +126,11 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **Levy**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-10, 10]^n. Dimensions: Any n >= 1.
 - **McCormick**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.913222954981037 at (-0.547197553, -1.547197553). Bounds: [-1.5, 4] x [-3, 4]. Dimensions: n=2.
 - **Michalewicz**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: -1.8013 (n=2), -4.687658 (n=5), -9.66015 (n=10). Bounds: [0, pi]^n. Dimensions: Any n >= 1.
-- **Quadratic**: **Unimodal, convex, non-separable, differentiable, scalable. Minimum: c - 0.25 * b^T A^-1 b at -0.5 * A^-1 b, where A is a positive definite matrix, b is a vector, and c is a scalar (default: A random positive definite, b=0, c=0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. The quadratic function encapsulates parameters A, b, c, set on the first call or overridden if provided, making it ideal for testing optimization algorithms on non-separable problems with varying condition numbers. Example usage: `quadratic(ones(2), Symmetric([2.0 0.0; 0.0 2.0]), [1.0, 1.0], 0.5)` sets custom parameters; subsequent calls to `quadratic(x)` reuse these parameters.**
+- **Quadratic**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: c - 0.25 * b^T A^-1 b at -0.5 * A^-1 b, where A is a positive definite matrix, b is a vector, and c is a scalar (default: A random positive definite, b=0, c=0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. The quadratic function encapsulates parameters A, b, c, set on the first call or overridden if provided, making it ideal for testing optimization algorithms on non-separable problems with varying condition numbers. Example usage: `quadratic(ones(2), Symmetric([2.0 0.0; 0.0 2.0]), [1.0, 1.0], 0.5)` sets custom parameters; subsequent calls to `quadratic(x)` reuse these parameters.
 - **Rana**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -498.12463264808594 at (-500.0, -499.0733150925747). Bounds: [-500, 500]^2. Dimensions: n=2.
 - **Rastrigin**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n >= 1.
 - **Rosenbrock**: Unimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-5, 5]^n. Dimensions: Any n >= 2.
+- **RotatedHyperEllipsoid**: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-65.536, 65.536]^n. Dimensions: Any n >= 1. The rotated hyper-ellipsoid function, also known as the sum squares function, is a convex, scalable test function with a single global minimum, suitable for testing optimization algorithms on non-separable problems.
 - **Schwefel**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (420.9687, ..., 420.9687). Bounds: [-500, 500]^n. Dimensions: Any n >= 1.
 - **Shekel**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -10.536409825004505 at (4.0, 4.0, 4.0, 4.0) for m=10. Bounds: [0, 10]^4. Dimensions: n=4.
 - **Shubert**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -186.7309 at multiple points, e.g., (-1.4251286, -0.800321). Bounds: [-10, 10]^2. Dimensions: n=2.
@@ -147,11 +149,52 @@ To run the test suite, execute:
     cd /c/Users/uweal/NonlinearOptimizationTestFunctions
     julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
 
-Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-308), and optimization with Optim.jl. Gradient tests are centralized in test/runtests.jl for consistency.
+Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-308, empty input vectors), and optimization with Optim.jl. Gradient tests are centralized in test/runtests.jl for consistency.
 
 ## License
 
 This package is licensed under the MIT License. See LICENSE for details.
+
+## Alternative Names for Test Functions
+
+Some test functions are referred to by different names in the literature. Below is a list connecting the names used in this package to common alternatives:
+
+- **ackley**: Ackley's function, Ackley No. 1, Ackley Path Function.
+- **axisparallelhyperellipsoid**: Axis parallel hyper-ellipsoid function, Sum squares function, De Jong F2.
+- **beale**: Beale's function.
+- **bohachevsky**: Bohachevsky's function.
+- **branin**: Branin's rcos function, Branin-Hoo function.
+- **bukin6**: Bukin function No. 6.
+- **crossintray**: Cross-in-Tray function.
+- **dejongf4**: De Jong F4, Quartic function with noise, Noisy quartic function.
+- **dixonprice**: Dixon-Price function.
+- **dropwave**: Drop-Wave function.
+- **easom**: Easom's function.
+- **eggholder**: Egg Holder function, Egg Crate function.
+- **goldsteinprice**: Goldstein-Price function.
+- **griewank**: Griewank's function, Griewangk’s function.
+- **hartmann**: Hartmann function (Hartmann 3, 4 or 6).
+- **himmelblau**: Himmelblau's function.
+- **keane**: Keane's function, Bump function.
+- **langermann**: Langermann's function.
+- **levy**: Levy function No. 13, Levy N.13.
+- **mccormick**: McCormick's function.
+- **michalewicz**: Michalewicz's function.
+- **quadratic**: Quadratic function, Paraboloid.
+- **rana**: Rana's function.
+- **rastrigin**: Rastrigin's function.
+- **rosenbrock**: Rosenbrock's valley, De Jong F2, Banana function.
+- **rotatedhyperellipsoid**: Rotated Hyper-Ellipsoid function, Sum squares function, Weighted sphere function.
+- **schwefel**: Schwefel's function, Schwefel 2.26.
+- **shekel**: Shekel's foxholes, De Jong F5, Foxholes function.
+- **shubert**: Shubert's function.
+- **sineenvelope**: Sine Envelope Sine Wave Sine function.
+- **sixhumpcamelback**: Six-Hump Camelback function, Camel function.
+- **sphere**: Sphere function, De Jong F1, Quadratic sphere.
+- **step**: Step function, De Jong F3.
+- **styblinskitang**: Styblinski-Tang function.
+- **sumofpowers**: Sum of different powers function, Absolute value function.
+- **zakharov**: Zakharov's function.
 
 ## References
 
@@ -160,4 +203,4 @@ This package is licensed under the MIT License. See LICENSE for details.
     - Hedar, A.-R. (2005). Global optimization test problems. http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm
     - Suganthan, P. N., et al. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website.
     - Al-Roomi (o. J.). Test Functions Repository. https://www.al-roomi.org
-	
+    - https://www.geocities.ws/eadorio/mvf.pdf

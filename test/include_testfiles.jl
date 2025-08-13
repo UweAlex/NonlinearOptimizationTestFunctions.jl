@@ -43,6 +43,9 @@ include("step_tests.jl")
 include("quadratic_tests.jl")
 include("dejongf4_tests.jl")
 include("zakharov_tests.jl")
+include("rotatedhyperellipsoid_tests.jl")
+
+
 
 
 
