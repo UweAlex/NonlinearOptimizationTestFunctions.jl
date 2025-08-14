@@ -1,7 +1,7 @@
 # src/functions/shekel.jl
 # Purpose: Implements the Shekel test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 31 July 2025
+# Last modified: 14 August 2025
 
 export SHEKEL_FUNCTION, shekel, shekel_gradient
 
@@ -11,12 +11,14 @@ using ForwardDiff
 """
     shekel(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
 Computes the Shekel function value at point `x`. Requires exactly 4 dimensions.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
+Returns `NaN` for inputs containing `NaN`, and a finite value for inputs containing `Inf`.
+Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function shekel(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
     any(isnan.(x)) && return T(NaN)
-    any(isinf.(x)) && return T(Inf)
     m = 10
     a = [
         4.0 4.0 4.0 4.0;
@@ -37,11 +39,14 @@ end
 """
     shekel_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
 Computes the gradient of the Shekel function. Returns a vector of length 4.
+Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function shekel_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
-    any(isnan.(x)) && return fill(T(NaN), length(x))
-    any(isinf.(x)) && return fill(T(Inf), length(x))
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
+    any(isnan.(x)) && return fill(T(NaN), n)
+    any(isinf.(x)) && return zeros(T, n)  # Gradient is zero at Inf due to function structure
     m = 10
     a = [
         4.0 4.0 4.0 4.0;
@@ -79,7 +84,7 @@ const SHEKEL_FUNCTION = TestFunction(
             [4.0, 4.0, 4.0, 4.0]
         end,
         :min_value => -10.536409825004505,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable"]),
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "finite_at_inf"]),
         :lb => (n::Int=4) -> begin
             n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
             fill(0.0, n)
@@ -89,7 +94,7 @@ const SHEKEL_FUNCTION = TestFunction(
             fill(10.0, n)
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Shekel function: Multimodal, non-convex, non-separable, differentiable function defined for n=4, with multiple local minima and a global minimum at [4.0, 4.0, 4.0, 4.0]. Note that the gradient at the minimum is non-zero due to the function's multimodal structure.",
-        :math => "\\sum_{i=1}^{10} \\frac{1}{\\sum_{j=1}^4 (x_j - a_{ij})^2 + c_i}"
+        :description => "Shekel function: Multimodal, finite at infinity, non-convex, non-separable, differentiable function defined for n=4, with multiple local minima and a global minimum at [4.0, 4.0, 4.0, 4.0]. Note that the gradient at the minimum is non-zero due to the function's multimodal structure.",
+        :math => "f(x) = -\\sum_{i=1}^{10} \\frac{1}{\\sum_{j=1}^4 (x_j - a_{ij})^2 + c_i}"
     )
 )

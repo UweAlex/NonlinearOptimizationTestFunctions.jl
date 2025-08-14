@@ -1,7 +1,7 @@
 # test/runtests.jl
 # Purpose: Entry point for running all tests in NonlinearOptimizationTestFunctions.
 # Context: Contains cross-function tests and includes function-specific tests via include_testfiles.jl.
-# Last modified: 11 August 2025
+# Last modified: 14 August 2025
 
 using Test, ForwardDiff, Zygote
 using NonlinearOptimizationTestFunctions
@@ -23,11 +23,15 @@ function finite_difference_gradient(f, x; h=1e-6)
 end
 
 @testset "Filter and Properties Tests" begin
-    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 26
+    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 27
     @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 7  
-    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 32
+    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 33
     @test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4
     @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 4  # Bukin6, De Jong F3, De Jong F4, und eine weitere
+    # Debug-Ausgabe: Liste alle Funktionen mit finite_at_inf
+    finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
+    println("Funktionen mit 'finite_at_inf': ", [tf.meta[:name] for tf in finite_at_inf_funcs])
+    @test length(finite_at_inf_funcs) == 2  # dejongf5, shekel
     @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
 end
 
@@ -40,7 +44,17 @@ end
         end
         @test_throws ArgumentError tf.f(Float64[])
         @test isnan(tf.f(fill(NaN, n)))
-        @test isinf(tf.f(fill(Inf, n)))
+        if "bounded" in tf.meta[:properties]
+            # Prüfe, ob die Funktion an den Bounds endliche Werte liefert
+            lb = tf.meta[:lb](n)
+            ub = tf.meta[:ub](n)
+            @test isfinite(tf.f(lb))
+            @test isfinite(tf.f(ub))
+        elseif "finite_at_inf" in tf.meta[:properties]
+            @test isfinite(tf.f(fill(Inf, n)))
+        else
+            @test isinf(tf.f(fill(Inf, n)))
+        end
         @test isfinite(tf.f(fill(1e-308, n)))
     end
 end
@@ -57,7 +71,7 @@ end
 @testset "Gradient Comparison for Differentiable Functions" begin
     Random.seed!(1234)
     differentiable_functions = filter_testfunctions(tf -> has_property(tf, "differentiable"))
-    @test length(differentiable_functions) == 32
+    @test length(differentiable_functions) == 33
     for tf in differentiable_functions
         n = try
             length(tf.meta[:min_position](2))

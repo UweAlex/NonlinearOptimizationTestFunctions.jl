@@ -1,5 +1,30 @@
 # NonlinearOptimizationTestFunctions
-# Last modified: 13 August 2025, 09:04 AM CEST
+# Last modified: 14 August 2025, 09:30 AM CEST
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Examples](#examples)
+    - [Evaluating the Eggholder Function](#evaluating-the-eggholder-function)
+    - [Comparing Optimization Methods](#comparing-optimization-methods)
+    - [Computing Hessian with Zygote](#computing-hessian-with-zygote)
+    - [Listing Test Functions and Properties](#listing-test-functions-and-properties)
+    - [Optimizing All Functions](#optimizing-all-functions)
+    - [Optimizing with NLopt](#optimizing-with-nlopt)
+    - [Filtering Test Functions by Properties](#filtering-test-functions-by-properties)
+- [Test Functions](#test-functions)
+- [Valid Properties](#valid-properties)
+  - [Modality](#modality)
+  - [Convexity](#convexity)
+  - [Separability](#separability)
+  - [Differentiability](#differentiability)
+  - [Other Properties](#other-properties)
+- [Running Tests](#running-tests)
+- [License](#license)
+- [Alternative Names for Test Functions](#alternative-names-for-test-functions)
+- [References](#references)
 
 ## Introduction
 
@@ -28,15 +53,15 @@ The package provides a TestFunction structure containing the function (f), gradi
 
 ### Examples
 
-1. Evaluating the Eggholder Function (examples/Evaluate_eggholder.jl):
-   Evaluates the Eggholder function and its analytical gradient at the origin, demonstrating basic usage of a test function and its gradient.
+#### Evaluating the Eggholder Function
+Evaluates the Eggholder function and its analytical gradient at the origin, demonstrating basic usage of a test function and its gradient.
 
         using NonlinearOptimizationTestFunctions
         println(eggholder([0,0]))
         println(eggholder_gradient([0,0]))
 
-2. Comparing Optimization Methods (examples/Compare_optimization_methods.jl):
-   Compares Gradient Descent and L-BFGS on the Rosenbrock function, demonstrating how to use TestFunction with Optim.jl to evaluate different algorithms.
+#### Comparing Optimization Methods
+Compares Gradient Descent and L-BFGS on the Rosenbrock function, demonstrating how to use TestFunction with Optim.jl to evaluate different algorithms.
 
         using NonlinearOptimizationTestFunctions, Optim
         tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
@@ -46,8 +71,8 @@ The package provides a TestFunction structure containing the function (f), gradi
         println("Gradient Descent on $(tf.meta[:name]): $(Optim.minimizer(result_gd)), $(Optim.minimum(result_gd))")
         println("L-BFGS on $(tf.meta[:name]): $(Optim.minimizer(result_lbfgs)), $(Optim.minimum(result_lbfgs))")
 
-3. Computing Hessian with Zygote (examples/Compute_hessian_with_zygote.jl):
-   Performs three Newton steps on the Rosenbrock function using analytical gradients and Zygote's Hessian computation, showcasing integration with automatic differentiation.
+#### Computing Hessian with Zygote
+Performs three Newton steps on the Rosenbrock function using analytical gradients and Zygote's Hessian computation, showcasing integration with automatic differentiation.
 
         using NonlinearOptimizationTestFunctions, Zygote, LinearAlgebra
         tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
@@ -58,8 +83,8 @@ The package provides a TestFunction structure containing the function (f), gradi
         x = x - inv(Zygote.hessian(tf.f, x)) * tf.grad(x)
         println("Nach 3 Newton-Schritten für $(tf.meta[:name]): $x")
 
-4. Listing Test Functions and Properties (examples/List_all_available_test_functions_and_their_properties.jl):
-   Displays all available test functions with their start points, minima, and properties, useful for inspecting function characteristics.
+#### Listing Test Functions and Properties
+Displays all available test functions with their start points, minima, and properties, useful for inspecting function characteristics.
 
         using NonlinearOptimizationTestFunctions
         n = 2
@@ -67,8 +92,8 @@ The package provides a TestFunction structure containing the function (f), gradi
             println("$(tf.meta[:name]): Start at $(tf.meta[:start](n)), Minimum at $(tf.meta[:min_position](n)), Value $(tf.meta[:min_value]), Properties: $(join(tf.meta[:properties], ", "))")
         end
 
-5. Optimizing All Functions (examples/Optimize_all_functions.jl):
-   Optimizes all test functions using Optim.jl's L-BFGS algorithm, demonstrating batch processing of test functions.
+#### Optimizing All Functions
+Optimizes all test functions using Optim.jl's L-BFGS algorithm, demonstrating batch processing of test functions.
 
         using NonlinearOptimizationTestFunctions, Optim
         n = 2
@@ -77,8 +102,8 @@ The package provides a TestFunction structure containing the function (f), gradi
             println("$(tf.meta[:name]): $(Optim.minimizer(result)), $(Optim.minimum(result))")
         end
 
-6. Optimizing with NLopt (examples/Optimize_with_nlopt.jl):
-   Optimizes the Rosenbrock function using NLopt.jl's LD_LBFGS algorithm, highlighting compatibility with external optimization libraries.
+#### Optimizing with NLopt
+Optimizes the Rosenbrock function using NLopt.jl's LD_LBFGS algorithm, highlighting compatibility with external optimization libraries.
 
         using NonlinearOptimizationTestFunctions
         if isdefined(Main, :NLopt)
@@ -102,18 +127,28 @@ The package provides a TestFunction structure containing the function (f), gradi
             println("NLopt.jl is not installed. Please install it to run this example.")
         end
 
+#### Filtering Test Functions by Properties
+Filters test functions based on specific properties (e.g., multimodal or finite_at_inf), demonstrating how to select functions for targeted benchmarking.
+
+        using NonlinearOptimizationTestFunctions
+        multimodal_funcs = filter_testfunctions(tf -> has_property(tf, "multimodal"))
+        println("Multimodal functions: ", [tf.meta[:name] for tf in multimodal_funcs])
+        finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
+        println("Functions with finite_at_inf: ", [tf.meta[:name] for tf in finite_at_inf_funcs])
+
 ## Test Functions
 
-The package includes a variety of test functions for nonlinear optimization, each defined in src/functions/<functionname>.jl. Below is a complete list of available functions, their properties, minima, bounds, and supported dimensions, based on precise values from sources like al-roomi.org, sfu.ca, and Molga & Smutnicki (2005). **All functions are fully implemented with function evaluations, analytical gradients, and metadata, validated through the test suite, including checks for empty input vectors, NaN, Inf, and small inputs (e.g., 1e-308).**
+The package includes a variety of test functions for nonlinear optimization, each defined in src/functions/<functionname>.jl. Below is a complete list of available functions, their properties, minima, bounds, and supported dimensions, based on precise values from sources like al-roomi.org, sfu.ca, and Molga & Smutnicki (2005). **All functions are fully implemented with function evaluations, analytical gradients, and metadata, validated through the test suite, including checks for empty input vectors, NaN, Inf, and small inputs (e.g., 1e-308). Functions throw appropriate errors (e.g., ArgumentError for empty input or incorrect dimensions) to ensure robustness.**
 
 - **Ackley**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 5]^n (default) or [-32.768, 32.768]^n (benchmark). Dimensions: Any n >= 1.
 - **AxisParallelHyperEllipsoid**: Convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1.
-- **Beale**: Multimodal, non-convex, differentiable. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2.
-- **Bohachevsky**: Multimodal, non-convex, differentiable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-10, 10]^n. Dimensions: Any n >= 2.
+- **Beale**: Multimodal, non-convex, differentiable, bounded. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2.
+- **Bohachevsky**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-10, 10]^n. Dimensions: Any n >= 2.
 - **Branin**: Multimodal, differentiable, non-convex, non-separable, bounded. Minimum: 0.397887 at (-pi, 12.275), (pi, 2.275), (9.424778, 2.475). Bounds: [-5, 10] x [0, 15]. Dimensions: n=2.
 - **Bukin6**: Multimodal, non-convex, partially differentiable, bounded. Minimum: 0.0 at (-10.0, 1.0). Bounds: [-15, -5] x [-3, 3]. Dimensions: n=2.
 - **CrossInTray**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -2.06261 at (1.3491, 1.3491), (-1.3491, 1.3491), (1.3491, -1.3491), (-1.3491, -1.3491). Bounds: [-10, 10]^2. Dimensions: n=2.
-- **DixonPrice**: Unimodal, non-convex, differentiable, scalable. Minimum: 0.0 at (2^(-(2^i - 2)/2^i), ..., 2^(-(2^n - 2)/2^n)). Bounds: [-10, 10]^n. Dimensions: Any n >= 1.
+- **De Jong F5**: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: 0.9980038388186492 at (-32.0, -32.0). Bounds: [-65.536, 65.536]^2. Dimensions: n=2.
+- **DixonPrice**: Unimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (2^(-(2^i - 2)/2^i), ..., 2^(-(2^n - 2)/2^n)). Bounds: [-10, 10]^n. Dimensions: Any n >= 1.
 - **DropWave**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0, 0). Bounds: [-5.12, 5.12]^2. Dimensions: n=2.
 - **Easom**: Unimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (pi, pi). Bounds: [-100, 100]^2. Dimensions: n=2.
 - **Eggholder**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -959.6406627208506 at (512.0, 404.2318058008512). Bounds: [-512, 512]^2. Dimensions: n=2.
@@ -132,7 +167,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **Rosenbrock**: Unimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-5, 5]^n. Dimensions: Any n >= 2.
 - **RotatedHyperEllipsoid**: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-65.536, 65.536]^n. Dimensions: Any n >= 1. The rotated hyper-ellipsoid function, also known as the sum squares function, is a convex, scalable test function with a single global minimum, suitable for testing optimization algorithms on non-separable problems.
 - **Schwefel**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (420.9687, ..., 420.9687). Bounds: [-500, 500]^n. Dimensions: Any n >= 1.
-- **Shekel**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -10.536409825004505 at (4.0, 4.0, 4.0, 4.0) for m=10. Bounds: [0, 10]^4. Dimensions: n=4.
+- **Shekel**: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: -10.536409825004505 at (4.0, 4.0, 4.0, 4.0) for m=10. Bounds: [0, 10]^4. Dimensions: n=4.
 - **Shubert**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -186.7309 at multiple points, e.g., (-1.4251286, -0.800321). Bounds: [-10, 10]^2. Dimensions: n=2.
 - **SineEnvelope**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2.
 - **SixHumpCamelback**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.031628453489877 at (±0.08984201368301331, ±0.7126564032704135). Bounds: [-3, 3] x [-2, 2]. Dimensions: n=2.
@@ -142,14 +177,51 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **SumOfPowers**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: Any n >= 1.
 - **Zakharov**: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 10]^n. Dimensions: Any n >= 1.
 
+## Valid Properties
+
+Each test function is associated with a set of properties that describe its mathematical characteristics, enabling filtering for specific use cases (e.g., multimodal or scalable functions). The following properties are defined in the package and can be assigned to test functions via their metadata (`meta[:properties]`). Note that not all properties are assigned to every function; for example, `finite_at_inf` is currently only applied to `De Jong F5` and `Shekel`, while `Langermann` does not have this property despite returning finite values at infinity.
+
+### Modality
+- **unimodal**: The function has a single global minimum and no local minima.
+- **multimodal**: The function has multiple local minima, making it challenging for optimization algorithms.
+- **highly multimodal**: A subset of multimodal functions with a particularly large number of local minima.
+- **deceptive**: The function has features that may mislead optimization algorithms toward suboptimal solutions.
+
+### Convexity
+- **convex**: The function is convex, ensuring a unique global minimum for continuous functions.
+- **non-convex**: The function is not convex, potentially having multiple minima or saddle points.
+- **quasi-convex**: The function is not convex but has a convex sublevel set, useful for certain optimization algorithms.
+- **strongly convex**: The function is convex with a strong curvature, guaranteeing faster convergence for some methods.
+
+### Separability
+- **separable**: The function can be optimized independently along each dimension.
+- **non-separable**: The function's variables are interdependent, requiring joint optimization.
+- **partially separable**: The function can be partially decomposed into separable components.
+- **fully non-separable**: The function is entirely non-separable, with strong interdependencies across all variables.
+
+### Differentiability
+- **differentiable**: The function has a well-defined gradient everywhere in its domain.
+- **partially differentiable**: The function is differentiable in parts of its domain but may have non-differentiable points.
+
+### Other Properties
+- **scalable**: The function can be defined for any number of dimensions (n >= 1).
+- **continuous**: The function is continuous across its domain.
+- **bounded**: The function is defined within finite bounds (e.g., [a, b]^n), and evaluations outside these bounds are typically undefined or irrelevant. Tests for bounded functions check finite values at the bounds (`lb`, `ub`) rather than at infinity.
+- **has_constraints**: The function includes explicit constraints (e.g., equality or inequality constraints).
+- **controversial**: The function has debated properties or inconsistent definitions in the literature.
+- **has_noise**: The function includes stochastic or noisy components, simulating real-world uncertainty.
+- **finite_at_inf**: The function returns finite values when evaluated at infinity (e.g., f([Inf, ..., Inf]) is finite).
+
+These properties are validated in the test suite (e.g., `test/runtests.jl`) to ensure consistency and correctness.
+
 ## Running Tests
 
 To run the test suite, execute:
 
     cd /c/Users/uweal/NonlinearOptimizationTestFunctions
-    julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
+    julia --project=. -e 'using Pkg; Pkg.resolve(); Pkg.instantiate(); include("test/runtests.jl")'
 
-Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-308, empty input vectors), and optimization with Optim.jl. Gradient tests are centralized in test/runtests.jl for consistency.
+Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-308, empty input vectors, and bounds for bounded functions), and optimization with Optim.jl. For functions marked as `bounded`, tests verify finite values at the lower and upper bounds (`lb`, `ub`) instead of infinity, reflecting their constrained domain. Gradient tests are centralized in test/runtests.jl for consistency. All tests, including those for the newly added De Jong F5 function, pass as of the last update, ensuring robustness and correctness.
 
 ## License
 
@@ -157,22 +229,23 @@ This package is licensed under the MIT License. See LICENSE for details.
 
 ## Alternative Names for Test Functions
 
-Some test functions are referred to by different names in the literature. Below is a list connecting the names used in this package to common alternatives:
+Some test functions are referred to by different names in the literature. Below is a list connecting the names used in this package to common alternatives.
 
 - **ackley**: Ackley's function, Ackley No. 1, Ackley Path Function.
-- **axisparallelhyperellipsoid**: Axis parallel hyper-ellipsoid function, Sum squares function, De Jong F2.
+- **axisparallelhyperellipsoid**: Axis parallel hyper-ellipsoid function, Sum squares function, Weighted sphere model, Quadratic function (axis-aligned variant).
 - **beale**: Beale's function.
-- **bohachevsky**: Bohachevsky's function.
-- **branin**: Branin's rcos function, Branin-Hoo function.
+- **bohachevsky**: Bohachevsky's function, Bohachevsky No. 1 (for the standard variant).
+- **branin**: Branin's rcos function, Branin-Hoo function, Branin function.
 - **bukin6**: Bukin function No. 6.
 - **crossintray**: Cross-in-Tray function.
 - **dejongf4**: De Jong F4, Quartic function with noise, Noisy quartic function.
+- **dejongf5**: De Jong F5, Shekel's foxholes, Foxholes function.
 - **dixonprice**: Dixon-Price function.
 - **dropwave**: Drop-Wave function.
 - **easom**: Easom's function.
-- **eggholder**: Egg Holder function, Egg Crate function.
+- **eggholder**: Egg Holder function, Egg Crate function, Holder Table function.
 - **goldsteinprice**: Goldstein-Price function.
-- **griewank**: Griewank's function, Griewangk’s function.
+- **griewank**: Griewank's function, Griewangk’s function, Griewank function.
 - **hartmann**: Hartmann function (Hartmann 3, 4 or 6).
 - **himmelblau**: Himmelblau's function.
 - **keane**: Keane's function, Bump function.
@@ -180,27 +253,27 @@ Some test functions are referred to by different names in the literature. Below 
 - **levy**: Levy function No. 13, Levy N.13.
 - **mccormick**: McCormick's function.
 - **michalewicz**: Michalewicz's function.
-- **quadratic**: Quadratic function, Paraboloid.
+- **quadratic**: Quadratic function, Paraboloid, General quadratic form (often customized with matrix A, vector b, scalar c).
 - **rana**: Rana's function.
 - **rastrigin**: Rastrigin's function.
 - **rosenbrock**: Rosenbrock's valley, De Jong F2, Banana function.
-- **rotatedhyperellipsoid**: Rotated Hyper-Ellipsoid function, Sum squares function, Weighted sphere function.
-- **schwefel**: Schwefel's function, Schwefel 2.26.
-- **shekel**: Shekel's foxholes, De Jong F5, Foxholes function.
+- **rotatedhyperellipsoid**: Rotated Hyper-Ellipsoid function, Schwefel's function 1.2, Extended sum squares function, Extended Rosenbrock function (in some contexts).
+- **schwefel**: Schwefel's function, Schwefel 2.26, Schwefel Problem 2.26.
+- **shekel**: Shekel's function, Shekel's foxholes, Foxholes function.
 - **shubert**: Shubert's function.
-- **sineenvelope**: Sine Envelope Sine Wave Sine function.
-- **sixhumpcamelback**: Six-Hump Camelback function, Camel function.
-- **sphere**: Sphere function, De Jong F1, Quadratic sphere.
+- **sineenvelope**: Sine Envelope Sine Wave Sine function, Sine envelope function.
+- **sixhumpcamelback**: Six-Hump Camelback function, Camel function, Six-hump camel function.
+- **sphere**: Sphere function, De Jong F1, Quadratic sphere, Parabola function, Sum of squares (unweighted).
 - **step**: Step function, De Jong F3.
-- **styblinskitang**: Styblinski-Tang function.
-- **sumofpowers**: Sum of different powers function, Absolute value function.
+- **styblinskitang**: Styblinski-Tang function, Tang function.
+- **sumofpowers**: Sum of different powers function, Absolute value function, Sum of increasing powers.
 - **zakharov**: Zakharov's function.
 
 ## References
 
-    - Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
-    - Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. https://arxiv.org/abs/1308.4008
-    - Hedar, A.-R. (2005). Global optimization test problems. http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm
-    - Suganthan, P. N., et al. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website.
-    - Al-Roomi (o. J.). Test Functions Repository. https://www.al-roomi.org
-    - https://www.geocities.ws/eadorio/mvf.pdf
+- Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
+- Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. https://arxiv.org/abs/1308.4008
+- Hedar, A.-R. (2005). Global optimization test problems. http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm
+- Suganthan, P. N., et al. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website.
+- Al-Roomi (o. J.). Test Functions Repository. https://www.al-roomi.org
+- https://www.geocities.ws/eadorio/mvf.pdf

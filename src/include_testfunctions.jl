@@ -39,6 +39,8 @@ include("functions/quadratic.jl")
 include("functions/dejongf4.jl")
 include("functions/zakharov.jl")
 include("functions/rotatedhyperellipsoid.jl")
+include("functions/dejongf5.jl")
+
 
 
 
