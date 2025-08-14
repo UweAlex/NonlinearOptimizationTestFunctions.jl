@@ -239,7 +239,7 @@ Some test functions are referred to by different names in the literature. Below 
 - **bukin6**: Bukin function No. 6.
 - **crossintray**: Cross-in-Tray function.
 - **dejongf4**: De Jong F4, Quartic function with noise, Noisy quartic function.
-- **dejongf5**: De Jong F5, Shekel's foxholes, Foxholes function.
+- **dejongf5**: De Jong F5, Foxholes function.
 - **dixonprice**: Dixon-Price function.
 - **dropwave**: Drop-Wave function.
 - **easom**: Easom's function.
