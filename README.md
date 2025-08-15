@@ -1,5 +1,5 @@
 # NonlinearOptimizationTestFunctions
-# Last modified: 14 August 2025, 09:30 AM CEST
+# Last modified: 15 August 2025
 
 ## Table of Contents
 
@@ -140,42 +140,78 @@ Filters test functions based on specific properties (e.g., multimodal or finite_
 
 The package includes a variety of test functions for nonlinear optimization, each defined in src/functions/<functionname>.jl. Below is a complete list of available functions, their properties, minima, bounds, and supported dimensions, based on precise values from sources like al-roomi.org, sfu.ca, and Molga & Smutnicki (2005). **All functions are fully implemented with function evaluations, analytical gradients, and metadata, validated through the test suite, including checks for empty input vectors, NaN, Inf, and small inputs (e.g., 1e-308). Functions throw appropriate errors (e.g., ArgumentError for empty input or incorrect dimensions) to ensure robustness.**
 
-- **Ackley**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 5]^n (default) or [-32.768, 32.768]^n (benchmark). Dimensions: Any n >= 1.
-- **AxisParallelHyperEllipsoid**: Convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1.
-- **Beale**: Multimodal, non-convex, differentiable, bounded. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2.
-- **Bohachevsky**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-10, 10]^n. Dimensions: Any n >= 2.
-- **Branin**: Multimodal, differentiable, non-convex, non-separable, bounded. Minimum: 0.397887 at (-pi, 12.275), (pi, 2.275), (9.424778, 2.475). Bounds: [-5, 10] x [0, 15]. Dimensions: n=2.
-- **Bukin6**: Multimodal, non-convex, partially differentiable, bounded. Minimum: 0.0 at (-10.0, 1.0). Bounds: [-15, -5] x [-3, 3]. Dimensions: n=2.
-- **CrossInTray**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -2.06261 at (1.3491, 1.3491), (-1.3491, 1.3491), (1.3491, -1.3491), (-1.3491, -1.3491). Bounds: [-10, 10]^2. Dimensions: n=2.
-- **De Jong F5**: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: 0.9980038388186492 at (-32.0, -32.0). Bounds: [-65.536, 65.536]^2. Dimensions: n=2.
-- **DixonPrice**: Unimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (2^(-(2^i - 2)/2^i), ..., 2^(-(2^n - 2)/2^n)). Bounds: [-10, 10]^n. Dimensions: Any n >= 1.
-- **DropWave**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0, 0). Bounds: [-5.12, 5.12]^2. Dimensions: n=2.
-- **Easom**: Unimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (pi, pi). Bounds: [-100, 100]^2. Dimensions: n=2.
-- **Eggholder**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -959.6406627208506 at (512.0, 404.2318058008512). Bounds: [-512, 512]^2. Dimensions: n=2.
-- **GoldsteinPrice**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 3.0 at (0, -1). Bounds: [-2, 2]^2. Dimensions: n=2.
-- **Griewank**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-600, 600]^n. Dimensions: Any n >= 1.
-- **Hartmann**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -3.86278214782076 at (0.114614, 0.555649, 0.852547) for n=3. Bounds: [0, 1]^n. Dimensions: n=3, 4, 6.
-- **Himmelblau**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at (3.0, 2.0), (-2.805118, 3.131312), (-3.779310, -3.283186), (3.584428, -1.848126). Bounds: [-5, 5]^2. Dimensions: n=2.
-- **Keane**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.673667521146855 at (0.0, 1.393249070031784), (1.393249070031784, 0.0). Bounds: [0, 10]^2. Dimensions: n=2.
-- **Langermann**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: approximately -5.1621259 at (2.002992, 1.006096). Bounds: [0, 10]^2. Dimensions: n=2.
-- **Levy**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-10, 10]^n. Dimensions: Any n >= 1.
-- **McCormick**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.913222954981037 at (-0.547197553, -1.547197553). Bounds: [-1.5, 4] x [-3, 4]. Dimensions: n=2.
-- **Michalewicz**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: -1.8013 (n=2), -4.687658 (n=5), -9.66015 (n=10). Bounds: [0, pi]^n. Dimensions: Any n >= 1.
-- **Quadratic**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: c - 0.25 * b^T A^-1 b at -0.5 * A^-1 b, where A is a positive definite matrix, b is a vector, and c is a scalar (default: A random positive definite, b=0, c=0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. The quadratic function encapsulates parameters A, b, c, set on the first call or overridden if provided, making it ideal for testing optimization algorithms on non-separable problems with varying condition numbers. Example usage: `quadratic(ones(2), Symmetric([2.0 0.0; 0.0 2.0]), [1.0, 1.0], 0.5)` sets custom parameters; subsequent calls to `quadratic(x)` reuse these parameters.
-- **Rana**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -498.12463264808594 at (-500.0, -499.0733150925747). Bounds: [-500, 500]^2. Dimensions: n=2.
-- **Rastrigin**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n >= 1.
-- **Rosenbrock**: Unimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-5, 5]^n. Dimensions: Any n >= 2.
-- **RotatedHyperEllipsoid**: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-65.536, 65.536]^n. Dimensions: Any n >= 1. The rotated hyper-ellipsoid function, also known as the sum squares function, is a convex, scalable test function with a single global minimum, suitable for testing optimization algorithms on non-separable problems.
-- **Schwefel**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (420.9687, ..., 420.9687). Bounds: [-500, 500]^n. Dimensions: Any n >= 1.
-- **Shekel**: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: -10.536409825004505 at (4.0, 4.0, 4.0, 4.0) for m=10. Bounds: [0, 10]^4. Dimensions: n=4.
-- **Shubert**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -186.7309 at multiple points, e.g., (-1.4251286, -0.800321). Bounds: [-10, 10]^2. Dimensions: n=2.
-- **SineEnvelope**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2.
-- **SixHumpCamelback**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.031628453489877 at (±0.08984201368301331, ±0.7126564032704135). Bounds: [-3, 3] x [-2, 2]. Dimensions: n=2.
-- **Sphere**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n >= 2.
-- **Step (De Jong F3)**: Unimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n >= 1.
-- **StyblinskiTang**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: -39.166165*n at (-2.903534, ..., -2.903534). Bounds: [-5, 5]^n. Dimensions: Any n >= 1.
-- **SumOfPowers**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: Any n >= 1.
-- **Zakharov**: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 10]^n. Dimensions: Any n >= 1.
+- **Ackley**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 5]^n (default) or [-32.768, 32.768]^n (benchmark). Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **AxisParallelHyperEllipsoid**: Convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Beale**: Multimodal, non-convex, differentiable, bounded. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Bohachevsky**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-10, 10]^n. Dimensions: Any n >= 2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Branin**: Multimodal, differentiable, non-convex, non-separable, bounded. Minimum: 0.397887 at (-pi, 12.275), (pi, 2.275), (9.424778, 2.475). Bounds: [-5, 10] x [0, 15]. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Bukin6**: Multimodal, non-convex, partially differentiable, bounded. Minimum: 0.0 at (-10.0, 1.0). Bounds: [-15, -5] x [-3, 3]. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **CrossInTray**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -2.06261 at (1.3491, 1.3491), (-1.3491, 1.3491), (1.3491, -1.3491), (-1.3491, -1.3491). Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **De Jong F5**: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: 0.9980038388186492 at (-32.0, -32.0). Bounds: [-65.536, 65.536]^2. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **DixonPrice**: Unimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (2^(-(2^i - 2)/2^i), ..., 2^(-(2^n - 2)/2^n)). Bounds: [-10, 10]^n. Dimensions: Any n >= 1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **DropWave**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0, 0). Bounds: [-5.12, 5.12]^2. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Easom**: Unimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (pi, pi). Bounds: [-100, 100]^2. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Eggholder**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -959.6406627208506 at (512.0, 404.2318058008512). Bounds: [-512, 512]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **GoldsteinPrice**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 3.0 at (0, -1). Bounds: [-2, 2]^2. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Griewank**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-600, 600]^n. Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Hartmann**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -3.86278214782076 at (0.114614, 0.555649, 0.852547) for n=3. Bounds: [0, 1]^n. Dimensions: n=3, 4, 6. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Himmelblau**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at (3.0, 2.0), (-2.805118, 3.131312), (-3.779310, -3.283186), (3.584428, -1.848126). Bounds: [-5, 5]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Keane**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.673667521146855 at (0.0, 1.393249070031784), (1.393249070031784, 0.0). Bounds: [0, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Langermann**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: approximately -5.1621259 at (2.002992, 1.006096). Bounds: [0, 10]^2. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Levy**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-10, 10]^n. Dimensions: Any n >= 1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **McCormick**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.913222954981037 at (-0.547197553, -1.547197553). Bounds: [-1.5, 4] x [-3, 4]. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Michalewicz**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: -1.8013 (n=2), -4.687658 (n=5), -9.66015 (n=10). Bounds: [0, pi]^n. Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Quadratic**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: c - 0.25 * b^T A^-1 b at -0.5 * A^-1 b, where A is a positive definite matrix, b is a vector, and c is a scalar (default: A random positive definite, b=0, c=0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. The quadratic function encapsulates parameters A, b, c, set on the first call or overridden if provided, making it ideal for testing optimization algorithms on non-separable problems with varying condition numbers. Example usage: `quadratic(ones(2), Symmetric([2.0 0.0; 0.0 2.0]), [1.0, 1.0], 0.5)` sets custom parameters; subsequent calls to `quadratic(x)` reuse these parameters. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Rana**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -498.12463264808594 at (-500.0, -499.0733150925747). Bounds: [-500, 500]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Rastrigin**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Rosenbrock**: Unimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-5, 5]^n. Dimensions: Any n >= 2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **RotatedHyperEllipsoid**: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-65.536, 65.536]^n. Dimensions: Any n >= 1. The rotated hyper-ellipsoid function, also known as the sum squares function, is a convex, scalable test function with a single global minimum, suitable for testing optimization algorithms on non-separable problems. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Schwefel**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (420.9687, ..., 420.9687). Bounds: [-500, 500]^n. Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Shekel**: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: -10.536409825004505 at (4.0, 4.0, 4.0, 4.0) for m=10. Bounds: [0, 10]^4. Dimensions: n=4. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Shubert**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -186.7309 at multiple points, e.g., (-1.4251286, -0.800321). Bounds: [-10, 10]^2. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **SineEnvelope**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **SixHumpCamelback**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.031628453489877 at (±0.08984201368301331, ±0.7126564032704135). Bounds: [-3, 3] x [-2, 2]. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Sphere**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n >= 2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **Step (De Jong F3)**: Unimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5.12, 5.12]^n. Dimensions: Any n >= 1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **StyblinskiTang**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: -39.166165*n at (-2.903534, ..., -2.903534). Bounds: [-5, 5]^n. Dimensions: Any n >= 1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **SumOfPowers**: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
+- **ThreeHumpCamel**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at (0.0, 0.0). Bounds: [-5, 5]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Zakharov**: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 10]^n. Dimensions: Any n >= 1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+
+## Upcoming Test Functions
+
+The following test functions are planned for implementation, based on standard benchmarks. They will be added with analytical gradients, metadata, and validation, consistent with the existing collection.
+
+- **Booth**: Unimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at (1.0, 3.0). Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Matyas**: Unimodal, convex, non-separable, differentiable, bounded. Minimum: 0.0 at (0.0, 0.0). Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **HolderTable**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -19.2085 at (8.05502, 9.66459) and others. Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Bird**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -106.764537 at (4.701055816, 3.15294602) and (-1.582142172, -3.130246801). Bounds: [-2π, 2π]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **DeckkersAarts**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -24777 at (0, 15) and (0, -15). Bounds: [-20, 20]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Giunta**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.06447042 at (0.4583428, 0.4583428). Bounds: [-1, 1]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Kearfott**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.352386 at multiple points. Bounds: [-3, 4]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **MishraBird**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -106.764537 at (-3.1302468, -1.5821422) and (-6.7745761, -2.4183762). Bounds: [-10, 0] x [-6.5, 0]. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **SchafferN1**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0 at (0,0). Bounds: [-100, 100]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **SchafferN2**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0 at (0,0). Bounds: [-100, 100]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **SchafferN4**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.292579 at (0,1.25313) and others. Bounds: [-100, 100]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Trid**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: -n(n+4)(n-1)/6 at i*(n+1-i) for i=1 to n. Bounds: [-n^2, n^2]^n. Dimensions: Any n >= 2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Wood**: Unimodal, non-convex, non-separable, differentiable, fixed. Minimum: 0 at (1,1,1,1). Bounds: [-10,10]^4. Dimensions: n=4. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Powell**: Unimodal, non-convex, non-separable, differentiable, fixed. Minimum: 0 at (0,0,0,0). Bounds: [-4,5]^4. Dimensions: n=4. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Perm**: Unimodal, non-convex, non-separable, differentiable, scalable. Minimum: 0 at (1,1/2,1/3,...,1/n). Bounds: [-n, n]^n. Dimensions: Any n >=1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **PowerSum**: Unimodal, non-convex, non-separable, differentiable, scalable. Minimum: 0 at specific point. Bounds: [0, n]^n. Dimensions: Any n >=1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Colville**: Unimodal, non-convex, non-separable, differentiable, fixed. Minimum: 0 at (1,1,1,1). Bounds: [-10,10]^4. Dimensions: n=4. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **FreudensteinRoth**: Multimodal, non-convex, non-separable, differentiable, fixed. Minimum: 0 at (5,4, -0.5, -0.5). Bounds: [-10,10]^4. Dimensions: n=4. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Brown**: Multimodal, non-convex, non-separable, differentiable, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-1,4]^n. Dimensions: Any n >=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **AlpineN1**: Multimodal, non-convex, separable, non-differentiable, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-10,10]^n. Dimensions: Any n >=1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **AlpineN2**: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -2.808^n at (7.917,7.917,...,7.917). Bounds: [0,10]^n. Dimensions: Any n >=1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **BartelsConn**: Multimodal, non-convex, non-separable, non-differentiable, fixed. Minimum: 1 at (0,0). Bounds: [-500,500]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **CarromTable**: Multimodal, non-convex, non-separable, differentiable, fixed. Minimum: -24.1568155165 at multiple. Bounds: [-10,10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Chichinadze**: Multimodal, non-convex, non-separable, differentiable, fixed. Minimum: -43.3159 at (5.90133, 0.5). Bounds: [-30,30]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Cigar**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-10,10]^n. Dimensions: Any n >=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **CosineMixture**: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -0.1*n at multiple. Bounds: [-1,1]^n. Dimensions: Any n >=1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Corana**: Multimodal, non-convex, separable, differentiable, fixed. Minimum: 0 at (0,0,0,0). Bounds: [-1000,1000]^4. Dimensions: n=4. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Csendes**: Unimodal, non-convex, separable, non-differentiable at 0, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-1,1]^n. Dimensions: Any n >=1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Cube**: Unimodal, non-convex, non-separable, differentiable, fixed. Minimum: 0 at (1,1,1). Bounds: [-10,10]^3. Dimensions: n=3. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Damavandi**: Multimodal, non-convex, non-separable, non-differentiable, fixed. Minimum: 0 at (2,2). Bounds: [0,14]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 
 ## Valid Properties
 
@@ -239,7 +275,7 @@ Some test functions are referred to by different names in the literature. Below 
 - **bukin6**: Bukin function No. 6.
 - **crossintray**: Cross-in-Tray function.
 - **dejongf4**: De Jong F4, Quartic function with noise, Noisy quartic function.
-- **dejongf5**: De Jong F5, Shekel's foxholes, Foxholes function.
+- **dejongf5**: De Jong F5, Foxholes function.
 - **dixonprice**: Dixon-Price function.
 - **dropwave**: Drop-Wave function.
 - **easom**: Easom's function.
@@ -267,6 +303,7 @@ Some test functions are referred to by different names in the literature. Below 
 - **step**: Step function, De Jong F3.
 - **styblinskitang**: Styblinski-Tang function, Tang function.
 - **sumofpowers**: Sum of different powers function, Absolute value function, Sum of increasing powers.
+- **threehumpcamel**: Three-Hump Camel function, Camel Three Humps function.
 - **zakharov**: Zakharov's function.
 
 ## References

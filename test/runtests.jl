@@ -23,14 +23,14 @@ function finite_difference_gradient(f, x; h=1e-6)
 end
 
 @testset "Filter and Properties Tests" begin
-    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 27
+    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 28
     @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 7  
-    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 33
+    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 34
     @test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4
     @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 4  # Bukin6, De Jong F3, De Jong F4, und eine weitere
     # Debug-Ausgabe: Liste alle Funktionen mit finite_at_inf
     finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
-    println("Funktionen mit 'finite_at_inf': ", [tf.meta[:name] for tf in finite_at_inf_funcs])
+    
     @test length(finite_at_inf_funcs) == 2  # dejongf5, shekel
     @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
 end
@@ -71,7 +71,7 @@ end
 @testset "Gradient Comparison for Differentiable Functions" begin
     Random.seed!(1234)
     differentiable_functions = filter_testfunctions(tf -> has_property(tf, "differentiable"))
-    @test length(differentiable_functions) == 33
+    @test length(differentiable_functions) == 34
     for tf in differentiable_functions
         n = try
             length(tf.meta[:min_position](2))

@@ -1,6 +1,6 @@
 # Anleitung_neue_Testfunktion.txt
-# Purpose: Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tests in NonlinearOptimizationTestFunctionsInJulia.
-# Context: Teil des Projekts NonlinearOptimizationTestFunctionsInJulia. Stellt sicher, dass neue Funktionen korrekt implementiert und getestet werden, konsistent mit bestehenden Funktionen wie `ackley.jl`, `rosenbrock.jl`, `branin.jl`.
+# Purpose: Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tests in NonlinearOptimizationTestFunctions.
+# Context: Teil des Projekts NonlinearOptimizationTestFunctions. Stellt sicher, dass neue Funktionen korrekt implementiert und getestet werden, konsistent mit bestehenden Funktionen wie `ackley.jl`, `rosenbrock.jl`, `branin.jl`.
 # Last modified: **13 August 2025, 08:42 AM CEST**
 
 ## Ziel
@@ -9,7 +9,7 @@ Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tes
 
 Die Testfunktionen, die bereits implementiert sind, erkennt man sicher an der Datei: `src/include_testfunctions.jl`. Zwischenbericht und Readme sind oft nicht aktuell.
 
-WICHTIGES VERBOT: Die `gradient!`-Funktion darf *unter keinen Umständen* explizit in einer Testfunktion definiert werden. Sie wird automatisch vom `TestFunction`-Konstruktor in `src/NonlinearOptimizationTestFunctionsInJulia.jl` als `(G, x) -> copyto!(G, grad(x))` generiert. Eine explizite Definition führt zu Redundanzen, Inkonsistenzen und Verstößen gegen die Projektstruktur.
+WICHTIGES VERBOT: Die `gradient!`-Funktion darf *unter keinen Umständen* explizit in einer Testfunktion definiert werden. Sie wird automatisch vom `TestFunction`-Konstruktor in `src/NonlinearOptimizationTestFunctions.jl` als `(G, x) -> copyto!(G, grad(x))` generiert. Eine explizite Definition führt zu Redundanzen, Inkonsistenzen und Verstößen gegen die Projektstruktur.
 
 WICHTIGER HINWEIS: Der `TestFunction`-Konstruktor akzeptiert drei positionale Argumente (`f`, `grad`, `meta`), wobei `meta` ein `Dict` mit den erforderlichen Schlüsseln (`:name`, `:start`, `:min_position`, `:min_value`, `:properties`, `:lb`, `:ub`, `:in_molga_smutnicki_2005`) ist. Verwenden Sie keine benannten Argumente (z. B. `TestFunction(; name=..., f=...)`), da dies zu einem `MethodError` führt. Orientieren Sie sich an den bestehenden Testfunktionen wie `ackley.jl`, `rosenbrock.jl` oder `branin.jl` für die korrekte Struktur.
 
@@ -53,7 +53,7 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
 
 3. Tests in `test/<functionname>_tests.jl` erstellen:
    - Erstelle eine Testdatei mit lowercase-Namen (z. B. `branin_tests.jl`).
-   - Verwende gezielte Imports (`using NonlinearOptimizationTestFunctionsInJulia: <FUNCTIONNAME>_FUNCTION, <functionname>`).
+   - Verwende gezielte Imports (`using NonlinearOptimizationTestFunctions: <FUNCTIONNAME>_FUNCTION, <functionname>`).
    - Teste Funktionswerte, Metadaten, Edge Cases (`NaN`, `Inf`, `1e-308`, leere Eingabe, falsche Dimensionen) und Optimierung mit `Optim.jl`.
    - **Verwende deterministische Werte oder Matrizen in den Tests, um konsistente Ergebnisse zu gewährleisten. Beispiel: Für skalierbare Funktionen wie die quadratische Funktion, verwende explizite positiv definite Matrizen wie `Symmetric(Matrix(Diagonal(fill(2.0, n))))`.**
    - Überprüfe Funktionswerte am Startpunkt und Minimum manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca).
@@ -73,7 +73,7 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
 
 7. Tests ausführen und überprüfen:
    - Führe die Tests aus:
-       cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
+       cd /c/Users/uweal/NonlinearOptimizationTestFunctions
        julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
    - Überprüfe, ob die neuen Tests in der Ausgabe erscheinen. Falls nicht, überprüfe die Schreibweise in `test/include_testfiles.jl` und das Vorhandensein der Testdatei.
 
@@ -119,7 +119,7 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
 
        # src/functions/<functionname>.jl
        # Purpose: Implements the <FunctionName> test function with its gradient for nonlinear optimization.
-       # Context: Part of NonlinearOptimizationTestFunctionsInJulia.
+       # Context: Part of NonlinearOptimizationTestFunctions.
        # Last modified: <Datum>
 
        export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient
@@ -190,7 +190,7 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
    - Stelle sicher, dass `:min_position(n)` das globale Minimum für Dimension `n` liefert, wo der Funktionswert `:min_value` ist. Recherchiere an verschiedenen Stellen im Internet (z. B. al-roomi.org, sfu.ca, geatbx.com, indusmic.com), um die präzisesten Werte zu finden, und überprüfe diese durch manuelle Berechnung oder Ausführen der Funktion.
    - Stelle sicher, dass `:start(n)` einen geeigneten Startpunkt liefert.
    - Stelle sicher, dass `:lb(n)` und `:ub(n)` die untere bzw. obere Schranke für Dimension `n` liefern.
-   - Füge relevante Eigenschaften zu `:properties` hinzu, z. B. `"differentiable"`, `"multimodal"`, `"convex"`, `"non-separable"`, aus `VALID_PROPERTIES` in `src/NonlinearOptimizationTestFunctionsInJulia.jl`.
+   - Füge relevante Eigenschaften zu `:properties` hinzu, z. B. `"differentiable"`, `"multimodal"`, `"convex"`, `"non-separable"`, aus `VALID_PROPERTIES` in `src/NonlinearOptimizationTestFunctions.jl`.
    - **Falls Matrizen verwendet werden, stelle sicher, dass sie positiv definit sind, z. B. durch Verwendung von `Diagonal` mit positiven Eigenwerten oder durch Überprüfung mit `eigvals`.**
    - Beispiel: Die Branin-Funktion (`src/functions/branin.jl`) ist ein gutes Beispiel für eine nicht-skalierbare Funktion (nur `n=2`) mit mehreren globalen Minima.
 
@@ -199,7 +199,7 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
 
 3. Tests in `test/<functionname>_tests.jl` erstellen:
    - Erstelle eine Testdatei mit lowercase-Namen (z. B. `branin_tests.jl`).
-   - Verwende gezielte Imports (`using NonlinearOptimizationTestFunctionsInJulia: <FUNCTIONNAME>_FUNCTION, <functionname>`).
+   - Verwende gezielte Imports (`using NonlinearOptimizationTestFunctions: <FUNCTIONNAME>_FUNCTION, <functionname>`).
    - Teste Funktionswerte, Metadaten, Edge Cases (`NaN`, `Inf`, `1e-308`, leere Eingabe, falsche Dimensionen) und Optimierung mit `Optim.jl`.
    - **Verwende deterministische Werte oder Matrizen in den Tests, um konsistente Ergebnisse zu gewährleisten. Beispiel: Für skalierbare Funktionen wie die quadratische Funktion, verwende explizite positiv definite Matrizen wie `Symmetric(Matrix(Diagonal(fill(2.0, n))))`.**
    - Überprüfe Funktionswerte am Startpunkt und Minimum manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca).
@@ -219,11 +219,11 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
 
 7. Tests ausführen und überprüfen:
    - Führe die Tests aus:
-       cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
+       cd /c/Users/uweal/NonlinearOptimizationTestFunctions.jl
        julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
    - Überprüfe, ob die neuen Tests in der Ausgabe erscheinen. Falls nicht, überprüfe die Schreibweise in `test/include_testfiles.jl` und das Vorhandensein der Testdatei.
 
 ## Testausführung
 Führe die Tests aus:
-    cd /c/Users/uweal/NonlinearOptimizationTestFunctionsInJulia
+    cd /c/Users/uweal/NonlinearOptimizationTestFunctions.jl
     julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'

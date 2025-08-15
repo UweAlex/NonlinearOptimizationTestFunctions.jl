@@ -1,11 +1,10 @@
-
-    # Zwischenbericht: NonlinearOptimizationTestFunctionsInJulia
-    # Stand: 11. August 2025, 08:11 AM CEST
+    # Zwischenbericht: NonlinearOptimizationTestFunctions
+    # Stand: 15. August 2025, 10:00 AM CEST
 
 Vorsicht, in diesem Zwischenbericht versteckt Grok 3 gerne phantsievolle Fehler und kreiert  z.B. seltsame minima oder bounds und der gleichen. Im Zweifel gilt die Literatur oder die tatsächliche Installation
 
     ## Projektübersicht
-    Das Projekt `NonlinearOptimizationTestFunctionsInJulia` entwickelt eine Julia-Bibliothek mit einer Sammlung von Testfunktionen für nichtlineare Optimierung, basierend auf *Test functions for optimization needs* (Molga & Smutnicki, 2005). Ziel ist es, ein verlässliches Werkzeug für Forscher, Entwickler und Studierende zu schaffen, das Optimierungsalgorithmen testen und vergleichen kann, mit dem Anspruch, Vergleichsprojekte in Funktionsumfang, Testabdeckung, Performance und Dokumentation zu übertreffen. Die Bibliothek ist dynamisch, mit nahezu täglichen Änderungen durch Hinzufügung neuer Funktionen oder Anpassungen. Jede Testfunktion ist mit analytischen Gradienten und detaillierten Metadaten ausgestattet, optimiert für die Integration mit Optimierungspaketen wie Optim.jl, NLopt, ForwardDiff und Zygote. Alle Implementierungen werden gegen Molga & Smutnicki (2005), al-roomi.org, Jamil & Yang (2013), Hedar (2005) und weitere Quellen verifiziert, um höchste Genauigkeit zu gewährleisten. Der Zwischenbericht ist ein integraler Bestandteil des Projekts, der die Entwicklung aus einer Meta-Perspektive dokumentiert und als Gedächtnisstütze dient, um wiederholte Fehler zu vermeiden.
+    Das Projekt `NonlinearOptimizationTestFunctions` entwickelt eine Julia-Bibliothek mit einer Sammlung von Testfunktionen für nichtlineare Optimierung, basierend auf *Test functions for optimization needs* (Molga & Smutnicki, 2005). Ziel ist es, ein verlässliches Werkzeug für Forscher, Entwickler und Studierende zu schaffen, das Optimierungsalgorithmen testen und vergleichen kann, mit dem Anspruch, Vergleichsprojekte in Funktionsumfang, Testabdeckung, Performance und Dokumentation zu übertreffen. Die Bibliothek ist dynamisch, mit nahezu täglichen Änderungen durch Hinzufügung neuer Funktionen oder Anpassungen. Jede Testfunktion ist mit analytischen Gradienten und detaillierten Metadaten ausgestattet, optimiert für die Integration mit Optimierungspaketen wie Optim.jl, NLopt, ForwardDiff und Zygote. Alle Implementierungen werden gegen Molga & Smutnicki (2005), al-roomi.org, Jamil & Yang (2013), Hedar (2005) und weitere Quellen verifiziert, um höchste Genauigkeit zu gewährleisten. Der Zwischenbericht ist ein integraler Bestandteil des Projekts, der die Entwicklung aus einer Meta-Perspektive dokumentiert und als Gedächtnisstütze dient, um wiederholte Fehler zu vermeiden.
 
     ## Designentscheidungen
     Die folgenden Designentscheidungen wurden getroffen, um die Ziele des Projekts zu erreichen, einschließlich Entscheidungen zur Gestaltung des Zwischenberichts und des Readme als Projektbestandteile:
@@ -69,19 +68,19 @@ Vorsicht, in diesem Zwischenbericht versteckt Grok 3 gerne phantsievolle Fehler 
          - Erstellung funktionsspezifischer Tests in `test/<functionname>_tests.jl`, die Funktionswerte, Gradienten, Metadaten und Edge-Cases (z. B. ungültige Dimensionen, NaN, Inf) prüfen.
          - Berücksichtigung potenzieller numerischer Instabilitäten, durch angepasste Testtoleranzen (z. B. `atol=0.3` für Funktionen mit Rauschen oder Singularitäten).
          - Priorisierung von Funktionen mit einzigartigen Eigenschaften (z. B. mehrere globale Minima, singularer Hesse-Matrix, Rauschen) für Benchmarking-Zwecke.
-       - Die Implementierung wird schrittweise erfolgen, mit wöchentlichen Meilensteinen, um die Verifikation gegen mehrere Quellen sicherzustellen und die Testabdeckung zu maximieren.
+       - Die Implementierung wird schrittweise erfolgen, mit wöchentlichen Meilensteinen, um die Verifikation gegen mehrere Quellen sicherzustellen und die Testabdeckung zu maximieren. Fortschritt: Weitere Funktionen wie ThreeHumpCamel hinzugefügt; Upcoming-Liste mit 30 Funktionen im Readme erstellt.
 
     2. **Überprüfung der Eigenschaften bestehender Funktionen**:
        - Alle bisher implementierten Funktionen sollen hinsichtlich ihrer Metadaten-Eigenschaften überprüft werden, insbesondere bezüglich „differentiable“ und „partially differentiable“, um sicherzustellen, dass Funktionen mit nicht-differenzierbaren Komponenten (z. B. Rauschen, Diskontinuitäten) korrekt klassifiziert werden.
-       - Begründung: Falsche Annahmen über die Differenzierbarkeit führten zu Testfehlern, die durch die Einführung von „partially differentiable“ behoben wurden. Eine systematische Überprüfung verhindert ähnliche Probleme.
+       - Begründung: Falsche Annahmen über die Differenzierbarkeit führten zu Testfehlern, die durch die Einführung von „partially differentiable“ behoben wurden. Eine systematische Überprüfung verhindert ähnliche Probleme. Fortschritt: Bei neuen Funktionen (z. B. ThreeHumpCamel als "differentiable") angewendet.
 
     3. **Verbesserung der Testabdeckung**:
        - Erweiterung der Tests in `test/runtests.jl` um Prüfungen für höhere Dimensionen (z. B. `n=10`, `n=100`) für skalierbare Funktionen, insbesondere für Gradienten im Optimum.
-       - Optimierung der Testzeit, z. B. durch Reduzierung der Anzahl zufälliger Punkte in Gradiententests, falls erforderlich.
+       - Optimierung der Testzeit, z. B. durch Reduzierung der Anzahl zufälliger Punkte in Gradiententests, falls erforderlich. Fortschritt: Filter-Tests angepasst (z. B. multimodal auf 28, differentiable auf 34); höhere Dimensionen noch ausstehend.
 
     4. **Verbesserung der Dokumentation**:
        - Vervollständigung der Docstrings für interne Funktionen und Integration von MathJax für mathematische Formeln in der Dokumentation.
-       - Entwicklung eines umfassenden Readme, das den oben genannten Entscheidungen entspricht und flexibel bleibt.
+       - Entwicklung eines umfassenden Readme, das den oben genannten Entscheidungen entspricht und flexibel bleibt. Fortschritt: Readme erweitert um Links zu Literatur in Funktionsbeschreibungen und Upcoming-Liste mit 30 Funktionen.
 
     5. **Community-Beteiligung**:
        - Einrichtung eines GitHub-Repositorys, um Beiträge von Nutzern (z. B. neue Funktionen, Fehlerkorrekturen) zu ermöglichen.
@@ -242,38 +241,16 @@ Vorsicht, in diesem Zwischenbericht versteckt Grok 3 gerne phantsievolle Fehler 
 
 ### Überprüfung des Readme
 
-Das zuvor bereitgestellte `Readme.txt` ist konsistent mit `src/functions/sineenvelope.jl` (Minimum \(-1.0\) bei \((0.0, 0.0)\)) und der De Jong F4 Implementierung (\(\text{Uniform}(0,1)\), \([-1.28, 1.28]^n\), `"partially differentiable"`). Die Änderungen (Korrektur von Sine Envelope, Hinzufügung von De Jong F4, Entfernung des fehlerhaften `++++...` Textes, Ergänzung von Contributing und References) sind korrekt und entsprechen den Designentscheidungen (Zeitlosigkeit, 4-Leerzeichen-Einrückung, Literaturtreue). Ich habe es erneut geprüft, und es gibt keine weiteren „Spinnereien“. Daher bleibt das `Readme.txt` unverändert, wie in der letzten Iteration angegeben.
+Das aktuelle `Readme.txt` ist konsistent mit den neuesten Implementierungen (z. B. ThreeHumpCamel, Upcoming-Liste mit 30 Funktionen). Es entspricht den Designentscheidungen (Zeitlosigkeit, 4-Leerzeichen-Einrückung, Literaturtreue) und enthält detaillierte Funktionsbeschreibungen mit Links zu Quellen. Keine weiteren Fehler festgestellt.
 
 ---
 
 ### Integration in das Projekt
 
-1. **Speichern des Zwischenberichts**:
-   - Ersetzen Sie den Inhalt von `Zwischenbericht.txt` mit dem obigen Plaintext.
-   - Stellen Sie sicher, dass die 4-Leerzeichen-Einrückung für Codeblöcke verwendet wird.
-
-2. **Speichern des Readme**:
-   - Behalten Sie das `Readme.txt` aus der letzten Iteration bei, da es korrekt ist.
-   - Verifizieren Sie, dass die 4-Leerzeichen-Einrückung für Codeblöcke verwendet wird.
-
-3. **Überprüfung der Implementierung**:
-   - Stellen Sie sicher, dass `src/functions/sineenvelope.jl` das Minimum \(-1.0\) bei \((0.0, 0.0)\) definiert, wie angegeben.
-   - Verifizieren Sie, dass `src/functions/dejongf4.jl` und `test/dejongf4_tests.jl` \(\text{Uniform}(0,1)\), \([-1.28, 1.28]^n\) und `"partially differentiable"` verwenden.
-
-4. **Tests ausführen**:
-   - Führen Sie die Tests aus, um die Korrektheit zu bestätigen:
-       ```bash
-       cd /c/Users/uweal/NonlinearOptimizationTestFunctions.jl
-       julia --project=. -e 'using Pkg; Pkg.resolve(); Pkg.instantiate(); include("test/runtests.jl")'
-       ```
-
 5. **Diagnose der „partially differentiable“ Funktionen**:
    - Um die vier Funktionen mit `"partially differentiable"` zu bestätigen, führen Sie aus:
-       ```bash
        cd /c/Users/uweal/NonlinearOptimizationTestFunctions.jl
        julia --project=. -e 'using NonlinearOptimizationTestFunctions; println([tf.meta[:name] for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS) if "partially differentiable" in tf.meta[:properties]])'
-       ```
    - Erwartete Ausgabe: `["bukin6", "step", "dejongf4", "schwefel"]` oder `["bukin6", "step", "dejongf4", "shekel"]`. Falls die Ausgabe abweicht, passen Sie den Test in `test/runtests.jl` an.
 
 ---
-
