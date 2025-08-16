@@ -1,5 +1,5 @@
 # NonlinearOptimizationTestFunctions
-# Last modified: 15 August 2025
+# Last modified: 16 August 2025
 
 ## Table of Contents
 
@@ -144,6 +144,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **AxisParallelHyperEllipsoid**: Convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
 - **Beale**: Multimodal, non-convex, differentiable, bounded. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **Bohachevsky**: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-10, 10]^n. Dimensions: Any n >= 2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Booth**: Unimodal, convex, non-separable, differentiable, bounded. Minimum: 0.0 at (1.0, 3.0). Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **Branin**: Multimodal, differentiable, non-convex, non-separable, bounded. Minimum: 0.397887 at (-pi, 12.275), (pi, 2.275), (9.424778, 2.475). Bounds: [-5, 10] x [0, 15]. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
 - **Bukin6**: Multimodal, non-convex, partially differentiable, bounded. Minimum: 0.0 at (-10.0, 1.0). Bounds: [-15, -5] x [-3, 3]. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **CrossInTray**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -2.06261 at (1.3491, 1.3491), (-1.3491, 1.3491), (1.3491, -1.3491), (-1.3491, -1.3491). Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
@@ -159,6 +160,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **Keane**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.673667521146855 at (0.0, 1.393249070031784), (1.393249070031784, 0.0). Bounds: [0, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **Langermann**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: approximately -5.1621259 at (2.002992, 1.006096). Bounds: [0, 10]^2. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
 - **Levy**: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-10, 10]^n. Dimensions: Any n >= 1. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
+- **Matyas**: Unimodal, convex, non-separable, differentiable, bounded. Minimum: 0.0 at (0.0, 0.0). Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **McCormick**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.913222954981037 at (-0.547197553, -1.547197553). Bounds: [-1.5, 4] x [-3, 4]. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **Michalewicz**: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: -1.8013 (n=2), -4.687658 (n=5), -9.66015 (n=10). Bounds: [0, pi]^n. Dimensions: Any n >= 1. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
 - **Quadratic**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: c - 0.25 * b^T A^-1 b at -0.5 * A^-1 b, where A is a positive definite matrix, b is a vector, and c is a scalar (default: A random positive definite, b=0, c=0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. The quadratic function encapsulates parameters A, b, c, set on the first call or overridden if provided, making it ideal for testing optimization algorithms on non-separable problems with varying condition numbers. Example usage: `quadratic(ones(2), Symmetric([2.0 0.0; 0.0 2.0]), [1.0, 1.0], 0.5)` sets custom parameters; subsequent calls to `quadratic(x)` reuse these parameters. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
@@ -182,8 +184,6 @@ The package includes a variety of test functions for nonlinear optimization, eac
 
 The following test functions are planned for implementation, based on standard benchmarks. They will be added with analytical gradients, metadata, and validation, consistent with the existing collection.
 
-- **Booth**: Unimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at (1.0, 3.0). Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
-- **Matyas**: Unimodal, convex, non-separable, differentiable, bounded. Minimum: 0.0 at (0.0, 0.0). Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **HolderTable**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -19.2085 at (8.05502, 9.66459) and others. Bounds: [-10, 10]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **Bird**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -106.764537 at (4.701055816, 3.15294602) and (-1.582142172, -3.130246801). Bounds: [-2π, 2π]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
 - **DeckkersAarts**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -24777 at (0, 15) and (0, -15). Bounds: [-20, 20]^2. Dimensions: n=2. [Jamil & Yang (2013)](https://arxiv.org/abs/1308.4008)
@@ -271,6 +271,7 @@ Some test functions are referred to by different names in the literature. Below 
 - **axisparallelhyperellipsoid**: Axis parallel hyper-ellipsoid function, Sum squares function, Weighted sphere model, Quadratic function (axis-aligned variant).
 - **beale**: Beale's function.
 - **bohachevsky**: Bohachevsky's function, Bohachevsky No. 1 (for the standard variant).
+- **booth**: Booth's function.
 - **branin**: Branin's rcos function, Branin-Hoo function, Branin function.
 - **bukin6**: Bukin function No. 6.
 - **crossintray**: Cross-in-Tray function.
@@ -287,6 +288,7 @@ Some test functions are referred to by different names in the literature. Below 
 - **keane**: Keane's function, Bump function.
 - **langermann**: Langermann's function.
 - **levy**: Levy function No. 13, Levy N.13.
+- **matyas**: Matyas function.
 - **mccormick**: McCormick's function.
 - **michalewicz**: Michalewicz's function.
 - **quadratic**: Quadratic function, Paraboloid, General quadratic form (often customized with matrix A, vector b, scalar c).

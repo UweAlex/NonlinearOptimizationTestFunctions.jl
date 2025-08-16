@@ -41,6 +41,9 @@ include("functions/zakharov.jl")
 include("functions/rotatedhyperellipsoid.jl")
 include("functions/dejongf5.jl")
 include("functions/threehumpcamel.jl")
+include("functions/booth.jl")
+include("functions/matyas.jl")
+
 
 
 

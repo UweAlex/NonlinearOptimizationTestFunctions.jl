@@ -46,6 +46,10 @@ include("zakharov_tests.jl")
 include("rotatedhyperellipsoid_tests.jl")
 include("dejongf5_tests.jl")
 include("threehumpcamel_tests.jl")
+include("booth_tests.jl")
+include("matyas_tests.jl")
+
+
 
 
 
