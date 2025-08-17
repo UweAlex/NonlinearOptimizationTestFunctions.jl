@@ -1,5 +1,5 @@
 # NonlinearOptimizationTestFunctions
-# Last modified: 16 August 2025
+# Last modified: 17 August 2025, 09:05 AM CEST
 
 ## Table of Contents
 
@@ -143,12 +143,15 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **Ackley** [Jamil & Yang (2013): f1]: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 5]^n (default) or [-32.768, 32.768]^n (benchmark). Dimensions: Any n >= 1.
 - **AxisParallelHyperEllipsoid** [Jamil & Yang (2013): f143]: Convex, differentiable, separable, scalable. Minimum: 0.0 at (0, ..., 0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1.
 - **Beale** [Jamil & Yang (2013): f10]: Multimodal, non-convex, differentiable, bounded. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2.
+- **Bird** [Jamil & Yang (2013): f16]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -106.764537 at (4.701055816, 3.15294602) and (-1.582142172, -3.130246801). Bounds: [-2π, 2π]^2. Dimensions: n=2.
 - **Bohachevsky** [Jamil & Yang (2013): f17]: Multimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-10, 10]^n. Dimensions: Any n >= 2.
 - **Booth** [Jamil & Yang (2013): f20]: Unimodal, convex, non-separable, differentiable, bounded. Minimum: 0.0 at (1.0, 3.0). Bounds: [-10, 10]^2. Dimensions: n=2.
 - **Branin** [Jamil & Yang (2013): f22]: Multimodal, differentiable, non-convex, non-separable, bounded. Minimum: 0.397887 at (-pi, 12.275), (pi, 2.275), (9.424778, 2.475). Bounds: [-5, 10] x [0, 15]. Dimensions: n=2.
 - **Bukin6** [Jamil & Yang (2013): f28]: Multimodal, non-convex, partially differentiable, bounded. Minimum: 0.0 at (-10.0, 1.0). Bounds: [-15, -5] x [-3, 3]. Dimensions: n=2.
 - **CrossInTray** [Jamil & Yang (2013): f39]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -2.06261 at (1.3491, 1.3491), (-1.3491, 1.3491), (1.3491, -1.3491), (-1.3491, -1.3491). Bounds: [-10, 10]^2. Dimensions: n=2.
+- **De Jong F4** [Jamil & Yang (2013): f44]: Unimodal, convex, separable, partially differentiable, scalable, bounded, has_noise. Minimum: 0.0 (deterministic part) at (0, ..., 0), plus additive Uniform[0,1) noise. Bounds: [-1.28, 1.28]^n. Dimensions: Any n >= 1.
 - **De Jong F5** [Jamil & Yang (2013): f46]: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: 0.9980038388186492 at (-32.0, -32.0). Bounds: [-65.536, 65.536]^2. Dimensions: n=2.
+- **DeckkersAarts** [Jamil & Yang (2013): f45]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -50233.6967 at (0, 14.945108) and (0, -14.945108). Bounds: [-20, 20]^2. Dimensions: n=2.
 - **DixonPrice** [Jamil & Yang (2013): f48]: Unimodal, non-convex, differentiable, scalable, bounded. Minimum: 0.0 at (2^(-(2^i - 2)/2^i), ..., 2^(-(2^n - 2)/2^n)). Bounds: [-10, 10]^n. Dimensions: Any n >= 1.
 - **DropWave**: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0, 0). Bounds: [-5.12, 5.12]^2. Dimensions: n=2. [Molga & Smutnicki (2005)](http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf)
 - **Easom** [Jamil & Yang (2013): f50]: Unimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (pi, pi). Bounds: [-100, 100]^2. Dimensions: n=2.
@@ -157,6 +160,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **Griewank** [Jamil & Yang (2013): f59]: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-600, 600]^n. Dimensions: Any n >= 1.
 - **Hartmann** [Jamil & Yang (2013): f62, f63]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -3.86278214782076 at (0.114614, 0.555649, 0.852547) for n=3. Bounds: [0, 1]^n. Dimensions: n=3, 4, 6.
 - **Himmelblau** [Jamil & Yang (2013): f65]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at (3.0, 2.0), (-2.805118, 3.131312), (-3.779310, -3.283186), (3.584428, -1.848126). Bounds: [-5, 5]^2. Dimensions: n=2.
+- **HolderTable** [Jamil & Yang (2013): f145]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -19.2085 at (8.05502, 9.66459) and others. Bounds: [-10, 10]^2. Dimensions: n=2.
 - **Keane** [Jamil & Yang (2013): f69]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.673667521146855 at (0.0, 1.393249070031784), (1.393249070031784, 0.0). Bounds: [0, 10]^2. Dimensions: n=2.
 - **Langermann** [Jamil & Yang (2013): f68]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: approximately -5.1621259 at (2.002992, 1.006096). Bounds: [0, 10]^2. Dimensions: n=2.
 - **Levy** [Jamil & Yang (2013): f73]: Multimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-10, 10]^n. Dimensions: Any n >= 1.
@@ -169,7 +173,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **Rosenbrock** [Jamil & Yang (2013): f105]: Unimodal, non-convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (1, ..., 1). Bounds: [-5, 5]^n. Dimensions: Any n >= 2.
 - **RotatedHyperEllipsoid** [Jamil & Yang (2013): f119]: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-65.536, 65.536]^n. Dimensions: Any n >= 1. The rotated hyper-ellipsoid function, also known as the sum squares function, is a convex, scalable test function with a single global minimum, suitable for testing optimization algorithms on non-separable problems.
 - **Schwefel** [Jamil & Yang (2013): f128]: Multimodal, non-convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (420.9687, ..., 420.9687). Bounds: [-500, 500]^n. Dimensions: Any n >= 1.
-- **Shekel** [Jamil & Yang (2013): f132]: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: -10.536409825004505 at (4.0, 4.0, 4.0, 4.0) for m=10. Bounds: [0, 10]^4. Dimensions: n=4.
+- **Shekel** [Jamil & Yang (2013): f132]: Multimodal, non-convex, non-separable, differentiable, bounded, finite_at_inf. Minimum: -10.536409825004505 at (4.000747838, 4.000592862, 3.999663587, 3.999510115) for m=10. Bounds: [0, 10]^4. Dimensions: n=4.
 - **Shubert** [Jamil & Yang (2013): f133]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -186.7309 at multiple points, e.g., (-1.4251286, -0.800321). Bounds: [-10, 10]^2. Dimensions: n=2.
 - **SineEnvelope** [Jamil & Yang (2013): f134]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2.
 - **SixHumpCamelback** [Jamil & Yang (2013): f30]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -1.031628453489877 at (±0.08984201368301331, ±0.7126564032704135). Bounds: [-3, 3] x [-2, 2]. Dimensions: n=2.
@@ -184,9 +188,6 @@ The package includes a variety of test functions for nonlinear optimization, eac
 
 The following test functions are planned for implementation, based on standard benchmarks. They will be added with analytical gradients, metadata, and validation, consistent with the existing collection.
 
-- **HolderTable** [Jamil & Yang (2013): f145]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -19.2085 at (8.05502, 9.66459) and others. Bounds: [-10, 10]^2. Dimensions: n=2.
-- **Bird** [Jamil & Yang (2013): f16]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -106.764537 at (4.701055816, 3.15294602) and (-1.582142172, -3.130246801). Bounds: [-2π, 2π]^2. Dimensions: n=2.
-- **DeckkersAarts** [Jamil & Yang (2013): f45]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -24777 at (0, 15) and (0, -15). Bounds: [-20, 20]^2. Dimensions: n=2.
 - **Giunta** [Jamil & Yang (2013): f57]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.06447042 at (0.4583428, 0.4583428). Bounds: [-1, 1]^2. Dimensions: n=2.
 - **Kearfott** [Jamil & Yang (2013): f70]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.352386 at multiple points. Bounds: [-3, 4]^2. Dimensions: n=2.
 - **MishraBird** [Jamil & Yang (2013): f31]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -106.764537 at (-3.1302468, -1.5821422) and (-6.7745761, -2.4183762). Bounds: [-10, 0] x [-6.5, 0]. Dimensions: n=2.
@@ -257,7 +258,7 @@ To run the test suite, execute:
     cd /c/Users/uweal/NonlinearOptimizationTestFunctions
     julia --project=. -e 'using Pkg; Pkg.resolve(); Pkg.instantiate(); include("test/runtests.jl")'
 
-Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-308, empty input vectors, and bounds for bounded functions), and optimization with Optim.jl. For functions marked as `bounded`, tests verify finite values at the lower and upper bounds (`lb`, `ub`) instead of infinity, reflecting their constrained domain. Gradient tests are centralized in test/runtests.jl for consistency. All tests, including those for the newly added De Jong F5 function, pass as of the last update, ensuring robustness and correctness.
+Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-308, empty input vectors, and bounds for bounded functions), and optimization with Optim.jl. For functions marked as `bounded`, tests verify finite values at the lower and upper bounds (`lb`, `ub`) instead of infinity, reflecting their constrained domain. Extensive gradient tests are conducted in `test/runtests.jl` to ensure the correctness of analytical gradients. These gradients are rigorously validated by comparing them against numerical gradients computed via finite differences and gradients obtained through automatic differentiation (AD) using ForwardDiff, ensuring high accuracy and reliability. All tests, including those for the newly added Deckkers-Aarts and Shekel functions, pass as of the last update, ensuring robustness and correctness.
 
 ## License
 
@@ -275,6 +276,7 @@ Some test functions are referred to by different names in the literature. Below 
 - **branin**: Branin's rcos function, Branin-Hoo function, Branin function.
 - **bukin6**: Bukin function No. 6.
 - **crossintray**: Cross-in-Tray function.
+- **deckkersaarts**: Deckkers-Aarts function, Deckkers and Aarts function.
 - **dejongf4**: De Jong F4, Quartic function with noise, Noisy quartic function.
 - **dejongf5**: De Jong F5, Foxholes function.
 - **dixonprice**: Dixon-Price function.
@@ -310,9 +312,10 @@ Some test functions are referred to by different names in the literature. Below 
 
 ## References
 
-- Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
-- Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. https://arxiv.org/abs/1308.4008
+- Al-Roomi, A. R. (2015). Unconstrained Single-Objective Benchmark Functions Repository. Dalhousie University. https://www.al-roomi.org/benchmarks/unconstrained
+- Gavana, A. (2013). Test functions index. Retrieved February 2013, from http://infinity77.net/global_optimization/test_functions.html (Note: Original source unavailable; referenced via Al-Roomi (2015) and opfunu Python library: https://github.com/thieu1995/opfunu/blob/master/opfunu/cec_based/cec.py)
 - Hedar, A.-R. (2005). Global optimization test problems. http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm
-- Suganthan, P. N., et al. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website.
-- Al-Roomi (o. J.). Test Functions Repository. https://www.al-roomi.org
-- https://www.geocities.ws/eadorio/mvf.pdf
+- Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. *International Journal of Mathematical Modelling and Numerical Optimisation*, 4(2), 150–194. https://arxiv.org/abs/1308.4008
+- Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
+- Suganthan, P. N., Hansen, N., Liang, J. J., Deb, K., Chen, Y.-P., Auger, A., & Tiwari, S. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website. https://www.lri.fr/~hansen/Tech-Report-May-30-05.pdf
+- Unknown Author. (n.d.). Mathematical Test Functions for Global Optimization. https://www.geocities.ws/eadorio/mvf.pdf

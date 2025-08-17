@@ -48,6 +48,12 @@ include("dejongf5_tests.jl")
 include("threehumpcamel_tests.jl")
 include("booth_tests.jl")
 include("matyas_tests.jl")
+include("holdertable_tests.jl")
+include("bird_tests.jl")
+include("deckkersaarts_tests.jl")
+
+
+
 
 
 

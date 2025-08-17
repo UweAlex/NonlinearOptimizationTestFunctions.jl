@@ -43,6 +43,10 @@ include("functions/dejongf5.jl")
 include("functions/threehumpcamel.jl")
 include("functions/booth.jl")
 include("functions/matyas.jl")
+include("functions/holdertable.jl")
+include("functions/bird.jl")
+include("functions/deckkersaarts.jl")
+
 
 
 

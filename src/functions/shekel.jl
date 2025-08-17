@@ -1,7 +1,7 @@
 # src/functions/shekel.jl
 # Purpose: Implements the Shekel test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 14 August 2025
+# Last modified: 17 August 2025
 
 export SHEKEL_FUNCTION, shekel, shekel_gradient
 
@@ -46,7 +46,7 @@ function shekel_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
     n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
-    any(isinf.(x)) && return zeros(T, n)  # Gradient is zero at Inf due to function structure
+    any(isinf.(x)) && return zeros(T, n)
     m = 10
     a = [
         4.0 4.0 4.0 4.0;
@@ -81,9 +81,9 @@ const SHEKEL_FUNCTION = TestFunction(
         end,
         :min_position => (n::Int=4) -> begin
             n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
-            [4.0, 4.0, 4.0, 4.0]
+            [4.000747838, 4.000592862, 3.999663587, 3.999510115]
         end,
-        :min_value => -10.536409825004505,
+        :min_value => -10.536409825004505,  # Überprüfen!
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "finite_at_inf"]),
         :lb => (n::Int=4) -> begin
             n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
@@ -94,7 +94,7 @@ const SHEKEL_FUNCTION = TestFunction(
             fill(10.0, n)
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Shekel function: Multimodal, finite at infinity, non-convex, non-separable, differentiable function defined for n=4, with multiple local minima and a global minimum at [4.0, 4.0, 4.0, 4.0]. Note that the gradient at the minimum is non-zero due to the function's multimodal structure.",
+        :description => "Shekel function: Multimodal, finite at infinity, non-convex, non-separable, differentiable function defined for n=4, with multiple local minima and a global minimum near [4.0, 4.0, 4.0, 4.0].",
         :math => "f(x) = -\\sum_{i=1}^{10} \\frac{1}{\\sum_{j=1}^4 (x_j - a_{ij})^2 + c_i}"
     )
 )
