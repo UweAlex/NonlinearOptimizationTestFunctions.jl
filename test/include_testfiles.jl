@@ -51,6 +51,10 @@ include("matyas_tests.jl")
 include("holdertable_tests.jl")
 include("bird_tests.jl")
 include("deckkersaarts_tests.jl")
+include("giunta_tests.jl")
+include("kearfott_tests.jl")
+
+
 
 
 

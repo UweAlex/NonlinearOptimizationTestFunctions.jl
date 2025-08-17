@@ -214,6 +214,57 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
    - Für multimodale Funktionen mit mehreren Minima, prüfe, ob das gefundene Minimum einem der globalen Minima nahe ist (siehe `branin_tests.jl`).
    - Verwende die recherchierten, präzisen Werte für `:min_position` und `:min_value` in den Tests, um Testfehler durch gerundete Literaturwerte zu vermeiden.
 
+Template:
+
+# test/<functionname>_tests.jl
+# Purpose: Tests for the <FunctionName> function.
+# Context: Part of NonlinearOptimizationTestFunctions test suite.
+# Last modified: <Datum>
+
+using Test, Optim
+using NonlinearOptimizationTestFunctions: <FUNCTIONNAME>_FUNCTION, <functionname>
+
+@testset "<FunctionName> Tests" begin
+    tf = <FUNCTIONNAME>_FUNCTION
+    n = <Standard-Dimension>  # z.B. 2 für fixe Dimensionen, 1 oder variabel für skalierbare
+
+    # Edge Cases
+    @test_throws ArgumentError <functionname>(Float64[])
+    @test isnan(<functionname>(fill(NaN, n)))
+    @test isinf(<functionname>(fill(Inf, n)))  # Oder isnan, je nach Funktion
+    @test isfinite(<functionname>(fill(1e-308, n)))
+
+    # Funktionswerte
+    @test <functionname>(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-6
+    @test <functionname>(tf.meta[:start](n)) ≈ <erwarteter Wert am Startpunkt> atol=1e-6  # Durch Berechnung ermitteln
+
+    # Metadaten
+    @test tf.meta[:name] == "<functionname>"
+    @test tf.meta[:start](n) == <erwarteter Startpunkt>
+    @test tf.meta[:min_position](n) ≈ <erwarteter Minimalpunkt> atol=1e-6
+    @test tf.meta[:min_value] ≈ <erwarteter Minimalwert> atol=1e-6
+    @test tf.meta[:lb](n) == <erwartete untere Bounds>
+    @test tf.meta[:ub](n) == <erwartete obere Bounds>
+    @test tf.meta[:in_molga_smutnicki_2005] == <true/false>
+    @test Set(tf.meta[:properties]) == Set(["<Eigenschaft1>", "<Eigenschaft2>", ...])
+
+    # Optimierungstests
+    @testset "Optimization Tests" begin
+        start = tf.meta[:start](n)  # Oder perturbed für multimodale: tf.meta[:min_position](n) + 0.01 * randn(n)
+        result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))
+        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=1e-3
+    end
+
+    # Optionale Tests für skalierbare Funktionen
+    # @testset "Scalability Tests" begin
+    #     n_high = 10
+    #     @test <functionname>(tf.meta[:min_position](n_high)) ≈ tf.meta[:min_value] atol=1e-6
+    #     result_high = optimize(tf.f, tf.gradient!, tf.meta[:start](n_high), LBFGS(), Optim.Options(f_reltol=1e-6))
+    #     @test Optim.minimum(result_high) ≈ tf.meta[:min_value] atol=1e-5
+    #     @test Optim.minimizer(result_high) ≈ tf.meta[:min_position](n_high) atol=1e-3
+    # end
+end
 4. Tests in `test/include_testfiles.jl` einbinden:
    - Füge `include("<functionname>_tests.jl")` hinzu.
    - Überprüfe die Einbindung durch direkte Ausführung der Testdatei:

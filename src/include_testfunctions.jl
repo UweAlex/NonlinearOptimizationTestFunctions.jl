@@ -46,6 +46,10 @@ include("functions/matyas.jl")
 include("functions/holdertable.jl")
 include("functions/bird.jl")
 include("functions/deckkersaarts.jl")
+include("functions/giunta.jl")
+include("functions/kearfott.jl")
+
+
 
 
 

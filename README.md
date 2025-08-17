@@ -1,5 +1,5 @@
 # NonlinearOptimizationTestFunctions
-# Last modified: 17 August 2025, 09:05 AM CEST
+# Last modified: 17 August 2025, 14:51 PM CEST
 
 ## Table of Contents
 
@@ -183,13 +183,13 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **SumOfPowers** [Jamil & Yang (2013): f93]: Unimodal, convex, separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: Any n >= 1.
 - **ThreeHumpCamel** [Jamil & Yang (2013): f29]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at (0.0, 0.0). Bounds: [-5, 5]^2. Dimensions: n=2.
 - **Zakharov** [Jamil & Yang (2013): f172]: Unimodal, convex, non-separable, differentiable, scalable, bounded. Minimum: 0.0 at (0, ..., 0). Bounds: [-5, 10]^n. Dimensions: Any n >= 1.
+- **Giunta** [Jamil & Yang (2013): f57]: Multimodal, non-convex, separable, differentiable, bounded. Minimum: 0.06447042053690566 at (0.4673200277395354, 0.4673200277395354). Bounds: [-1, 1]^2. Dimensions: n=2.
+- **Kearfott** [Jamil & Yang (2013): f70]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.0 at multiple points, e.g., (1.224744871391589, 0.7071067811865476). Bounds: [-3, 4]^2. Dimensions: n=2.
 
 ## Upcoming Test Functions
 
 The following test functions are planned for implementation, based on standard benchmarks. They will be added with analytical gradients, metadata, and validation, consistent with the existing collection.
 
-- **Giunta** [Jamil & Yang (2013): f57]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0.06447042 at (0.4583428, 0.4583428). Bounds: [-1, 1]^2. Dimensions: n=2.
-- **Kearfott** [Jamil & Yang (2013): f70]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -0.352386 at multiple points. Bounds: [-3, 4]^2. Dimensions: n=2.
 - **MishraBird** [Jamil & Yang (2013): f31]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: -106.764537 at (-3.1302468, -1.5821422) and (-6.7745761, -2.4183762). Bounds: [-10, 0] x [-6.5, 0]. Dimensions: n=2.
 - **SchafferN1** [Jamil & Yang (2013): f112]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0 at (0,0). Bounds: [-100, 100]^2. Dimensions: n=2.
 - **SchafferN2** [Jamil & Yang (2013): f113]: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0 at (0,0). Bounds: [-100, 100]^2. Dimensions: n=2.
@@ -309,6 +309,8 @@ Some test functions are referred to by different names in the literature. Below 
 - **sumofpowers**: Sum of different powers function, Absolute value function, Sum of increasing powers.
 - **threehumpcamel**: Three-Hump Camel function, Camel Three Humps function.
 - **zakharov**: Zakharov's function.
+- **giunta**: Giunta function.
+- **kearfott**: Kearfott's function.
 
 ## References
 
@@ -318,4 +320,4 @@ Some test functions are referred to by different names in the literature. Below 
 - Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. *International Journal of Mathematical Modelling and Numerical Optimisation*, 4(2), 150–194. https://arxiv.org/abs/1308.4008
 - Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
 - Suganthan, P. N., Hansen, N., Liang, J. J., Deb, K., Chen, Y.-P., Auger, A., & Tiwari, S. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website. https://www.lri.fr/~hansen/Tech-Report-May-30-05.pdf
-- Unknown Author. (n.d.). Mathematical Test Functions for Global Optimization. https://www.geocities.ws/eadorio/mvf.pdf
+- Unknown Author. (n.d.). Mathematical Test Functions for Global Optimization. https://www.geocities.ws/eadorio/mvf.pdf 
