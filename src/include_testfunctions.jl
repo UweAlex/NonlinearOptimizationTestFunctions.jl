@@ -48,6 +48,13 @@ include("functions/bird.jl")
 include("functions/deckkersaarts.jl")
 include("functions/giunta.jl")
 include("functions/kearfott.jl")
+include("functions/mishrabird.jl")
+include("functions/schaffern1.jl")
+include("functions/schaffern2.jl")
+include("functions/schaffern4.jl")
+
+
+
 
 
 

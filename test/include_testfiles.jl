@@ -53,6 +53,13 @@ include("bird_tests.jl")
 include("deckkersaarts_tests.jl")
 include("giunta_tests.jl")
 include("kearfott_tests.jl")
+include("mishrabird_tests.jl")
+include("schaffern1_tests.jl")
+include("schaffern2_tests.jl")
+include("schaffern4_tests.jl")
+
+
+
 
 
 
