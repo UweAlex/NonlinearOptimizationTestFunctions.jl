@@ -69,10 +69,10 @@ const HARTMANN_FUNCTION = TestFunction(
             n == 3 || throw(ArgumentError("Hartmann requires exactly 3 dimensions"))
             [0.5, 0.5, 0.5]
         end,
-        :min_position => (n::Int=3) -> begin
-            n == 3 || throw(ArgumentError("Hartmann requires exactly 3 dimensions"))
-            [0.114614, 0.555649, 0.852547]
-        end,
+     :min_position => (n::Int=3) -> begin
+    n == 3 || throw(ArgumentError("Hartmann requires exactly 3 dimensions"))
+    [0.114614339099637, 0.5556488499706311, 0.8525469535196916]
+end,
         :min_value => -3.86278214782076,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable"]),
         :lb => (n::Int=3) -> begin
@@ -84,7 +84,7 @@ const HARTMANN_FUNCTION = TestFunction(
             fill(1.0, 3)
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Hartmann function: Multimodal, non-convex, non-separable, differentiable, defined for n=3 only, with a global minimum at approximately [0.114614, 0.555649, 0.852547].",
+        :description => "Hartmann function: Multimodal, non-convex, non-separable, differentiable, defined for n=3 only, with a global minimum at [0.114614339099637, 0.5556488499706311, 0.8525469535196916].",
         :math => "-\\sum_{i=1}^4 \\alpha_i \\exp\\left(-\\sum_{j=1}^3 A_{ij} (x_j - P_{ij})^2\\right), \\quad \\alpha=[1,1.2,3,3.2], \\quad A=\\begin{bmatrix}3 & 10 & 30 \\\\ 0.1 & 10 & 35 \\\\ 3 & 10 & 30 \\\\ 0.1 & 10 & 35\\end{bmatrix}, \\quad P=\\begin{bmatrix}0.3689 & 0.1170 & 0.2673 \\\\ 0.4699 & 0.4387 & 0.7470 \\\\ 0.1091 & 0.8732 & 0.5547 \\\\ 0.03815 & 0.5743 & 0.8828\\end{bmatrix}"
     )
 )

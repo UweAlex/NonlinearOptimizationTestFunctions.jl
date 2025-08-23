@@ -1,7 +1,7 @@
 # test/crossintray_tests.jl
 # Purpose: Tests for the Cross-in-Tray function.
 # Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
-# Last modified: 05 August 2025
+# Last modified: August 22, 2025
 
 using Test, Optim, ForwardDiff
 using NonlinearOptimizationTestFunctions: CROSSINTRAY_FUNCTION, crossintray, crossintray_gradient
@@ -21,20 +21,25 @@ using NonlinearOptimizationTestFunctions: CROSSINTRAY_FUNCTION, crossintray, cro
     # Test metadata
     @test tf.meta[:name] == "crossintray"
     @test tf.meta[:start](n) == [0.0, 0.0]
-    @test tf.meta[:min_position](n) ≈ [1.3491, 1.3491] atol=1e-6
-    @test tf.meta[:min_value] ≈ -2.062611237 atol=1e-6
+    @test tf.meta[:min_position](n) ≈ [1.349406575769872, 1.349406575769872] atol=1e-8
+    @test tf.meta[:min_value] ≈ -2.062611237 atol=1e-8
     @test tf.meta[:lb](n) == [-10.0, -10.0]
     @test tf.meta[:ub](n) == [10.0, 10.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
     @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"])
     # Test gradient at minimum
-    @test crossintray_gradient(tf.meta[:min_position](n)) ≈ [0.0, 0.0] atol=0.3
+    @test crossintray_gradient(tf.meta[:min_position](n)) ≈ [0.0, 0.0] atol=1e-6
     # Test optimization
     @testset "Optimization Tests" begin
-        minima = [[1.3491, 1.3491], [1.3491, -1.3491], [-1.3491, 1.3491], [-1.3491, -1.3491]]
+        minima = [
+            [1.349406575769872, 1.349406575769872],
+            [1.349406575769872, -1.349406575769872],
+            [-1.349406575769872, 1.349406575769872],
+            [-1.349406575769872, -1.349406575769872]
+        ]
         start = tf.meta[:min_position](n) + 0.01 * randn(n)  # Start near one minimum
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-6
         @test any(norm(Optim.minimizer(result) - m) < 1e-3 for m in minima)
     end
     # Test gradient comparison at random points

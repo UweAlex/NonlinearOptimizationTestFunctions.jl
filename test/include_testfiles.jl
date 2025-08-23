@@ -58,6 +58,13 @@ include("schaffern1_tests.jl")
 include("schaffern2_tests.jl")
 include("schaffern4_tests.jl")
 
+include("ackley2_tests.jl")
+include("adjiman_tests.jl")
+include("bartelsconn_tests.jl")
+
+
+
+
 
 
 

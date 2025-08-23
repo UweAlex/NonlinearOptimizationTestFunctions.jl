@@ -80,10 +80,10 @@ const SHEKEL_FUNCTION = TestFunction(
             fill(2.0, n)
         end,
         :min_position => (n::Int=4) -> begin
-            n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
-            [4.000747838, 4.000592862, 3.999663587, 3.999510115]
-        end,
-        :min_value => -10.536409825004505,  # Überprüfen!
+    n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
+    [4.000746531592147, 4.000592934138629, 3.9996633980404135, 3.9995098005868956]
+end,
+       :min_value => -10.536409816692043,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "finite_at_inf"]),
         :lb => (n::Int=4) -> begin
             n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
@@ -94,7 +94,7 @@ const SHEKEL_FUNCTION = TestFunction(
             fill(10.0, n)
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Shekel function: Multimodal, finite at infinity, non-convex, non-separable, differentiable function defined for n=4, with multiple local minima and a global minimum near [4.0, 4.0, 4.0, 4.0].",
+  :description => "Shekel function: Multimodal, finite at infinity, non-convex, non-separable, differentiable function defined for n=4, with multiple local minima and a global minimum at [4.000746531592147, 4.000592934138629, 3.9996633980404135, 3.9995098005868956].",
         :math => "f(x) = -\\sum_{i=1}^{10} \\frac{1}{\\sum_{j=1}^4 (x_j - a_{ij})^2 + c_i}"
     )
 )

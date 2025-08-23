@@ -50,11 +50,11 @@ const DECKKERSAARTS_FUNCTION = TestFunction(
             n != 2 && throw(ArgumentError("DeckkersAarts requires exactly 2 dimensions"))
             [0.0, 10.0]
         end,
-        :min_position => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("DeckkersAarts requires exactly 2 dimensions"))
-            [0.0, 14.945108]
-        end,
-        :min_value => -24776.51834228699,  # Korrigierter Wert basierend auf Julia-Berechnung
+:min_position => (n::Int) -> begin
+    n != 2 && throw(ArgumentError("DeckkersAarts requires exactly 2 dimensions"))
+    [0.0, 14.945112151891957]
+end,
+:min_value => -24776.518342317686,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
         :lb => (n::Int) -> begin
             n != 2 && throw(ArgumentError("DeckkersAarts requires exactly 2 dimensions"))

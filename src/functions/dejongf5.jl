@@ -60,7 +60,7 @@ const DEJONGF5_FUNCTION = TestFunction(
     dejongf5,
     dejongf5_gradient,
     Dict(
-        :name => "De Jong F5",
+        :name => "dejongf5",
         :start => (n::Int) -> begin
             n == 2 || throw(ArgumentError("De Jong F5 requires exactly 2 dimensions"))
             [0.0, 0.0]

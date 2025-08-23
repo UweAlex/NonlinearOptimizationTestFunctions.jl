@@ -17,7 +17,7 @@ using NonlinearOptimizationTestFunctions: DEJONGF5_FUNCTION, dejongf5
     @test isfinite(dejongf5(fill(Inf, n)))  # Prüft finite_at_inf
     @test dejongf5(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-3
     @test dejongf5(tf.meta[:start](n)) ≈ 12.670505812885983 atol=1e-6  # Korrigierter Wert
-    @test tf.meta[:name] == "De Jong F5"
+    @test tf.meta[:name] == "dejongf5"
     @test tf.meta[:start](n) == [0.0, 0.0]
     @test tf.meta[:min_position](n) == [-32.0, -32.0]
     @test tf.meta[:min_value] ≈ 0.9980038388186492 atol=1e-6

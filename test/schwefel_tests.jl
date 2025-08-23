@@ -1,7 +1,7 @@
 # test/schwefel_tests.jl
 # Purpose: Tests for the Schwefel function in NonlinearOptimizationTestFunctions.
 # Context: Part of the test suite to verify the correctness of the Schwefel function, its gradient, metadata, and optimization behavior. Ensures compatibility with ForwardDiff and Optim.jl, and tests edge cases and scalability as per the requirements in the project documentation.
-# Last modified: 17. Juli 2025, 16:29 PM CEST
+# Last modified: August 22, 2025
 
 using Test, Optim, ForwardDiff, LinearAlgebra
 using NonlinearOptimizationTestFunctions: SCHWEFEL_FUNCTION, schwefel, schwefel_gradient
@@ -28,7 +28,7 @@ end
     @test tf.meta[:lb](3) == fill(-500.0, 3)
     @test tf.meta[:ub](3) == fill(500.0, 3)
     @test tf.meta[:start](3) == fill(1.0, 3)
-    @test tf.meta[:min_position](3) ≈ fill(420.9687, 3) atol=1e-6
+    @test tf.meta[:min_position](3) ≈ fill(420.9687463209481, 3) atol=1e-6
     @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
     @test tf.meta[:properties] == Set(["multimodal", "separable", "bounded", "differentiable", "scalable", "non-convex"])
     # Funktionstests

@@ -39,9 +39,9 @@ const SHUBERT_FUNCTION = TestFunction(
             [0.0, 0.0]
         end,
         :min_position => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
-            [-1.4251286, -0.800321]
-        end,
+    n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
+    [-1.425128428319761, -0.8003211004719731]
+end,
         :min_value => -186.7309, # Standardwert aus der Literatur
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
         :lb => (n::Int=2) -> begin
@@ -53,7 +53,7 @@ const SHUBERT_FUNCTION = TestFunction(
             [10.0, 10.0]
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Shubert function: Multimodal, non-convex, non-separable, differentiable, bounded (n=2 only). Has 18 global minima.",
+       :description => "Shubert function: Multimodal, non-convex, non-separable, differentiable, bounded (n=2 only). Has 18 global minima, including [-1.425128428319761, -0.8003211004719731].",
         :math => "\\left(\\sum_{i=1}^5 i \\cos((i+1)x_1 + i)\\right) \\left(\\sum_{i=1}^5 i \\cos((i+1)x_2 + i)\\right)"
     )
 )

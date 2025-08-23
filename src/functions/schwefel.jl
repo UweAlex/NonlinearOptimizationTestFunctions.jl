@@ -52,7 +52,7 @@ const SCHWEFEL_FUNCTION = TestFunction(
         end,
         :min_position => (n::Int=2) -> begin
             n >= 1 || throw(ArgumentError("Schwefel requires at least 1 dimension"))
-            fill(420.9687, n)
+             fill(420.9687463209481, n)
         end,
         :min_value => 0.0,
         :properties => Set(["multimodal", "non-convex", "separable", "differentiable", "scalable", "bounded"]),
@@ -65,7 +65,7 @@ const SCHWEFEL_FUNCTION = TestFunction(
             fill(500.0, n)
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Schwefel function: Multimodal test function with a global minimum at approximately [420.9687, ..., 420.9687].",
+        :description => "Schwefel function: Multimodal test function with a global minimum at [420.9687463209481, ..., 420.9687463209481].",
         :math => "f(x) = 418.9829n - \\sum_{i=1}^n x_i \\sin(\\sqrt{|x_i|})"
     )
 )

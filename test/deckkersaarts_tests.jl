@@ -18,17 +18,17 @@ using Optim
     @test tf.meta[:start](n) == [0.0, 10.0]
     @test tf.meta[:lb](n) == [-20.0, -20.0]
     @test tf.meta[:ub](n) == [20.0, 20.0]
-    @test tf.meta[:min_value] ≈ -24776.51834228699 atol=1e-6
+    @test tf.meta[:min_value] ≈ -24776.518342317686 atol=1e-6
 
     # Test Funktionswerte
     start = tf.meta[:start](n)
     @test deckkersaarts(start) ≈ -8900.0 atol=1e-6  # f([0,10]) = -8900.0
 
     # Test globales Minimum (beide Minima)
-    min_pos1 = [0.0, 14.945108]
-    min_pos2 = [0.0, -14.945108]
-    @test deckkersaarts(min_pos1) ≈ -24776.51834228699 atol=1e-5
-    @test deckkersaarts(min_pos2) ≈ -24776.51834228699 atol=1e-5
+    min_pos1 = [0.0, 14.945112151891957]
+    min_pos2 = [0.0, -14.945112151891957]
+    @test deckkersaarts(min_pos1) ≈ -24776.518342317686 atol=1e-5
+    @test deckkersaarts(min_pos2) ≈ -24776.518342317686 atol=1e-5
     @test tf.meta[:min_position](n) ≈ min_pos1 atol=1e-6
 
     # Test Edge Cases
@@ -49,5 +49,5 @@ using Optim
     found_value = Optim.minimum(result)
     # Prüfe, ob das gefundene Minimum einem der globalen Minima nahe ist
     @test any(min_pos -> isapprox(found_min, min_pos, atol=0.1), [min_pos1, min_pos2])
-    @test found_value ≈ -24776.51834228699 atol=0.1
+    @test found_value ≈ -24776.518342317686 atol=0.1
 end

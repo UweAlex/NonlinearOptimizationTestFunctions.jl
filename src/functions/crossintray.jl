@@ -59,7 +59,7 @@ const CROSSINTRAY_FUNCTION = TestFunction(
         end,
         :min_position => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Cross-in-Tray requires exactly 2 dimensions"))
-            [1.3491, 1.3491]  # One of the four global minima
+            [1.349406575769872, 1.349406575769872]  # One of the four global minima
         end,
         :min_value => -2.062611237,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
@@ -72,7 +72,7 @@ const CROSSINTRAY_FUNCTION = TestFunction(
             [10.0, 10.0]
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Cross-in-Tray function: A multimodal, non-convex, non-separable test function with four global minima.",
+        :description => "Cross-in-Tray function: A multimodal, non-convex, non-separable test function with four global minima at [1.349406575769872, 1.349406575769872], [-1.349406575769872, 1.349406575769872], [1.349406575769872, -1.349406575769872], [-1.349406575769872, -1.349406575769872].",
         :math => "-0.0001 \\left( \\left| \\sin(x_1) \\sin(x_2) \\exp\\left( \\left| 100 - \\frac{\\sqrt{x_1^2 + x_2^2}}{\\pi} \\right| \\right) \\right| + 1 \\right)^{0.1}"
     )
 )

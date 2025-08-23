@@ -11,7 +11,7 @@ using NonlinearOptimizationTestFunctions: SINEENVELOPE_FUNCTION, sineenvelope
     @test isfinite(sineenvelope(fill(1e-308, n)))
     @test ≈(sineenvelope(tf.meta[:min_position](n)), -1.0, atol=1e-6)  # Korrigiert von -0.5 auf -1.0
     @test ≈(sineenvelope(tf.meta[:start](n)), -0.026215469198405728, atol=1e-6)  # Korrigiert von -0.4803017961922437
-    @test tf.meta[:name] == "SineEnvelope"
+    @test tf.meta[:name] == "sineenvelope"
     @test tf.meta[:start](n) == [1.0, 1.0]
     @test tf.meta[:min_position](n) == [0.0, 0.0]
     @test tf.meta[:min_value] ≈ -1.0 atol=1e-6  # Korrigiert von -0.5

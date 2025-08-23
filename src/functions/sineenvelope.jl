@@ -46,7 +46,7 @@ const SINEENVELOPE_FUNCTION = TestFunction(
     sineenvelope,
     sineenvelope_gradient,
     Dict(
-        :name => "SineEnvelope",
+        :name => "sineenvelope",
         :description => "Sine Envelope Test Function from Molga & Smutnicki (2005). Multimodal function with a global minimum at (0,0).",
         :math => "-0.5 + \\frac{\\sin^2(\\sqrt{x_1^2 + x_2^2}) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}",
         :min_value => -1.0,  # Korrigiert von -0.5 auf -1.0

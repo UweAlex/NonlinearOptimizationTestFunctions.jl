@@ -3,6 +3,11 @@
 # Context: Part of NonlinearOptimizationTestFunctions, enables modular function loading.
 # Last modified: 19. Juli 2025
 
+
+
+
+
+
 include("functions/rosenbrock.jl")
 include("functions/sphere.jl")
 include("functions/ackley.jl")
@@ -52,7 +57,9 @@ include("functions/mishrabird.jl")
 include("functions/schaffern1.jl")
 include("functions/schaffern2.jl")
 include("functions/schaffern4.jl")
-
+include("functions/ackley2.jl")
+include("functions/adjiman.jl")
+include("functions/bartelsconn.jl")
 
 
 

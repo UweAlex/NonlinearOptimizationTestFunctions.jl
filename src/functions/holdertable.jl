@@ -45,13 +45,13 @@ const HOLDERTABLE_FUNCTION = TestFunction(
     Dict(
         :name => "holdertable",
         :start => (n::Int) -> [0.0, 0.0],  # Zurück auf [0,0] für Konsistenz; Optimierung prüft nur Verbesserung
-        :min_position => (n::Int) -> [8.05502, 9.66459],
+        :min_position => (n::Int) -> [8.055023475736176, 9.664590019238494],
         :min_value => -19.2085,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
         :lb => (n::Int) -> [-10.0, -10.0],
         :ub => (n::Int) -> [10.0, 10.0],
         :in_molga_smutnicki_2005 => true,
-        :description => "HolderTable function: Multimodal with four global minima.",
+   :description => "HolderTable function: Multimodal with four global minima at [8.055023475736176, 9.664590019238494], [-8.055023475736176, 9.664590019238494], [8.055023475736176, -9.664590019238494], [-8.055023475736176, -9.664590019238494].",
         :math => "-|\\sin(x) \\cos(y) \\exp(|1 - \\sqrt{x^2 + y^2}/\\pi|)|"
     )
 )
