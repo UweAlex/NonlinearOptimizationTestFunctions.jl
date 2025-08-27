@@ -1,7 +1,7 @@
 # src/functions/bird.jl
 # Purpose: Implements the Bird test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 16. August 2025
+# Last modified: 25 August 2025
 
 export BIRD_FUNCTION, bird, bird_gradient
 
@@ -34,11 +34,10 @@ function bird_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.D
     n != 2 && throw(ArgumentError("Bird requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
     any(isinf.(x)) && return fill(T(Inf), 2)
-    exp1 = exp((1 - cos(x[2]))^2)
-    exp2 = exp((1 - sin(x[1]))^2)
-    df_dx1 = cos(x[1]) * exp1 - 2 * cos(x[1]) * cos(x[2]) * (1 - sin(x[1])) * exp2 + 2 * (x[1] - x[2])
-    df_dx2 = 2 * sin(x[2]) * sin(x[1]) * (1 - cos(x[2])) * exp1 - sin(x[2]) * exp2 - 2 * (x[1] - x[2])
-    return [df_dx1, df_dx2]
+    grad = zeros(T, 2)
+    grad[1] = cos(x[1]) * exp((1 - cos(x[2]))^2) - 2 * cos(x[1]) * (1 - sin(x[1])) * exp((1 - sin(x[1]))^2) * cos(x[2]) + 2 * (x[1] - x[2])
+    grad[2] = sin(x[1]) * exp((1 - cos(x[2]))^2) * 2 * (1 - cos(x[2])) * sin(x[2]) - sin(x[2]) * exp((1 - sin(x[1]))^2) - 2 * (x[1] - x[2])
+    return grad
 end
 
 const BIRD_FUNCTION = TestFunction(
@@ -46,14 +45,14 @@ const BIRD_FUNCTION = TestFunction(
     bird_gradient,
     Dict(
         :name => "bird",
-        :start => (n::Int) -> [0.0, 0.0],
-        :min_position => (n::Int) -> [4.70104312, 3.15293848],  # Präziser Wert
-        :min_value => -106.76453675,  # Präziser Wert
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
-        :lb => (n::Int) -> [-2*pi, -2*pi],
-        :ub => (n::Int) -> [2*pi, 2*pi],
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [4.7010558160187405, 3.152946019601391],
+        :min_value => -106.76453671958178,
+        :properties => Set(["bounded", "continuous", "differentiable", "multimodal", "non-convex", "non-separable"]),
+        :lb => () -> [-2π, -2π],
+        :ub => () -> [2π, 2π],
         :in_molga_smutnicki_2005 => false,
-        :description => "Bird function: Multimodal with two global minima.",
-        :math => "\\sin(x) e^{(1-\\cos(y))^2} + \\cos(y) e^{(1-\\sin(x))^2} + (x - y)^2"
+        :description => "Bird function: Multimodal, non-convex, non-separable, differentiable, fixed.",
+        :math => "\\sin(x_1) \\exp\\left((1 - \\cos(x_2))^2\\right) + \\cos(x_2) \\exp\\left((1 - \\sin(x_1))^2\\right) + (x_1 - x_2)^2"
     )
 )

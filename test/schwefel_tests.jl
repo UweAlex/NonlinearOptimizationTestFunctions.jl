@@ -30,7 +30,7 @@ end
     @test tf.meta[:start](3) == fill(1.0, 3)
     @test tf.meta[:min_position](3) ≈ fill(420.9687463209481, 3) atol=1e-6
     @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
-    @test tf.meta[:properties] == Set(["multimodal", "separable", "bounded", "differentiable", "scalable", "non-convex"])
+    @test tf.meta[:properties] == Set(["multimodal", "separable", "bounded", "differentiable", "scalable", "non-convex", "continuous"])
     # Funktionstests
     @test_throws ArgumentError schwefel(Float64[])
     @test isnan(schwefel([NaN, NaN]))
@@ -47,7 +47,7 @@ end
     tf.gradient!(G, x)
     @test G ≈ schwefel_gradient(x) atol=1e-6
     # ForwardDiff-Kompatibilität
-    x_dual = [ForwardDiff.Dual(0.5, 1.0), ForwardDiff.Dual(0.5, 0.0)]
+  x_dual = [ForwardDiff.Dual(0.5, 1.0), ForwardDiff.Dual(0.5, 0.0)]
     @test isfinite(schwefel(x_dual))
     @test all(isfinite, schwefel_gradient(x_dual))
     # Optimierungstests

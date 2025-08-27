@@ -1,7 +1,7 @@
 # src/functions/matyas.jl
 # Purpose: Implements the Matyas test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 16. August 2025
+# Last modified: August 24, 2025
 
 export MATYAS_FUNCTION, matyas, matyas_gradient
 
@@ -42,24 +42,12 @@ const MATYAS_FUNCTION = TestFunction(
     matyas_gradient,
     Dict(
         :name => "matyas",
-        :start => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Matyas requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
-        :min_position => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Matyas requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [0.0, 0.0],
         :min_value => 0.0,
-        :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "bounded"]),
-        :lb => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Matyas requires exactly 2 dimensions"))
-            [-10.0, -10.0]
-        end,
-        :ub => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Matyas requires exactly 2 dimensions"))
-            [10.0, 10.0]
-        end,
+        :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "bounded","continuous"]),
+        :lb => () -> [-10.0, -10.0],
+        :ub => () -> [10.0, 10.0],
         :in_molga_smutnicki_2005 => true,
         :description => "Matyas function: Unimodal, convex, quadratic test function.",
         :math => "0.26 (x^2 + y^2) - 0.48 x y"

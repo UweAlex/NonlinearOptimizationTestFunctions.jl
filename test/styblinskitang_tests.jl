@@ -22,7 +22,7 @@ using NonlinearOptimizationTestFunctions: STYBLINSKITANG_FUNCTION, styblinskitan
     @test tf.meta[:lb](n) == [-5.0, -5.0]
     @test tf.meta[:ub](n) == [5.0, 5.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["differentiable", "non-convex", "scalable", "multimodal"])
+    @test Set(tf.meta[:properties]) == Set(["differentiable", "non-convex", "scalable", "multimodal" ,"bounded","continuous"])
     @testset "Optimization Tests" begin
         start = tf.meta[:min_position](n) + 0.01 * randn(n)  # Perturbed start due to multimodality
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))

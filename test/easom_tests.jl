@@ -22,7 +22,7 @@ using NonlinearOptimizationTestFunctions: EASOM_FUNCTION, easom
     @test tf.meta[:lb](n) == [-100.0, -100.0]
     @test tf.meta[:ub](n) == [100.0, 100.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"])
+    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"])
     @testset "Optimization Tests" begin
         start = [pi + 0.01, pi + 0.01] 
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-8, g_tol=1e-8, iterations=1000))

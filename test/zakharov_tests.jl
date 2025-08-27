@@ -1,20 +1,29 @@
 # test/zakharov_tests.jl
 # Purpose: Tests for the Zakharov function.
 # Context: Part of NonlinearOptimizationTestFunctions test suite.
-# Last modified: August 12, 2025
+# Last modified: 27 August 2025
 
-using Test, Optim
+using Test, Optim, Random
 using NonlinearOptimizationTestFunctions: ZAKHAROV_FUNCTION, zakharov
 
 @testset "Zakharov Tests" begin
     tf = ZAKHAROV_FUNCTION
     n = 2
+    start = tf.meta[:start](n)
+    min_pos = tf.meta[:min_position](n)
+    min_value = tf.meta[:min_value]
+
+    # Test Funktionswerte
+    @test zakharov(start) ≈ 9.3125 atol=1e-6  # f([1, 1]) = 2 + (0.5 + 1)^2 + (0.5 + 1)^4 = 9.3125
+    @test zakharov(min_pos) ≈ min_value atol=1e-6  # min_pos = [0, 0], min_value = 0
+
+    # Test Edge Cases
     @test_throws ArgumentError zakharov(Float64[])
     @test isnan(zakharov(fill(NaN, n)))
     @test isinf(zakharov(fill(Inf, n)))
     @test isfinite(zakharov(fill(1e-308, n)))
-    @test zakharov(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-6
-    @test zakharov(tf.meta[:start](n)) ≈ 9.3125 atol=1e-6
+
+    # Test Metadaten
     @test tf.meta[:name] == "zakharov"
     @test tf.meta[:start](n) == ones(n)
     @test tf.meta[:min_position](n) == zeros(n)
@@ -22,11 +31,13 @@ using NonlinearOptimizationTestFunctions: ZAKHAROV_FUNCTION, zakharov
     @test tf.meta[:lb](n) == fill(-5.0, n)
     @test tf.meta[:ub](n) == fill(10.0, n)
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["unimodal", "convex", "non-separable", "differentiable", "scalable"])
+    @test tf.meta[:properties] == Set(["unimodal", "convex", "non-separable", "differentiable", "scalable", "bounded", "continuous"])
+
+    # Test Optimierung
     @testset "Optimization Tests" begin
-        start = tf.meta[:start](n)
-        result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
-        @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=1e-3
+        Random.seed!(1234)
+        result = optimize(tf.f, tf.gradient!, tf.meta[:lb](n), tf.meta[:ub](n), start + 0.01 * randn(n), Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6, g_tol=1e-6, iterations=1000))
+        @test Optim.minimum(result) ≈ min_value atol=1e-5
+        @test Optim.minimizer(result) ≈ min_pos atol=1e-3
     end
 end

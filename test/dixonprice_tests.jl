@@ -22,7 +22,7 @@ using NonlinearOptimizationTestFunctions: DIXONPRICE_FUNCTION, dixonprice
     @test tf.meta[:lb](n) == [-10.0, -10.0]
     @test tf.meta[:ub](n) == [10.0, 10.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["differentiable", "non-convex", "scalable", "unimodal"])
+    @test Set(tf.meta[:properties]) == Set(["differentiable", "non-convex", "scalable", "unimodal" ,"bounded","continuous"])
     @testset "Optimization Tests" begin
         start = tf.meta[:start](n)
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))

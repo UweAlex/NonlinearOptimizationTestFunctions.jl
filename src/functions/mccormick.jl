@@ -1,7 +1,7 @@
 # src/functions/mccormick.jl
 # Purpose: Implements the McCormick test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctionsInJulia.
-# Last modified: 02 August 2025
+# Last modified: 25 August 2025
 
 export MCCORMICK_FUNCTION, mccormick, mccormick_gradient
 
@@ -41,26 +41,14 @@ const MCCORMICK_FUNCTION = TestFunction(
     mccormick_gradient,
     Dict(
         :name => "mccormick",
-        :start => (n::Int) -> begin
-            n == 2 || throw(ArgumentError("McCormick requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
-        :min_position => (n::Int) -> begin
-            n == 2 || throw(ArgumentError("McCormick requires exactly 2 dimensions"))
-            [-0.547197553, -1.547197553]
-        end,
-        :min_value => -1.913222954981037,
-        :properties => Set(["differentiable", "non-convex", "multimodal"]),
-        :lb => (n::Int) -> begin
-            n == 2 || throw(ArgumentError("McCormick requires exactly 2 dimensions"))
-            [-1.5, -3.0]
-        end,
-        :ub => (n::Int) -> begin
-            n == 2 || throw(ArgumentError("McCormick requires exactly 2 dimensions"))
-            [4.0, 4.0]
-        end,
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [-0.54719755, -1.54719755],
+        :min_value => -1.91322295,
+        :properties => Set(["differentiable", "non-convex", "multimodal", "bounded", "continuous"]),
+        :lb => () -> [-1.5, -3.0],
+        :ub => () -> [4.0, 4.0],
         :in_molga_smutnicki_2005 => true,
-        :description => "McCormick function: Multimodal, non-convex function with global minimum at approximately -1.913222954981037, defined for 2 dimensions.",
+        :description => "McCormick function: Multimodal, non-convex function with global minimum at approximately -1.91322295, defined for 2 dimensions.",
         :math => "\\sin(x_1 + x_2) + (x_1 - x_2)^2 - 1.5 x_1 + 2.5 x_2 + 1"
     )
 )

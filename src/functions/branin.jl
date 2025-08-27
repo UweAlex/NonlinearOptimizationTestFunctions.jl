@@ -63,7 +63,7 @@ const BRANIN_FUNCTION = TestFunction(
             [-π, 12.275]  # Eines der drei globalen Minima
         end,
         :min_value => 0.397887,
-        :properties => Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded"]),
+        :properties => Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Branin function requires exactly 2 dimensions"))
             [-5.0, 0.0]

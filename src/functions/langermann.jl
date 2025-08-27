@@ -69,7 +69,7 @@ const LANGERMANN_FUNCTION = TestFunction(
             [2.002992119907532, 1.0060959403343601]
         end,
         :min_value => -5.162126159963982,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "controversial"]),
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "controversial","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Langermann requires exactly 2 dimensions"))
             [0.0, 0.0]

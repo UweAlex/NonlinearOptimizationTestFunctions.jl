@@ -1,7 +1,7 @@
 # src/functions/dropwave.jl
 # Purpose: Implements the Drop-Wave test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctionsInJulia.
-# Last modified: 06 August 2025
+# Last modified: August 26, 2025
 
 export DROPWAVE_FUNCTION, dropwave, dropwave_gradient
 
@@ -54,24 +54,12 @@ const DROPWAVE_FUNCTION = TestFunction(
     dropwave_gradient,
     Dict(
         :name => "dropwave",
-        :start => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Drop-Wave requires exactly 2 dimensions"))
-            [1.0, 1.0]
-        end,
-        :min_position => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Drop-Wave requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
+        :start => () -> [1.0, 1.0],
+        :min_position => () -> [0.0, 0.0],
         :min_value => -1.0,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
-        :lb => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Drop-Wave requires exactly 2 dimensions"))
-            [-5.12, -5.12]
-        end,
-        :ub => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Drop-Wave requires exactly 2 dimensions"))
-            [5.12, 5.12]
-        end,
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
+        :lb => () -> [-5.12, -5.12],
+        :ub => () -> [5.12, 5.12],
         :in_molga_smutnicki_2005 => true,
         :description => "Drop-Wave function: A multimodal, non-convex, non-separable, differentiable function defined for 2 dimensions, with a global minimum at [0, 0].",
         :math => "-\\frac{1 + \\cos(12 \\sqrt{x_1^2 + x_2^2})}{0.5 (x_1^2 + x_2^2) + 2}"

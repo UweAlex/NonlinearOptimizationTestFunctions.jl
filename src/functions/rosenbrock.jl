@@ -44,7 +44,7 @@ const ROSENBROCK_FUNCTION = TestFunction(
         :start => (n::Int=2) -> zeros(n),
         :min_position => (n::Int=2) -> ones(n),
         :min_value => 0.0,
-        :properties => Set(["differentiable", "non-convex", "non-separable", "unimodal", "bounded"]),  # Geändert von "multimodal" zu "unimodal"
+        :properties => Set(["differentiable", "non-convex", "non-separable", "unimodal", "bounded","continuous"]),  # Geändert von "multimodal" zu "unimodal"
         :lb => (n::Int=2) -> fill(-5.0, n),
         :ub => (n::Int=2) -> fill(5.0, n),
         :in_molga_smutnicki_2005 => true,

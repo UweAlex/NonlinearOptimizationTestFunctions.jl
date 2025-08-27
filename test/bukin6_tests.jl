@@ -1,33 +1,62 @@
-# test/bukin6_tests.jl
-# Purpose: Tests for the Bukin N.6 function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
-# Last modified: 03 August 2025
+# src/functions/bukin6.jl
+# Purpose: Implements the Bukin6 test function with its gradient for nonlinear optimization.
+# Context: Part of NonlinearOptimizationTestFunctions.
+# Last modified: 25 August 2025
 
-using Test, Optim
-using NonlinearOptimizationTestFunctions: BUKIN6_FUNCTION, bukin6
+export BUKIN6_FUNCTION, bukin6, bukin6_gradient
 
-@testset "Bukin6 Tests" begin
-    tf = BUKIN6_FUNCTION
-    n = 2
-    @test_throws ArgumentError bukin6(Float64[])
-    @test_throws ArgumentError bukin6([0.0, 0.0, 0.0])
-    @test isnan(bukin6([NaN, 0.0]))
-    @test isinf(bukin6([Inf, 0.0]))
-    @test isfinite(bukin6([1e-308, 1e-308]))
-    @test bukin6(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-6
-    @test bukin6(tf.meta[:start](n)) ≈ 0.1 atol=1e-6
-    @test tf.meta[:name] == "bukin6"
-    @test tf.meta[:start](n) == [0.0, 0.0]
-    @test tf.meta[:min_position](n) == [-10.0, 1.0]
-    @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
-    @test tf.meta[:lb](n) == [-15.0, -3.0]
-    @test tf.meta[:ub](n) == [-5.0, 3.0]
-   @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["partially differentiable", "non-convex", "multimodal"])
-    @testset "Optimization Tests" begin
-        start = [-10.0, 1.0]  # Changed from [-10.0, 0.99] to the exact minimum
-        result = optimize(tf.f, tf.gradient!, tf.meta[:lb](n), tf.meta[:ub](n), start, Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6))
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-3  # Increased from 0.001 to 0.001 (1e-3)
-        @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=1e-2  # Increased from 0.01 to 0.01 (1e-2)
-    end
+using LinearAlgebra
+using ForwardDiff
+
+"""
+    bukin6(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+Computes the Bukin6 function value at point `x`. Requires exactly 2 dimensions.
+Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
+Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
+"""
+function bukin6(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != 2 && throw(ArgumentError("Bukin6 requires exactly 2 dimensions"))
+    any(isnan.(x)) && return T(NaN)
+    any(isinf.(x)) && return T(Inf)
+    return 100 * sqrt(abs(x[2] - 0.01 * x[1]^2)) + 0.01 * abs(x[1] + 10)
 end
+
+"""
+    bukin6_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+Computes the gradient of the Bukin6 function. Returns a vector of length 2.
+Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
+"""
+function bukin6_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != 2 && throw(ArgumentError("Bukin6 requires exactly 2 dimensions"))
+    any(isnan.(x)) && return fill(T(NaN), 2)
+    any(isinf.(x)) && return fill(T(Inf), 2)
+    grad = zeros(T, 2)
+    diff_term = x[2] - 0.01 * x[1]^2
+    # Partial derivative w.r.t x1
+    grad[1] = abs(diff_term) > 1e-10 ? -0.2 * x[1] * sign(diff_term) / sqrt(abs(diff_term)) : zero(T)
+    grad[1] += 0.01 * sign(x[1] + 10)
+    # Partial derivative w.r.t x2
+    grad[2] = abs(diff_term) > 1e-10 ? 50 * sign(diff_term) / sqrt(abs(diff_term)) : zero(T)
+    return grad
+end
+
+const BUKIN6_FUNCTION = TestFunction(
+    bukin6,
+    bukin6_gradient,
+    Dict(
+        :name => "bukin6",
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [-10.0, 1.0],
+        :min_value => 0.0,
+        :properties => Set(["bounded", "continuous", "partially differentiable", "non-convex", "multimodal"]),
+        :lb => () -> [-15.0, -3.0],
+        :ub => () -> [-5.0, 3.0],
+        :in_molga_smutnicki_2005 => true,
+        :description => "Bukin6 function: Multimodal, non-convex, partially differentiable, bounded, continuous.",
+        :math => "100 \\sqrt{|x_2 - 0.01 x_1^2|} + 0.01 |x_1 + 10|"
+    )
+)

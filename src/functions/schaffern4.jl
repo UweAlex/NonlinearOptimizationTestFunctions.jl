@@ -1,3 +1,8 @@
+# src/functions/schaffern4.jl
+# Purpose: Implements the Schaffer N.4 test function with its gradient for nonlinear optimization.
+# Context: Part of NonlinearOptimizationTestFunctions.
+# Last modified: August 24, 2025
+
 export SCHAFFERN4_FUNCTION, schaffern4, schaffern4_gradient
 
 using LinearAlgebra
@@ -103,24 +108,12 @@ const SCHAFFERN4_FUNCTION = TestFunction(
     schaffern4_gradient,
     Dict(
         :name => "schaffern4",
-        :start => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Schaffer N.4 requires exactly 2 dimensions"))
-            [0.0, 1.253131828792882]
-        end,
-        :min_position => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Schaffer N.4 requires exactly 2 dimensions"))
-            [0.0, 1.253131828792882]
-        end,
-        :min_value => 0.292578632035980,  # Fixed: Use precise value
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
-        :lb => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Schaffer N.4 requires exactly 2 dimensions"))
-            [-100.0, -100.0]
-        end,
-        :ub => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Schaffer N.4 requires exactly 2 dimensions"))
-            [100.0, 100.0]
-        end,
+        :start => () -> [0.0, 1.253131828792882],
+        :min_position => () -> [0.0, 1.253131828792882],
+        :min_value => 0.292578632035980,
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
+        :lb => () -> [-100.0, -100.0],
+        :ub => () -> [100.0, 100.0],
         :in_molga_smutnicki_2005 => false,
         :description => "Schaffer N.4 function: A multimodal function with global minimum at (0, 1.25313) and other equivalent points.",
         :math => "f(x) = 0.5 + \\frac{\\cos^2(\\sin(|x_1^2 - x_2^2|)) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}"

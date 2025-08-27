@@ -26,7 +26,7 @@ const AXISPARALLELHYPERELLIPSOID_FUNCTION = TestFunction(
         :start => (n::Int=1) -> fill(1.0, n),
         :min_position => (n::Int=1) -> fill(0.0, n),
         :min_value => 0.0,
-        :properties => Set(["convex", "differentiable", "separable", "scalable"]),
+        :properties => Set(["convex", "differentiable", "separable", "scalable","continuous"]),
         :lb => (n::Int=1) -> fill(-Inf, n),
         :ub => (n::Int=1) -> fill(Inf, n),
         :description => "AxisParallelHyperEllipsoid function: a convex, differentiable function.",

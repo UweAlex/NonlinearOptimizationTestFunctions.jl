@@ -1,7 +1,7 @@
 # src/functions/ackley2.jl
 # Purpose: Implements the Ackley2 test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: August 21, 2025
+# Last modified: August 24, 2025
 
 export ACKLEY2_FUNCTION, ackley2, ackley2_gradient
 
@@ -47,24 +47,12 @@ end
 
 const ACKLEY2_META = Dict(
     :name => "ackley2",
-    :start => (n::Int) -> begin
-        n != 2 && throw(ArgumentError("Ackley2 requires exactly 2 dimensions"))
-        [0.0, 0.0]
-    end,
-    :min_position => (n::Int) -> begin
-        n != 2 && throw(ArgumentError("Ackley2 requires exactly 2 dimensions"))
-        [0.0, 0.0]
-    end,
+    :start => () -> [0.0, 0.0],
+    :min_position => () -> [0.0, 0.0],
     :min_value => -200.0,
-    :properties => Set(["unimodal", "non-convex", "non-separable", "differentiable", "continuous", "bounded"]),
-    :lb => (n::Int) -> begin
-        n != 2 && throw(ArgumentError("Ackley2 requires exactly 2 dimensions"))
-        [-32.0, -32.0]
-    end,
-    :ub => (n::Int) -> begin
-        n != 2 && throw(ArgumentError("Ackley2 requires exactly 2 dimensions"))
-        [32.0, 32.0]
-    end,
+    :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "continuous", "bounded"]),
+    :lb => () -> [-32.0, -32.0],
+    :ub => () -> [32.0, 32.0],
     :in_molga_smutnicki_2005 => false,
     :description => "Ackley2 function: Continuous, differentiable, non-separable, non-scalable, unimodal.",
     :math => "\\f(x) = -200 e^{-0.02 \\sqrt{x_1^2 + x_2^2}}"

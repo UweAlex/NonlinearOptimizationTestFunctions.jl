@@ -23,7 +23,7 @@ using NonlinearOptimizationTestFunctions: BRANIN_FUNCTION, branin
     @test tf.meta[:lb](n) == [-5.0, 0.0]
     @test tf.meta[:ub](n) == [10.0, 15.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded"])
+    @test Set(tf.meta[:properties]) == Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded","continuous"])
     @testset "Optimization Tests" begin
         # Startpunkt leicht vom Minimum entfernt, da multimodal
         start = tf.meta[:min_position](n) + 0.01 * randn(n)

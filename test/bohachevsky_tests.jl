@@ -23,7 +23,7 @@ using NonlinearOptimizationTestFunctions: BOHACHEVSKY_FUNCTION, bohachevsky
     @test tf.meta[:lb](n) == [-10.0, -10.0]
     @test tf.meta[:ub](n) == [10.0, 10.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["differentiable", "multimodal", "non-convex", "scalable"])
+    @test Set(tf.meta[:properties]) == Set(["differentiable", "multimodal", "non-convex", "scalable" ,"bounded","continuous"])
     @testset "Optimization Tests" begin
         start = tf.meta[:min_position](n) + 0.01 * randn(n)  # Leicht gestörter Startpunkt, da multimodal
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))

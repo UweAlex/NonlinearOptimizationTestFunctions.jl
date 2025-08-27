@@ -1,7 +1,7 @@
 # src/functions/schaffern2.jl
 # Purpose: Implements the Schaffer N.2 test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 19 August 2025
+# Last modified: August 24, 2025
 
 export SCHAFFERN2_FUNCTION, schaffern2, schaffern2_gradient
 
@@ -83,24 +83,12 @@ const SCHAFFERN2_FUNCTION = TestFunction(
     schaffern2_gradient,
     Dict(
         :name => "schaffern2",
-        :start => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Schaffer N.2 requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
-        :min_position => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Schaffer N.2 requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [0.0, 0.0],
         :min_value => 0.0,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
-        :lb => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Schaffer N.2 requires exactly 2 dimensions"))
-            [-100.0, -100.0]
-        end,
-        :ub => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Schaffer N.2 requires exactly 2 dimensions"))
-            [100.0, 100.0]
-        end,
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
+        :lb => () -> [-100.0, -100.0],
+        :ub => () -> [100.0, 100.0],
         :in_molga_smutnicki_2005 => false,
         :description => "Schaffer N.2 function: A multimodal function with a global minimum at the origin and many local minima.",
         :math => "f(x) = 0.5 + \\frac{\\sin^2(x_1^2 - x_2^2) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}"

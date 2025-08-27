@@ -1,7 +1,7 @@
 # src/functions/quadratic.jl
 # Purpose: Implements a generic quadratic test function with optional parameters A, b, c, which are set on first call and encapsulated for subsequent calls.
 # Context: Part of NonlinearOptimizationTestFunctionsInJulia.
-# Last modified: 09 August 2025
+# Last modified: 27 August 2025
 
 export QUADRATIC_FUNCTION, quadratic, quadratic_gradient
 
@@ -30,6 +30,7 @@ const A_fixed = Ref{Any}(nothing)
 const b_fixed = Ref{Any}(nothing)
 const c_fixed = Ref{Any}(nothing)
 const is_initialized = Ref(false)
+const current_dim = Ref{Int}(0)  # Track current dimension
 
 """
     quadratic(x::AbstractVector{T}, A=nothing, b=nothing, c=nothing) where {T<:Union{Real, ForwardDiff.Dual}}
@@ -41,7 +42,7 @@ function quadratic(x::AbstractVector{T}, A=nothing, b=nothing, c=nothing) where 
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
 
-    if !is_initialized[] || !isnothing(A) || !isnothing(b) || !isnothing(c)
+    if !is_initialized[] || !isnothing(A) || !isnothing(b) || !isnothing(c) || current_dim[] != n
         A_fixed[] = isnothing(A) ? generate_positive_definite_matrix(n, 10.0) : copy(A)
         b_fixed[] = isnothing(b) ? zeros(T, n) : copy(b)
         c_fixed[] = isnothing(c) ? T(0.0) : T(c)
@@ -49,6 +50,7 @@ function quadratic(x::AbstractVector{T}, A=nothing, b=nothing, c=nothing) where 
         all(eigvals_A .> 0) || throw(ArgumentError("Matrix A must be positive definite"))
         length(b_fixed[]) == n || throw(ArgumentError("Vector b must have length n"))
         is_initialized[] = true
+        current_dim[] = n
     end
 
     return dot(x, A_fixed[]*x) + dot(b_fixed[], x) + c_fixed[]
@@ -64,13 +66,14 @@ function quadratic_gradient(x::AbstractVector{T}, A=nothing, b=nothing) where {T
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
 
-    if !is_initialized[] || !isnothing(A) || !isnothing(b)
+    if !is_initialized[] || !isnothing(A) || !isnothing(b) || current_dim[] != n
         A_fixed[] = isnothing(A) ? generate_positive_definite_matrix(n, 10.0) : copy(A)
         b_fixed[] = isnothing(b) ? zeros(T, n) : copy(b)
         eigvals_A = eigvals(A_fixed[])
         all(eigvals_A .> 0) || throw(ArgumentError("Matrix A must be positive definite"))
         length(b_fixed[]) == n || throw(ArgumentError("Vector b must have length n"))
         is_initialized[] = true
+        current_dim[] = n
     end
 
     return 2 * A_fixed[] * x + b_fixed[]
@@ -93,7 +96,7 @@ const QUADRATIC_FUNCTION = TestFunction(
             dim >= 1 || throw(ArgumentError("Dimension must be at least 1"))
             is_initialized[] ? c_fixed[] - 0.25 * dot(b_fixed[], A_fixed[]\b_fixed[]) : 0.0
         end,
-        :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "scalable"]),
+        :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "scalable", "continuous"]),
         :lb => (dim::Int) -> begin
             dim >= 1 || throw(ArgumentError("Dimension must be at least 1"))
             fill(-Inf, dim)

@@ -51,7 +51,7 @@ const EASOM_FUNCTION = TestFunction(
             [pi, pi]
         end,
         :min_value => -1.0,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Easom requires exactly 2 dimensions"))
             [-100.0, -100.0]

@@ -1,7 +1,7 @@
 # src/functions/mishrabird.jl
 # Purpose: Implements the MishraBird test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 18 August 2025
+# Last modified: August 24, 2025
 
 export MISHRAbird_FUNCTION, mishrabird, mishrabird_gradient
 
@@ -17,7 +17,7 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 function mishrabird(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("MishraBird requires exactly 2 dimensions")) #
+    n != 2 && throw(ArgumentError("MishraBird requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -60,26 +60,14 @@ const MISHRAbird_FUNCTION = TestFunction(
     mishrabird_gradient,
     Dict(
         :name => "mishrabird",
-        :start => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("MishraBird requires exactly 2 dimensions"))
-            return [-1.0, -1.0]
-        end,
-        :min_position => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("MishraBird requires exactly 2 dimensions"))
-            return [-3.1302468, -1.5821422]  # One of the two global minima
-        end,
-        :min_value => -106.764537, #
-        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded"]), #
-        :lb => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("MishraBird requires exactly 2 dimensions"))
-            return [-10.0, -6.5] #
-        end,
-        :ub => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("MishraBird requires exactly 2 dimensions"))
-            return [0.0, 0.0] #
-        end,
+        :start => () -> [-1.0, -1.0],
+        :min_position => () -> [-3.1302468, -1.5821422], # One of the two global minima
+        :min_value => -106.764537,
+        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded","continuous"]),
+        :lb => () -> [-10.0, -6.5],
+        :ub => () -> [0.0, 0.0],
         :in_molga_smutnicki_2005 => false,
-        :description => "Mishra's Bird function is a multimodal, non-separable function with two known global minima. It is often cited with the constraint (x+5)^2+(y+5)^2 < 25.",
+        :description => "Mishra's Bird function is a multimodal, non-separable function with two known global minima. It is often cited with the constraint (x+5)^2+(y+5)^2 < 25, but this implementation is unconstrained.",
         :math => "f(x, y) = \\sin(y) e^{(1 - \\cos(x))^2} + \\cos(x) e^{(1 - \\sin(y))^2} + (x - y)^2"
     )
 )

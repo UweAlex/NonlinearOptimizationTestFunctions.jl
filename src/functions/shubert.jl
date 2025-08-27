@@ -43,7 +43,7 @@ const SHUBERT_FUNCTION = TestFunction(
     [-1.425128428319761, -0.8003211004719731]
 end,
         :min_value => -186.7309, # Standardwert aus der Literatur
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
             [-10.0, -10.0]

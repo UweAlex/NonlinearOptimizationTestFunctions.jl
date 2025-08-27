@@ -31,7 +31,7 @@ const SPHERE_FUNCTION = TestFunction(
             fill(0.0, n)
         end,
         :min_value => 0.0,
-        :properties => Set(["unimodal", "convex", "separable", "differentiable", "scalable", "bounded"]),
+        :properties => Set(["unimodal", "convex", "separable", "differentiable", "scalable","bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n >= 2 || throw(ArgumentError("Sphere requires at least 2 dimensions"))
             fill(-5.12, n)

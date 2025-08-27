@@ -57,7 +57,7 @@ const EGGHOLDER_FUNCTION = TestFunction(
             [512.0, 404.2318058008512]
         end,
         :min_value => -959.6406627208506,
-        :properties => Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded"]),
+        :properties => Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Eggholder requires exactly 2 dimensions"))
             [-512.0, -512.0]

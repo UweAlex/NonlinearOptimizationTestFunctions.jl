@@ -1,7 +1,7 @@
 # src/functions/threehumpcamel.jl
 # Purpose: Implements the Three-Hump Camel test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 15 August 2025
+# Last modified: August 24, 2025
 
 export THREEHUMPCAMEL_FUNCTION, threehumpcamel, threehumpcamel_gradient
 
@@ -21,7 +21,7 @@ function threehumpcamel(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     x1, x2 = x
-    return 2 * x1^2 - 1.05 * x1^4 + (x1^6) / 6 + x1 * x2 + x2^2
+    return T(2.0) * x1^2 - T(1.05) * x1^4 + (x1^6) / T(6.0) + x1 * x2 + x2^2
 end
 
 """
@@ -33,11 +33,11 @@ function threehumpcamel_gradient(x::AbstractVector{T}) where {T<:Union{Real, For
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
     n != 2 && throw(ArgumentError("Three-Hump Camel requires exactly 2 dimensions"))
-    any(isnan.(x)) && return fill(T(NaN), n)
-    any(isinf.(x)) && return fill(T(Inf), n)
+    any(isnan.(x)) && return fill(T(NaN), 2)
+    any(isinf.(x)) && return fill(T(Inf), 2)
     x1, x2 = x
-    g1 = 4 * x1 - 4.2 * x1^3 + x1^5 + x2
-    g2 = x1 + 2 * x2
+    g1 = T(4.0) * x1 - T(4.2) * x1^3 + x1^5 + x2
+    g2 = x1 + T(2.0) * x2
     return [g1, g2]
 end
 
@@ -46,26 +46,14 @@ const THREEHUMPCAMEL_FUNCTION = TestFunction(
     threehumpcamel_gradient,
     Dict(
         :name => "threehumpcamel",
-        :start => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Three-Hump Camel requires exactly 2 dimensions"))
-            [2.0, 2.0]
-        end,
-        :min_position => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Three-Hump Camel requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
+        :start => () -> [2.0, 2.0],
+        :min_position => () -> [0.0, 0.0],
         :min_value => 0.0,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
-        :lb => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Three-Hump Camel requires exactly 2 dimensions"))
-            [-5.0, -5.0]
-        end,
-        :ub => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Three-Hump Camel requires exactly 2 dimensions"))
-            [5.0, 5.0]
-        end,
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
+        :lb => () -> [-5.0, -5.0],
+        :ub => () -> [5.0, 5.0],
         :in_molga_smutnicki_2005 => false,
-        :description => "Three-Hump Camel function: A multimodal function with three local minima, one global.",
-        :math => "f(x,y) = 2x^2 - 1.05x^4 + \\frac{x^6}{6} + xy + y^2"
+        :description => "Three-Hump Camel function: Multimodal, non-convex, non-separable, differentiable, bounded test function with three local minima and a global minimum at (0.0, 0.0).",
+        :math => "2x_1^2 - 1.05x_1^4 + \\frac{x_1^6}{6} + x_1 x_2 + x_2^2"
     )
 )

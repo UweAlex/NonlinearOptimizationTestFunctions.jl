@@ -1,7 +1,7 @@
 # src/functions/schaffern1.jl
 # Purpose: Implements the SchafferN1 test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 18 August 2025
+# Last modified: August 24, 2025
 
 export SCHAFFERN1_FUNCTION, schaffern1, schaffern1_gradient
 
@@ -68,24 +68,12 @@ const SCHAFFERN1_FUNCTION = TestFunction(
     schaffern1_gradient,
     Dict(
         :name => "schaffern1",
-        :start => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("SchafferN1 requires exactly 2 dimensions"))
-            return [1.0, 1.0]
-        end,
-        :min_position => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("SchafferN1 requires exactly 2 dimensions"))
-            return [0.0, 0.0] # [cite: 101]
-        end,
+        :start => () -> [1.0, 1.0],
+        :min_position => () -> [0.0, 0.0], # [cite: 101]
         :min_value => 0.0, # [cite: 101]
-        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded"]), # [cite: 100]
-        :lb => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("SchafferN1 requires exactly 2 dimensions"))
-            return [-100.0, -100.0] # [cite: 101]
-        end,
-        :ub => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("SchafferN1 requires exactly 2 dimensions"))
-            return [100.0, 100.0] # [cite: 101]
-        end,
+        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded","continuous"]), # [cite: 100]
+        :lb => () -> [-100.0, -100.0], # [cite: 101]
+        :ub => () -> [100.0, 100.0], # [cite: 101]
         :in_molga_smutnicki_2005 => false,
         :description => "Schaffer N1 is a highly multimodal, non-separable function with a global minimum at the center of its domain.",
         :math => "f(x, y) = 0.5 + \\frac{\\sin^2(\\sqrt{x^2 + y^2}) - 0.5}{(1 + 0.001(x^2 + y^2))^2}"

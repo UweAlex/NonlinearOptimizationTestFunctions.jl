@@ -1,7 +1,7 @@
 # src/functions/crossintray.jl
 # Purpose: Implements the Cross-in-Tray test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctionsInJulia.
-# Last modified: 05 August 2025
+# Last modified: 26 August 2025
 
 export CROSSINTRAY_FUNCTION, crossintray, crossintray_gradient
 
@@ -53,25 +53,13 @@ const CROSSINTRAY_FUNCTION = TestFunction(
     crossintray_gradient,
     Dict(
         :name => "crossintray",
-        :start => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Cross-in-Tray requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
-        :min_position => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Cross-in-Tray requires exactly 2 dimensions"))
-            [1.349406575769872, 1.349406575769872]  # One of the four global minima
-        end,
-        :min_value => -2.062611237,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
-        :lb => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Cross-in-Tray requires exactly 2 dimensions"))
-            [-10.0, -10.0]
-        end,
-        :ub => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Cross-in-Tray requires exactly 2 dimensions"))
-            [10.0, 10.0]
-        end,
-        :in_molga_smutnicki_2005 => true,
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [1.349406575769872, 1.349406575769872],
+        :min_value => -2.062611870822739,
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
+        :lb => () -> [-10.0, -10.0],
+        :ub => () -> [10.0, 10.0],
+        :in_molga_smutnicki_2005 => false,  # Fixed to false
         :description => "Cross-in-Tray function: A multimodal, non-convex, non-separable test function with four global minima at [1.349406575769872, 1.349406575769872], [-1.349406575769872, 1.349406575769872], [1.349406575769872, -1.349406575769872], [-1.349406575769872, -1.349406575769872].",
         :math => "-0.0001 \\left( \\left| \\sin(x_1) \\sin(x_2) \\exp\\left( \\left| 100 - \\frac{\\sqrt{x_1^2 + x_2^2}}{\\pi} \\right| \\right) \\right| + 1 \\right)^{0.1}"
     )

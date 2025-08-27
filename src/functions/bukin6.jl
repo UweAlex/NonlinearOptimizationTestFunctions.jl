@@ -50,24 +50,12 @@ const BUKIN6_FUNCTION = TestFunction(
     bukin6_gradient,
     Dict(
         :name => "bukin6",
-        :start => (n::Int) -> begin
-            n == 2 || throw(ArgumentError("Bukin N.6 requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
-        :min_position => (n::Int) -> begin
-            n == 2 || throw(ArgumentError("Bukin N.6 requires exactly 2 dimensions"))
-            [-10.0, 1.0]
-        end,
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [-10.0, 1.0],
         :min_value => 0.0,
-        :properties => Set(["partially differentiable", "non-convex", "multimodal"]),
-        :lb => (n::Int) -> begin
-            n == 2 || throw(ArgumentError("Bukin N.6 requires exactly 2 dimensions"))
-            [-15.0, -3.0]
-        end,
-        :ub => (n::Int) -> begin
-            n == 2 || throw(ArgumentError("Bukin N.6 requires exactly 2 dimensions"))
-            [-5.0, 3.0]
-        end,
+        :properties => Set(["partially differentiable", "non-convex", "multimodal", "bounded", "continuous"]),
+        :lb => () -> [-15.0, -3.0],
+        :ub => () -> [-5.0, 3.0],
         :in_molga_smutnicki_2005 => true,
         :description => "Bukin function N.6: Multimodal, partially differentiable, non-convex function with global minimum at zero, defined for 2 dimensions.",
         :math => "100 \\sqrt{|x_2 - 0.01 x_1^2|} + 0.01 |x_1 + 10|"

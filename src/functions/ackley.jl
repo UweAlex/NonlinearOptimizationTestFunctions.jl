@@ -58,7 +58,7 @@ const ACKLEY_FUNCTION = TestFunction(
         :start => (n::Int=1) -> fill(1.0, n),
         :min_position => (n::Int=1) -> fill(0.0, n),
         :min_value => 0.0,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "scalable", "bounded"]),
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "scalable", "bounded","continuous"]),
         :lb => (n::Int=1; bounds="default") -> bounds == "benchmark" ? fill(-32.768, n) : fill(-5.0, n),
         :ub => (n::Int=1; bounds="default") -> bounds == "benchmark" ? fill(32.768, n) : fill(5.0, n),
         :description => "Ackley function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Default bounds are [-5, 5], but [-32.768, 32.768] are recommended for standard benchmarks.",

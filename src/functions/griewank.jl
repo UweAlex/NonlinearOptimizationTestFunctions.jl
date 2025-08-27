@@ -51,7 +51,9 @@ const GRIEWANK_FUNCTION = TestFunction(
             fill(0.0, n)
         end,
         :min_value => 0.0,
-        :properties => Set(["differentiable", "multimodal", "separable", "scalable"]),
+        :properties => Set(["differentiable", "multimodal", "separable", "scalable","bounded","continuous"
+
+]),
         :lb => (n::Int=1) -> begin
             n >= 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
             fill(-600.0, n)

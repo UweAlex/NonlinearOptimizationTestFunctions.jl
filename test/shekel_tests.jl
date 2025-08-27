@@ -23,7 +23,7 @@ using NonlinearOptimizationTestFunctions: SHEKEL_FUNCTION, shekel
     @test tf.meta[:lb](n) == [0.0, 0.0, 0.0, 0.0]
     @test tf.meta[:ub](n) == [10.0, 10.0, 10.0, 10.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "finite_at_inf"])
+    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "finite_at_inf","continuous"])
     @testset "Optimization Tests" begin
         start = tf.meta[:min_position](n) + 0.01 * randn(n)  # Start nahe Minimum für multimodale Funktion
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))

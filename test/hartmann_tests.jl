@@ -23,7 +23,7 @@ using NonlinearOptimizationTestFunctions: HARTMANN_FUNCTION, hartmann
     @test tf.meta[:lb](n) == fill(0.0, 3)
     @test tf.meta[:ub](n) == fill(1.0, 3)
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable"])
+    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable" ,"bounded","continuous"])
     @testset "Optimization Tests" begin
         start = tf.meta[:min_position](n) + 0.01 * randn(n)  # Leichtes Rauschen für multimodale Funktion
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))

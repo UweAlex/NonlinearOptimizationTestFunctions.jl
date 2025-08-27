@@ -41,7 +41,7 @@ const RASTRIGIN_FUNCTION = TestFunction(
         :start => (n::Int=1) -> fill(1.0, n),
         :min_position => (n::Int=1) -> fill(0.0, n),
         :min_value => 0.0,
-        :properties => Set(["multimodal", "non-convex", "separable", "differentiable", "scalable", "bounded"]),
+        :properties => Set(["multimodal", "non-convex", "separable", "differentiable", "scalable", "bounded","bounded","continuous"]),
         :lb => (n::Int=1) -> fill(-5.12, n),
         :ub => (n::Int=1) -> fill(5.12, n),
         :description => "Rastrigin function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Bounds are [-5.12, 5.12].",

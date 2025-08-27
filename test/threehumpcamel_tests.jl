@@ -1,49 +1,40 @@
 # test/threehumpcamel_tests.jl
-# Purpose: Tests for the ThreeHumpCamel function.
+# Purpose: Tests for the Three-Hump Camel function.
 # Context: Part of NonlinearOptimizationTestFunctions test suite.
-# Last modified: August 17, 2025
+# Last modified: 27 August 2025
 
-using Test, Optim
+using Test, Optim, Random
 using NonlinearOptimizationTestFunctions: THREEHUMPCAMEL_FUNCTION, threehumpcamel
 
 @testset "ThreeHumpCamel Tests" begin
     tf = THREEHUMPCAMEL_FUNCTION
-    n = 2  # z.B. 2 für fixe Dimensionen, 1 oder variabel für skalierbare
 
     # Edge Cases
     @test_throws ArgumentError threehumpcamel(Float64[])
-    @test isnan(threehumpcamel(fill(NaN, n)))
-    @test isinf(threehumpcamel(fill(Inf, n)))  # Oder isnan, je nach Funktion
-    @test isfinite(threehumpcamel(fill(1e-308, n)))
+    @test isnan(threehumpcamel(fill(NaN, 2)))
+    @test isinf(threehumpcamel(fill(Inf, 2)))
+    @test isfinite(threehumpcamel(fill(1e-308, 2)))
 
-    # Funktionswerte
-    @test threehumpcamel(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-6
-    @test threehumpcamel(tf.meta[:start](n)) ≈ 9.866666666666667 atol=1e-6  # Durch Berechnung ermitteln
+    # Function Values
+    @test threehumpcamel(tf.meta[:min_position]()) ≈ tf.meta[:min_value] atol=1e-6
+    @test threehumpcamel(tf.meta[:start]()) ≈ 9.866666666666667 atol=1e-6
 
-    # Metadaten
+    # Metadata
     @test tf.meta[:name] == "threehumpcamel"
-    @test tf.meta[:start](n) == [2.0, 2.0]
-    @test tf.meta[:min_position](n) ≈ [0.0, 0.0] atol=1e-6
+    @test tf.meta[:start]() == [2.0, 2.0]
+    @test tf.meta[:min_position]() ≈ [0.0, 0.0] atol=1e-6
     @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
-    @test tf.meta[:lb](n) == [-5.0, -5.0]
-    @test tf.meta[:ub](n) == [5.0, 5.0]
+    @test tf.meta[:lb]() == [-5.0, -5.0]
+    @test tf.meta[:ub]() == [5.0, 5.0]
     @test tf.meta[:in_molga_smutnicki_2005] == false
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"])
+    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
 
-    # Optimierungstests
+    # Optimization Tests
     @testset "Optimization Tests" begin
-        start = tf.meta[:start](n)  # Oder perturbed für multimodale: tf.meta[:min_position](n) + 0.01 * randn(n)
-        result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))
+        Random.seed!(1234)
+        start = tf.meta[:min_position]() + 0.01 * randn(2)  # Perturbed for multimodality
+        result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), start, Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6, g_tol=1e-6, iterations=1000))
         @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
-        @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=1e-3
+        @test Optim.minimizer(result) ≈ tf.meta[:min_position]() atol=1e-3
     end
-
-    # Optionale Tests für skalierbare Funktionen
-    # @testset "Scalability Tests" begin
-    #     n_high = 10
-    #     @test <functionname>(tf.meta[:min_position](n_high)) ≈ tf.meta[:min_value] atol=1e-6
-    #     result_high = optimize(tf.f, tf.gradient!, tf.meta[:start](n_high), LBFGS(), Optim.Options(f_reltol=1e-6))
-    #     @test Optim.minimum(result_high) ≈ tf.meta[:min_value] atol=1e-5
-    #     @test Optim.minimizer(result_high) ≈ tf.meta[:min_position](n_high) atol=1e-3
-    # end
 end

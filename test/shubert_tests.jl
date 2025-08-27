@@ -23,7 +23,7 @@ using NonlinearOptimizationTestFunctions: SHUBERT_FUNCTION, shubert, shubert_gra
     @test tf.meta[:lb](n) == [-10.0, -10.0]
     @test tf.meta[:ub](n) == [10.0, 10.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"])
+    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"])
     @testset "Minimum Verification" begin
         min_pos = tf.meta[:min_position](n)
         @test shubert(min_pos) ≈ -186.730908831 atol=1e-5

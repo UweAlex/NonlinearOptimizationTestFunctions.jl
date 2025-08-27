@@ -1,34 +1,56 @@
 # test/dejongf4_tests.jl
-# Purpose: Tests for the De Jong F4 function.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia test suite.
-# Last modified: 11 August 2025
+# Purpose: Tests for the De Jong F4 test function in NonlinearOptimizationTestFunctions.
+# Context: Verifies function values, metadata, edge cases, and optimization for dejongf4.jl.
+# Last modified: 26 August 2025
 
-using Test, Optim
-using NonlinearOptimizationTestFunctions: DEJONGF4_FUNCTION, dejongf4
-using Random
+using Test
+using Optim
+using ForwardDiff
+using LinearAlgebra
+using NonlinearOptimizationTestFunctions: DEJONGF4_FUNCTION, dejongf4, dejongf4_gradient
 
 @testset "De Jong F4 Tests" begin
     tf = DEJONGF4_FUNCTION
-    n = 2
-    Random.seed!(1234)  # Für reproduzierbare Tests
-    @test_throws ArgumentError dejongf4(Float64[])
-    @test isnan(dejongf4(fill(NaN, n)))
-    @test isinf(dejongf4(fill(Inf, n)))
-    @test isfinite(dejongf4(fill(1e-308, n)))
-    @test abs(dejongf4(tf.meta[:min_position](n)) - tf.meta[:min_value]) <= 1.0  # Noise in [0,1)
-    @test abs(dejongf4(tf.meta[:start](n)) - tf.meta[:min_value]) <= 1.0  # Start at zeros
-    @test tf.meta[:name] == "dejongf4"
-    @test tf.meta[:start](n) == zeros(n)
-    @test tf.meta[:min_position](n) == zeros(n)
-    @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
-    @test tf.meta[:lb](n) == fill(-1.28, n)
-    @test tf.meta[:ub](n) == fill(1.28, n)
-    @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["unimodal", "convex", "separable", "partially differentiable", "scalable", "continuous", "bounded", "has_noise"])
+    n = 2  # Test dimension
+
+    @testset "Basic Tests" begin
+        @test tf.meta[:name] == "dejongf4"
+        @test isfinite(dejongf4(tf.meta[:lb](n); noise=0.0))
+        @test isfinite(dejongf4(tf.meta[:ub](n); noise=0.0))
+        @test tf.meta[:min_value] ≈ 0.0 atol=1e-3
+        @test dejongf4(tf.meta[:min_position](n); noise=0.0) ≈ tf.meta[:min_value] atol=1e-3 rtol=1e-2
+        @test 0.0 <= dejongf4(tf.meta[:start](n); noise=0.0) < 1.0
+        @test tf.meta[:start](n) == zeros(Float64, n)
+        @test tf.meta[:min_position](n) ≈ zeros(Float64, n) atol=1e-3
+        @test tf.meta[:properties] == Set(["unimodal", "convex", "separable", "partially differentiable", "scalable", "continuous", "bounded", "has_noise"])
+        @test tf.meta[:lb](n) == fill(-1.28, n)
+        @test tf.meta[:ub](n) == fill(1.28, n)
+    end
+
     @testset "Optimization Tests" begin
-        start = tf.meta[:start](n)
-        result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))
-        @test abs(Optim.minimum(result) - tf.meta[:min_value]) <= 1.0  # Noise in [0,1)
-        @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=1e-3
+        res = optimize(x -> dejongf4(x; noise=0.0), tf.meta[:start](n), NelderMead(), Optim.Options(iterations=1000))
+        @test Optim.converged(res)
+        @test Optim.minimum(res) ≈ tf.meta[:min_value] atol=1e-2 rtol=1e-2
+        @test Optim.minimizer(res) ≈ tf.meta[:min_position](n) atol=1e-2
+    end
+
+    @testset "Gradient Comparison Tests" begin
+        lb = tf.meta[:lb](n)
+        ub = tf.meta[:ub](n)
+        for _ in 1:5
+            x = lb .+ (ub .- lb) .* rand(n)
+            programmed_grad = dejongf4_gradient(x; noise=0.0)
+            ad_grad = ForwardDiff.gradient(x -> dejongf4(x; noise=0.0), x)
+            @test isapprox(programmed_grad, ad_grad, atol=1e-3)
+        end
+    end
+
+    @testset "Edge Cases" begin
+        @test_throws ArgumentError dejongf4(Float64[])
+        @test isnan(dejongf4([NaN, 0.0]; noise=0.0))
+        @test isnan(dejongf4([0.0, NaN]; noise=0.0))
+        @test isinf(dejongf4([Inf, 0.0]; noise=0.0))
+        @test isinf(dejongf4([0.0, Inf]; noise=0.0))
+        @test isfinite(dejongf4([1e-308, 1e-308]; noise=0.0))
     end
 end

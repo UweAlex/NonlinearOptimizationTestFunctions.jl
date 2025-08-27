@@ -74,7 +74,7 @@ const HARTMANN_FUNCTION = TestFunction(
     [0.114614339099637, 0.5556488499706311, 0.8525469535196916]
 end,
         :min_value => -3.86278214782076,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable"]),
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable","bounded","continuous"]),
         :lb => (n::Int=3) -> begin
             n == 3 || throw(ArgumentError("Hartmann requires exactly 3 dimensions"))
             fill(0.0, 3)

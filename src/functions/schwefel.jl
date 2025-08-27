@@ -55,7 +55,7 @@ const SCHWEFEL_FUNCTION = TestFunction(
              fill(420.9687463209481, n)
         end,
         :min_value => 0.0,
-        :properties => Set(["multimodal", "non-convex", "separable", "differentiable", "scalable", "bounded"]),
+        :properties => Set(["multimodal", "non-convex", "separable", "differentiable", "scalable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n >= 1 || throw(ArgumentError("Schwefel requires at least 1 dimension"))
             fill(-500.0, n)

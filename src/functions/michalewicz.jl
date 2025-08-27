@@ -87,7 +87,7 @@ const MICHALEWICZ_FUNCTION = TestFunction(
                 return -0.8013 * n  # Approximate scaling
             end
         end,
-        :properties => Set(["multimodal", "non-separable", "differentiable", "scalable", "bounded"]),
+        :properties => Set(["multimodal", "non-separable", "differentiable", "scalable", "bounded","bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n >= 2 || throw(ArgumentError("Michalewicz requires at least 2 dimensions"))
             fill(0.0, n)

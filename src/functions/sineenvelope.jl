@@ -66,7 +66,7 @@ const SINEENVELOPE_FUNCTION = TestFunction(
             n == 2 || throw(ArgumentError("SineEnvelope requires exactly 2 dimensions"))
             [100.0, 100.0]
         end,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
         :in_molga_smutnicki_2005 => true
     )
 )

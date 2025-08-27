@@ -23,7 +23,7 @@ using NonlinearOptimizationTestFunctions: GOLDSTEINPRICE_FUNCTION, goldsteinpric
     @test tf.meta[:lb](n) == [-2.0, -2.0]
     @test tf.meta[:ub](n) == [2.0, 2.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded"])
+    @test Set(tf.meta[:properties]) == Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded","continuous"])
     @testset "Optimization Tests" begin
         start = tf.meta[:min_position](n) + 0.01 * randn(n)  # Start nahe Minimum wegen Multimodalität
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))

@@ -73,7 +73,7 @@ const RANA_FUNCTION = TestFunction(
             [-500.0, -499.0733150925747]  # Vorläufig, muss überprüft werden
         end,
         :min_value =>  -498.12463264808594,  # Vorläufig, muss überprüft werden
-        :properties => Set(["multimodal", "partially differentiable", "non-separable"]),
+        :properties => Set(["multimodal", "partially differentiable", "non-separable","bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
             [-500.0, -500.0]

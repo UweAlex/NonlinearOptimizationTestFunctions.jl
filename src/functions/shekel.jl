@@ -84,7 +84,7 @@ const SHEKEL_FUNCTION = TestFunction(
     [4.000746531592147, 4.000592934138629, 3.9996633980404135, 3.9995098005868956]
 end,
        :min_value => -10.536409816692043,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "finite_at_inf"]),
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "finite_at_inf","continuous"]),
         :lb => (n::Int=4) -> begin
             n == 4 || throw(ArgumentError("Shekel requires exactly 4 dimensions"))
             fill(0.0, n)

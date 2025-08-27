@@ -67,7 +67,7 @@ const GOLDSTEINPRICE_FUNCTION = TestFunction(
             [0.0, -1.0]
         end,
         :min_value => 3.0,
-        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded"]),
+        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Goldstein-Price requires exactly 2 dimensions"))
             [-2.0, -2.0]

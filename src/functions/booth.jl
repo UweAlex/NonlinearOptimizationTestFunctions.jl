@@ -1,7 +1,7 @@
 # src/functions/booth.jl
 # Purpose: Implements the Booth test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 16. August 2025
+# Last modified: August 24, 2025
 
 export BOOTH_FUNCTION, booth, booth_gradient
 
@@ -44,26 +44,17 @@ const BOOTH_FUNCTION = TestFunction(
     booth_gradient,
     Dict(
         :name => "booth",
-        :start => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Booth requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
-        :min_position => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Booth requires exactly 2 dimensions"))
-            [1.0, 3.0]
-        end,
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [1.0, 3.0],
         :min_value => 0.0,
-        :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "bounded"]),
-        :lb => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Booth requires exactly 2 dimensions"))
-            [-10.0, -10.0]
-        end,
-        :ub => (n::Int) -> begin
-            n != 2 && throw(ArgumentError("Booth requires exactly 2 dimensions"))
-            [10.0, 10.0]
-        end,
+        :properties => Set(["unimodal", "convex", "separable", "differentiable", "bounded","continuous"]),
+        :lb => () -> [-10.0, -10.0],
+        :ub => () -> [10.0, 10.0],
         :in_molga_smutnicki_2005 => true,
-        :description => "Booth function: Unimodal, convex, quadratic test function.",
-        :math => "(x + 2y - 7)^2 + (2x + y - 5)^2"
+        :description => "Booth function: Unimodal, convex, separable, differentiable, bounded quadratic test function with a single global minimum at (1, 3).",
+        :math => "(x_1 + 2x_2 - 7)^2 + (2x_1 + x_2 - 5)^2"
     )
 )
+
+
+
