@@ -63,7 +63,8 @@ include("functions/trid.jl")
 include("functions/wood.jl")
 include("functions/zakharov.jl")
 
-
+include("functions/alpinen1.jl")
+include("functions/alpinen2.jl")
 
 
 

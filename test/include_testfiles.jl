@@ -63,6 +63,9 @@ include("trid_tests.jl")
 include("wood_tests.jl")
 include("zakharov_tests.jl")
 
+include("alpinen1_tests.jl")
+include("alpinen2_tests.jl")
+
 
 
 

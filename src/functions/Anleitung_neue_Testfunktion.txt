@@ -146,7 +146,7 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
 
    **Vorlage für skalierbare Funktionen (z. B. Rosenbrock, Ackley):**
 
-       ```julia
+       
        # src/functions/<functionname>.jl
        # Purpose: Implements the <FunctionName> test function with its gradient for nonlinear optimization.
        # Context: Part of NonlinearOptimizationTestFunctions.
@@ -216,11 +216,11 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
                :math => "<mathematische Formel in LaTeX>"
            )
        )
-       ```
+       
 
    **Vorlage für nicht-skalierbare Funktionen (z. B. Booth, Giunta, Branin, Beale, BartelsConn):**
 
-       ```julia
+       
        # src/functions/<functionname>.jl
        # Purpose: Implements the <FunctionName> test function with its gradient for nonlinear optimization.
        # Context: Part of NonlinearOptimizationTestFunctions.
@@ -278,7 +278,7 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
                :math => "<mathematische Formel in LaTeX>"
            )
        )
-       ```
+
 
    - Stelle sicher, dass `:min_position` das globale Minimum für die Funktion liefert, wo der Funktionswert `:min_value` ist. Recherchiere an verschiedenen Stellen im Internet (z. B. al-roomi.org, sfu.ca, geatbx.com, indusmic.com), um die präzisesten Werte zu finden, und überprüfe diese durch manuelle Berechnung oder Ausführen der Funktion.
    - Stelle sicher, dass `:start` einen geeigneten Startpunkt liefert.
@@ -292,18 +292,30 @@ WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Min
 2. Funktion in `src/include_testfunctions.jl` einbinden:
    - Füge `include("functions/<functionname>.jl")` hinzu, damit die Funktion in `TEST_FUNCTIONS` registriert wird.
 
+
 3. Tests in `test/<functionname>_tests.jl` erstellen:
-   - Erstelle eine Testdatei mit lowercase-Namen (z. B. `branin_tests.jl`).
-   - Verwende gezielte Imports (`using NonlinearOptimizationTestFunctions: <FUNCTIONNAME>_FUNCTION, <functionname>`).
-   - Teste Funktionswerte, Metadaten, Edge Cases (`NaN`, `Inf`, `1e-308`, leere Eingabe, falsche Dimensionen) und Optimierung mit `Optim.jl`.
-   - **Verwende deterministische Werte oder Matrizen in den Tests, um konsistente Ergebnisse zu gewährleisten. Beispiel: Für skalierbare Funktionen wie die quadratische Funktion, verwende explizite positiv definite Matrizen wie `Symmetric(Matrix(Diagonal(fill(2.0, n))))`.**
-   - **Für Funktionen mit definierten Schranken in den Metadaten (`:lb`, `:ub`), verwende `Fminbox` in den Optimierungstests, um die Schranken zu respektieren und Divergenz zu vermeiden, insbesondere bei multimodalen Funktionen. Beispiel: Für Funktionen wie `adjiman` mit `lb=[-1.0, -1.0]` und `ub=[2.0, 1.0]`, verwende `Fminbox(LBFGS())` mit den Schranken aus `tf.meta[:lb](n)` und `tf.meta[:ub](n)`.**
-   - **Für nicht überall differenzierbare Funktionen (z.B. `BartelsConn`), verwende derivative-free Optimierer wie `NelderMead` in Optimierungstests, um `DomainError`s zu vermeiden. Teste die Nicht-Differenzierbarkeit mit `@test_throws DomainError <functionname>_gradient(x)` an Punkten, wo der Gradient nicht definiert ist (z.B. am Minimum). Verwende deterministische Startpunkte (z.B. `[1.0, 1.0]` statt `tf.meta[:start]() + 0.01 * randn(n)`), um Konvergenzprobleme bei multimodalen Funktionen zu minimieren.**
-   - **Für nicht-skalierbare Funktionen (z.B. `Beale`, `n=2`) rufe Metadatenfunktionen ohne Argumente auf (z.B. `tf.meta[:start]()` statt `tf.meta[:start](n)`), um `MethodError`s zu vermeiden.**
-   - **Teste `:in_molga_smutnicki_2005` gegen die Literatur (z.B. `true` für `Beale`, `BartelsConn` gemäß [Molga & Smutnicki (2005)]), um Testfehler zu vermeiden.**
-   - Überprüfe Funktionswerte am Startpunkt und Minimum manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca).
-   - Für multimodale Funktionen mit mehreren Minima, prüfe, ob das gefundene Minimum einem der globalen Minima nahe ist (siehe `branin_tests.jl`).
-   - Verwende die recherchierten, präzisen Werte für `:min_position` und `:min_value` in den Tests, um Testfehler durch gerundete Literaturwerte zu vermeiden.
+
+* Erstelle eine Testdatei mit lowercase-Namen (z. B. `branin_tests.jl`).
+* Verwende gezielte Imports (`using NonlinearOptimizationTestFunctions: <FUNCTIONNAME>_FUNCTION, <functionname>`).
+* Teste Funktionswerte, Metadaten, Edge Cases (`NaN`, `Inf`, `1e-308`, leere Eingabe, falsche Dimensionen) und Optimierung mit `Optim.jl`.
+* Verwende deterministische Werte oder Matrizen in den Tests, um konsistente Ergebnisse zu gewährleisten.
+* Für Funktionen mit Schranken (`:lb`, `:ub` in den Metadaten) nutze `Fminbox`, um Divergenz zu vermeiden.
+* Für nicht überall differenzierbare Funktionen verwende derivative-free Optimierer wie `NelderMead`.
+* Für nicht-skalierbare Funktionen (`Beale`, `BartelsConn`, …) rufe Metadatenfunktionen ohne Argumente auf (`tf.meta[:start]()`).
+* Überprüfe `:in_molga_smutnicki_2005` gegen die Literatur.
+* Vergleiche die erwarteten Funktionswerte am Startpunkt und Minimum mit den implementierten Werten.
+* **NEUE REGEL:** Falls diese Tests (Position, Wert, Gradient im Minimum) fehlschlagen:
+
+  * Suche das Minimum numerisch (z. B. `optimize(tf.f, tf.meta[:lb](n), tf.meta[:ub](n), tf.meta[:start](n), Fminbox(LBFGS()))`).
+  * Gib das gefundene Minimum (Position und Wert) mit `@info` oder `@warn` aus.
+  * Berechne die Abstände zwischen Literaturwerten (`:min_position`, `:min_value`) und den gefundenen Werten.
+  * **Wenn der Unterschied kleiner als eine Toleranz (`atol=1e-4` für Werte, `normdiff ≤ 1e-3` für Positionen) ist:**
+
+    * Aktualisiere die Tests so, dass das gefundene Minimum akzeptiert wird.
+  * **Wenn der Unterschied größer ist:**
+
+    * Brich den Test mit `@test` ab und kennzeichne dies als relevanten Fehler in der Implementierung oder in den Literaturangaben.
+
 
 4. Tests in `test/include_testfiles.jl` einbinden:
    - Füge `include("<functionname>_tests.jl")` hinzu.

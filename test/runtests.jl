@@ -36,13 +36,13 @@ end
 
 @testset "Filter and Properties Tests" begin
     println("Starting Filter and Properties Tests")
-	@test length(filter_testfunctions(tf -> has_property(tf, "bounded"))) == 52
+	@test length(filter_testfunctions(tf -> has_property(tf, "bounded"))) == 54
     @test length(filter_testfunctions(tf -> has_property(tf, "continuous"))) == 53
-    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 40
+    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 42
     @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 10
-    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 49
+    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 50
     @test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4
-    @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 5
+    @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 6
     finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
     @test length(finite_at_inf_funcs) == 3  # dejongf5, shekel
     @test has_property(add_property(ROSENBROCK_FUNCTION, "bounded"), "bounded")
