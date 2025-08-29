@@ -1,14 +1,14 @@
 # src/functions/ackley.jl
 # Purpose: Implements the Ackley test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 14. Juli 2025, 17:05 PM CEST
+# Last modified: 29 August 2025, 08:30 AM CEST
 
 """
     ackley(x::AbstractVector)
 Computes the Ackley function value at point `x`. Requires at least 1 dimension.
-Default bounds are `[-5, 5]`, but `[-32.768, 32.768]` are recommended for benchmarks (use `meta[:lb](n, bounds="benchmark")`).
+Standard bounds are [-32.768, 32.768]^n as per Molga & Smutnicki (2005).
+Alternative bounds [-5, 5]^n can be used via `meta[:lb](n, bounds="alternative")`.
 """
-
 function ackley(x::AbstractVector)
     length(x) >= 1 || throw(ArgumentError("Ackley requires at least 1 dimension"))
     T = eltype(x)
@@ -26,6 +26,7 @@ end
 """
     ackley_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
 Computes the gradient of the Ackley function. Returns a vector of length n.
+At the global minimum x = [0, ..., 0], the gradient is zero.
 """
 function ackley_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) >= 1 || throw(ArgumentError("Ackley requires at least 1 dimension"))
@@ -37,7 +38,7 @@ function ackley_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff
     c = 2 * π
     sum_squares = sum(x.^2)
     if sum_squares == 0
-        return zeros(T, n)  # Sonderbehandlung für x = [0.0, ...]
+        return zeros(T, n)  # Gradient is zero at x = [0, ..., 0]
     end
     sqrt_sum_squares = sqrt(sum_squares / n)
     term1 = (a * b / sqrt_sum_squares) * exp(-b * sqrt_sum_squares) / n
@@ -49,7 +50,6 @@ function ackley_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff
     return grad
 end
 
-
 const ACKLEY_FUNCTION = TestFunction(
     ackley,
     ackley_gradient,
@@ -58,10 +58,13 @@ const ACKLEY_FUNCTION = TestFunction(
         :start => (n::Int=1) -> fill(1.0, n),
         :min_position => (n::Int=1) -> fill(0.0, n),
         :min_value => 0.0,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "scalable", "bounded","continuous"]),
-        :lb => (n::Int=1; bounds="default") -> bounds == "benchmark" ? fill(-32.768, n) : fill(-5.0, n),
-        :ub => (n::Int=1; bounds="default") -> bounds == "benchmark" ? fill(32.768, n) : fill(5.0, n),
-        :description => "Ackley function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Default bounds are [-5, 5], but [-32.768, 32.768] are recommended for standard benchmarks.",
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "scalable", "bounded", "continuous"]),
+        :lb => (n::Int=1; bounds="default") -> bounds == "alternative" ? fill(-5.0, n) : fill(-32.768, n),
+        :ub => (n::Int=1; bounds="default") -> bounds == "alternative" ? fill(5.0, n) : fill(32.768, n),
+        :in_molga_smutnicki_2005 => true,
+        :description => "Ackley function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Standard bounds are [-32.768, 32.768]^n as per Molga & Smutnicki (2005). Alternative bounds [-5, 5]^n are available.",
         :math => "f(x) = -20 \\exp\\left(-0.2 \\sqrt{\\frac{1}{n} \\sum_{i=1}^n x_i^2}\\right) - \\exp\\left(\\frac{1}{n} \\sum_{i=1}^n \\cos(2\\pi x_i)\\right) + 20 + e"
     )
 )
+
+export ACKLEY_FUNCTION, ackley, ackley_gradient
