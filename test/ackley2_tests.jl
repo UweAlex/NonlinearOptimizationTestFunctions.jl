@@ -26,7 +26,7 @@ using NonlinearOptimizationTestFunctions: ACKLEY2_FUNCTION, ackley2
     @test tf.meta[:lb]() == [-32.0, -32.0]
     @test tf.meta[:ub]() == [32.0, 32.0]
     @test tf.meta[:in_molga_smutnicki_2005] == false
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "continuous", "bounded"])
+    @test Set(tf.meta[:properties]) == Set(["unimodal", "non-convex", "non-separable", "differentiable", "continuous", "bounded"])
 
     # Funktionswerte
     start = [1.0, 1.0]  # Typischer Startpunkt

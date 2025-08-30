@@ -38,7 +38,7 @@ end
     println("Starting Filter and Properties Tests")
 	@test length(filter_testfunctions(tf -> has_property(tf, "bounded"))) == 54
     @test length(filter_testfunctions(tf -> has_property(tf, "continuous"))) == 53
-    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 42
+    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 41
     @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 10
     @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 51
     @test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4

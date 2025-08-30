@@ -10,7 +10,8 @@ Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tes
 WICHTIGER HINWEIS ZU OPTIMIERUNGSTESTS: Optimierungstests in test/<functionname>_tests.jl dienen primär der Überprüfung der Kompatibilität mit Optim.jl. Mathematisch begründete Abweichungen vom globalen Minimum (z. B. bei multimodalen Funktionen wie Ackley, Rastrigin oder Schwefel) sind akzeptabel, da das Ziel die Funktionalität der Funktion mit Optim.jl ist, nicht zwingend das Finden des globalen Minimums. Um Konvergenzprobleme zu minimieren, sollte der Startpunkt für Optimierungstests nahe am bekannten Minimum gewählt werden (z. B. [0.1, 0.1] statt [1.0, 1.0] für Ackley). Verwende lockere Toleranzen (z. B. atol=1e-2 für Minimizer, 1e-4 für Funktionswerte) bei multimodalen Funktionen oder Funktionen mit numerischen Instabilitäten.
 
 Die Testfunktionen, die bereits implementiert sind, erkennt man sicher an der Datei: src/include_testfunctions.jl. Zwischenbericht und Readme sind oft nicht aktuell.
-
+Neu zu implementierende Funktionen stehen hoffentlich in der Readme.md
+Bei der Wahl welche Funktion bevorzugt implementiert werden soll finde am Besten wenisgstens eine Implementierung mit Sourcecode im Netz 
 WICHTIGES VERBOT: Die gradient!-Funktion darf unter keinen Umständen explizit in einer Testfunktion definiert werden. Sie wird automatisch vom TestFunction-Konstruktor in src/NonlinearOptimizationTestFunctions.jl als (G, x) -> copyto!(G, grad(x)) generiert. Eine explizite Definition führt zu Redundanzen, Inkonsistenzen und Verstößen gegen die Projektstruktur.
 
 WICHTIGER HINWEIS: Der TestFunction-Konstruktor akzeptiert drei positionale Argumente (f, grad, meta), wobei meta ein Dict mit den erforderlichen Schlüsseln (:name, :start, :min_position, :min_value, :properties, :lb, :ub, :in_molga_smutnicki_2005) ist. Verwenden Sie keine benannten Argumente (z. B. TestFunction(; name=..., f=...)), da dies zu einem MethodError führt. Orientieren Sie sich an den bestehenden Testfunktionen wie ackley.jl, rosenbrock.jl oder branin.jl für die korrekte Struktur.
@@ -52,6 +53,9 @@ NEUER HINWEIS ZU MOLGA & SMUTNICKI (2005): Stelle sicher, dass :in_molga_smutnic
 
 NEUER HINWEIS ZU NEUEN EIGENSCHAFTEN UND DIMENSIONALITÄT: 
 Beim Hinzufügen einer neuen Testfunktion ist Vorsicht bei der Einführung neuer Eigenschaften geboten. Neue Eigenschaften dürfen nur eingeführt werden, wenn sie in der Literatur explizit begründet sind (z. B. Jamil & Yang, 2013; Molga & Smutnicki, 2005) und in VALID_PROPERTIES in src/NonlinearOptimizationTestFunctions.jl definiert sind. Ohne diese Definition führt die Verwendung einer neuen Eigenschaft zu einem ArgumentError: Invalid properties beim Precompiling. Beispiel: Die Powell-Funktion (n=4) wurde zunächst mit der Eigenschaft fixed implementiert, was einen Fehler verursachte, da fixed nicht in VALID_PROPERTIES enthalten war.
+
+Funktionssignaturen sollten x::AbstractVector ohne Typparameter akzeptieren, und der Typ muss erst innerhalb der Funktion überprüft werden (eltype(x) <: Union{Real, ForwardDiff.Dual}).
+Damit bestehen die Funktionen auch den Edge Cases Test mit Vector{Any}(), der sonst zu MethodError führt.
 
 Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=4, Hartmann mit n=3, Shekel mit n=4) ist nicht notwendig, da die feste Dimension bereits durch das Fehlen der Eigenschaft scalable und die Implementierung implizit abgedeckt wird:
 - Für Funktionen mit fester Dimension (z. B. Powell, Hartmann, Shekel) definiere Metadatenfunktionen (:start, :min_position, :lb, :ub) ohne Parameter, z. B.:
