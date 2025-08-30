@@ -65,6 +65,7 @@ include("zakharov_tests.jl")
 include("alpinen1_tests.jl")
 include("alpinen2_tests.jl")
 include("powell_tests.jl")
+include("colville_tests.jl")
 
 
 

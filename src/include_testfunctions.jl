@@ -65,7 +65,7 @@ include("functions/zakharov.jl")
 include("functions/alpinen1.jl")
 include("functions/alpinen2.jl")
 include("functions/powell.jl")
-
+include("functions/colville.jl")
 
 
 
