@@ -1,19 +1,19 @@
-# src/functions/hartmann.jl
+# src/functions/hartmanf3.jl
 # Purpose: Implements the Hartmann test function (n=3) with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
 # Last modified: 01 August 2025
 
-export HARTMANN_FUNCTION, hartmann, hartmann_gradient
+export HARTMANF3_FUNCTION, hartmanf3, hartmanf3_gradient
 
 using LinearAlgebra
 using ForwardDiff
 
 """
-    hartmann(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+    hartmanf3(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
 Computes the Hartmann function value at point `x`. Requires exactly 3 dimensions.
 Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 """
-function hartmann(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function hartmanf3(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 3 || throw(ArgumentError("Hartmann requires exactly 3 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
@@ -34,10 +34,10 @@ function hartmann(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
 end
 
 """
-    hartmann_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+    hartmanf3_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
 Computes the gradient of the Hartmann function. Returns a vector of length 3.
 """
-function hartmann_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function hartmanf3_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 3 || throw(ArgumentError("Hartmann requires exactly 3 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 3)
     any(isinf.(x)) && return fill(T(Inf), 3)
@@ -60,11 +60,11 @@ function hartmann_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDi
     return grad  # Removed the incorrect negation
 end
 
-const HARTMANN_FUNCTION = TestFunction(
-    hartmann,
-    hartmann_gradient,
+const HARTMANF3_FUNCTION = TestFunction(
+    hartmanf3,
+    hartmanf3_gradient,
     Dict(
-        :name => "hartmann",
+        :name => "hartmanf3",
         :start => (n::Int=3) -> begin
             n == 3 || throw(ArgumentError("Hartmann requires exactly 3 dimensions"))
             [0.5, 0.5, 0.5]

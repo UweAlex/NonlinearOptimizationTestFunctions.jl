@@ -1,22 +1,22 @@
-# test/hartmann_tests.jl
+# test/hartmanf3_tests.jl
 # Purpose: Tests for the Hartmann function.
 # Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: 01 August 2025
 
 using Test, Optim
-using NonlinearOptimizationTestFunctions: HARTMANN_FUNCTION, hartmann
+using NonlinearOptimizationTestFunctions: HARTMANF3_FUNCTION, hartmanf3
 
-@testset "Hartmann Tests" begin
-    tf = HARTMANN_FUNCTION
+@testset "Hartmanf3 Tests" begin
+    tf = HARTMANF3_FUNCTION
     n = 3
-    @test_throws ArgumentError hartmann(Float64[])
-    @test_throws ArgumentError hartmann([1.0, 1.0])
-    @test isnan(hartmann(fill(NaN, n)))
-    @test isinf(hartmann(fill(Inf, n)))
-    @test isfinite(hartmann(fill(1e-308, n)))
-    @test hartmann(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-6
-    @test hartmann(tf.meta[:start](n)) ≈ -0.6280220961750616 atol=1e-6  # Updated to match computed value
-    @test tf.meta[:name] == "hartmann"
+    @test_throws ArgumentError hartmanf3(Float64[])
+    @test_throws ArgumentError hartmanf3([1.0, 1.0])
+    @test isnan(hartmanf3(fill(NaN, n)))
+    @test isinf(hartmanf3(fill(Inf, n)))
+    @test isfinite(hartmanf3(fill(1e-308, n)))
+    @test hartmanf3(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-6
+    @test hartmanf3(tf.meta[:start](n)) ≈ -0.6280220961750616 atol=1e-6  # Updated to match computed value
+    @test tf.meta[:name] == "hartmanf3"
     @test tf.meta[:start](n) == [0.5, 0.5, 0.5]
     @test tf.meta[:min_position](n) ≈ [0.114614, 0.555649, 0.852547] atol=1e-6
     @test tf.meta[:min_value] ≈ -3.86278214782076 atol=1e-6

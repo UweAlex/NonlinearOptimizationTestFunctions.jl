@@ -29,7 +29,7 @@ include("functions/eggholder.jl")
 include("functions/giunta.jl")
 include("functions/goldsteinprice.jl")
 include("functions/griewank.jl")
-include("functions/hartmann.jl")
+include("functions/hartmanf3.jl")
 include("functions/himmelblau.jl")
 include("functions/holdertable.jl")
 include("functions/keane.jl")
@@ -66,6 +66,8 @@ include("functions/alpinen1.jl")
 include("functions/alpinen2.jl")
 include("functions/powell.jl")
 include("functions/colville.jl")
+include("functions/brent.jl")
+
 
 
 

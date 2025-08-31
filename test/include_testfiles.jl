@@ -29,7 +29,7 @@ include("eggholder_tests.jl")
 include("giunta_tests.jl")
 include("goldsteinprice_tests.jl") 
 include("griewank_tests.jl")
-include("hartmann_tests.jl")
+include("hartmanf3_tests.jl")
 include("himmelblau_tests.jl")
 include("holdertable_tests.jl")
 include("keane_tests.jl")
@@ -66,6 +66,8 @@ include("alpinen1_tests.jl")
 include("alpinen2_tests.jl")
 include("powell_tests.jl")
 include("colville_tests.jl")
+include("brent_tests.jl")
+
 
 
 
