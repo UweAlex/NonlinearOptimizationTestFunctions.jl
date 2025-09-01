@@ -67,6 +67,10 @@ include("functions/alpinen2.jl")
 include("functions/powell.jl")
 include("functions/colville.jl")
 include("functions/brent.jl")
+include("functions/freudensteinroth.jl")
+include("functions/brown.jl")
+
+
 
 
 

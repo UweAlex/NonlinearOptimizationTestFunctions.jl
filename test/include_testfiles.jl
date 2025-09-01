@@ -67,6 +67,10 @@ include("alpinen2_tests.jl")
 include("powell_tests.jl")
 include("colville_tests.jl")
 include("brent_tests.jl")
+include("freudensteinroth_tests.jl")
+include("brown_tests.jl")
+
+
 
 
 

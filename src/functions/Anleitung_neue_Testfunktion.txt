@@ -1,7 +1,7 @@
 # Anleitung_neue_Testfunktion.txt
 # Purpose: Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tests in NonlinearOptimizationTestFunctions.
 # Context: Teil des Projekts NonlinearOptimizationTestFunctions. Stellt sicher, dass neue Funktionen korrekt implementiert und getestet werden, konsistent mit bestehenden Funktionen wie ackley.jl, rosenbrock.jl, branin.jl.
-# Last modified: 29 August 2025, 09:45 AM CEST
+# Last modified: 31 August 2025, 11:20 PM CEST
 
 ## Ziel
 
@@ -50,6 +50,8 @@ NEUER HINWEIS ZU NICHT-DIFFERENZIERBAREN FUNKTIONEN: Für Funktionen, die nicht 
 NEUER HINWEIS ZU PRÄZISEN SCHRANKEN: Stelle sicher, dass die Schranken (:lb, :ub) in src/functions/<functionname>.jl mit den in der Literatur angegebenen Werten übereinstimmen (z. B. [Jamil & Yang (2013)]). Falsche Schranken führen zu Testfehlern, wie bei BartelsConn, wo [-5.0, -5.0] und [5.0, 5.0] statt der korrekten [-500.0, -500.0] und [500.0, 500.0] gemäß [Jamil & Yang (2013): f9] verwendet wurden. Überprüfe Schranken durch Recherche an mehreren Quellen (z. B. al-roomi.org, sfu.ca, Molga & Smutnicki, 2005) und passe Tests in test/<functionname>_tests.jl entsprechend an.
 
 NEUER HINWEIS ZU MOLGA & SMUTNICKI (2005): Stelle sicher, dass :in_molga_smutnicki_2005 in den Metadaten korrekt gesetzt ist, indem du prüfst, ob die Funktion in [Molga & Smutnicki (2005)] enthalten ist (siehe "Test functions for optimization needs"). Falsche Werte führen zu Testfehlern, wie bei Beale, wo true erwartet wurde, da die Funktion in [Molga & Smutnicki (2005)] enthalten ist. Überprüfe dies durch direkte Recherche in der Quelle oder vergleichbaren Referenzen.
+
+NEUER HINWEIS ZU GRADIENTENBASIERTEN OPTIMIERERN: Für Funktionen mit großen Gradientenwerten (z. B. Freudenstein-Roth, wo der Gradient an den Schranken eine Magnitude von ~10^6 erreichen kann), können gradientenbasierte Optimierer wie LBFGS aufgrund numerischer Instabilitäten oder Konvergenzprobleme fehlschlagen. In solchen Fällen ist es ausreichend, die Kompatibilität mit Optim.jl ausschließlich mit einem derivative-free Optimierer wie Fminbox(NelderMead()) zu testen. Dies stellt sicher, dass die Funktion mit Optim.jl funktioniert, ohne dass gradientenbasierte Verfahren zwingend erfolgreich sein müssen, insbesondere bei multimodalen oder numerisch anspruchsvollen Funktionen. Beispiel: Für Freudenstein-Roth wurde Fminbox(NelderMead()) in test/freudensteinroth_tests.jl verwendet, um Konvergenzprobleme von LBFGS zu umgehen.
 
 NEUER HINWEIS ZU NEUEN EIGENSCHAFTEN UND DIMENSIONALITÄT: 
 Beim Hinzufügen einer neuen Testfunktion ist Vorsicht bei der Einführung neuer Eigenschaften geboten. Neue Eigenschaften dürfen nur eingeführt werden, wenn sie in der Literatur explizit begründet sind (z. B. Jamil & Yang, 2013; Molga & Smutnicki, 2005) und in VALID_PROPERTIES in src/NonlinearOptimizationTestFunctions.jl definiert sind. Ohne diese Definition führt die Verwendung einer neuen Eigenschaft zu einem ArgumentError: Invalid properties beim Precompiling. Beispiel: Die Powell-Funktion (n=4) wurde zunächst mit der Eigenschaft fixed implementiert, was einen Fehler verursachte, da fixed nicht in VALID_PROPERTIES enthalten war.
@@ -105,9 +107,9 @@ Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=
 3. Tests in test/<functionname>_tests.jl erstellen:
    - Erstelle eine Testdatei mit lowercase-Namen (z. B. branin_tests.jl).
    - Verwende gezielte Imports (using NonlinearOptimizationTestFunctions: <FUNCTIONNAME>_FUNCTION, <functionname>).
-   - Teste Funktionswerte, Metadaten, Edge Cases (NaN, Inf, 1e-308, leere Eingabe, falsche Dimensionen) und Optimierung mit Optim.jl.
+   - Teste Funktionswerte, Metadaten, Edge Cases (NaN, Inf, 1e-308, leere Eingabe, falsche Dimensionen) und Optimierung mit Optim.jl z.B.: result = optimize(tf.f, tf.gradient!, tf.meta[:lb](n), tf.meta[:ub](n), tf.meta[:start](n), Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6))
    - Verwende deterministische Werte oder Matrizen in den Tests, um konsistente Ergebnisse zu gewährleisten. Beispiel: Für skalierbare Funktionen wie die quadratische Funktion, verwende explizite positiv definite Matrizen wie Symmetric(Matrix(Diagonal(fill(2.0, n)))).
-   - Für Funktionen mit definierten Schranken in den Metadaten (:lb, :ub), verwende Fminbox in den Optimierungstests, um die Schranken zu respektieren und Divergenz zu vermeiden, insbesondere bei multimodalen Funktionen. Beispiel: Für Funktionen wie adjiman mit lb=[-1.0, -1.0] und ub=[2.0, 1.0], verwende Fminbox(LBFGS()) mit den Schranken aus tf.meta[:lb](n) und tf.meta[:ub](n).
+   - Für Funktionen mit definierten Schranken in den Metadaten (:lb, :ub), verwende Fminbox in den Optimierungstests, um die Schranken zu respektieren und Divergenz zu vermeiden, insbesondere bei multimodalen Funktionen. Beispiel: Für Funktionen wie adjiman mit lb=[-1.0, -1.0] und ub=[2.0, 1.0], verwende Fminbox(NelderMead()) oder Fminbox(LBFGS()) mit den Schranken aus tf.meta[:lb](n) und tf.meta[:ub](n).
    - Für nicht überall differenzierbare Funktionen (z. B. BartelsConn), verwende derivative-free Optimierer wie NelderMead in Optimierungstests, um DomainErrors zu vermeiden. Teste die Nicht-Differenzierbarkeit mit @test_throws DomainError <functionname>_gradient(x) an Punkten, wo der Gradient nicht definiert ist (z. B. am Minimum).
    - Für multimodale Funktionen (z. B. Ackley, Rastrigin, Schwefel), wähle den Startpunkt für Optimierungstests nahe am bekannten Minimum (z. B. [0.1, 0.1] für Ackley), um die Kompatibilität mit Optim.jl zu gewährleisten. Mathematisch begründete Abweichungen vom globalen Minimum sind akzeptabel, da der Fokus auf der Funktionalität liegt. Verwende lockere Toleranzen (z. B. atol=1e-2 für Minimizer, 1e-4 für Funktionswerte) in den Optimierungstests.
    - Für nicht-skalierbare Funktionen (z. B. Beale, n=2) rufe Metadatenfunktionen ohne Argumente auf (z. B. tf.meta[:start]() statt tf.meta[:start](n)), um MethodErrors zu vermeiden.
@@ -115,6 +117,7 @@ Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=
    - Überprüfe Funktionswerte am Startpunkt und Minimum manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca). Falsche Testwerte (z. B. für ackley([0.5, 0.5])) können zu Testfehlern führen; berechne alle Testwerte manuell oder durch Ausführen der Funktion.
    - Für multimodale Funktionen mit mehreren Minima, prüfe, ob das gefundene Minimum einem der globalen Minima nahe ist (siehe branin_tests.jl).
    - Verwende die recherchierten, präzisen Werte für :min_position und :min_value in den Tests, um Testfehler durch gerundete Literaturwerte zu vermeiden.
+   - Für Funktionen mit großen Gradientenwerten oder numerischen Instabilitäten (z. B. Freudenstein-Roth), teste die Kompatibilität mit Optim.jl ausschließlich mit Fminbox(NelderMead()), falls gradientenbasierte Optimierer wie LBFGS Konvergenzprobleme aufweisen.
 
 4. Tests in test/include_testfiles.jl einbinden:
    - Füge include("<functionname>_tests.jl") hinzu.
@@ -147,7 +150,7 @@ Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=
 4. Keine Gradiententests in funktionsspezifischen Testdateien:
    - Implementiere keine Gradiententests in test/<functionname>_tests.jl, da diese ausschließlich in test/runtests.jl durchgeführt werden, um Konsistenz zu gewährleisten.
 
-5. Keine falschen Testwerte etwa aus dem Zwischenbericht übernehmen:
+5. Keine falschen Testwerte etwa aus dem Zwischenbericht oder Readme.md übernehmen:
    - Übernimm keine erwarteten Funktionswerte (z. B. am Startpunkt oder Minimum) ohne manuelle Überprüfung durch Berechnung oder Ausführen der Funktion, unterstützt durch Recherche an verschiedenen Stellen im Internet. Beispiel: Der falsche Testwert 36.90471446624321 für die Branin-Funktion am Startpunkt [0.0, 0.0] führte zu einem Testfehler.
 
 6. Keine Änderung der Namenskonventionen:
@@ -181,7 +184,7 @@ Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=
        # src/functions/<functionname>.jl
        # Purpose: Implements the <FunctionName> test function with its gradient for nonlinear optimization.
        # Context: Part of NonlinearOptimizationTestFunctions.
-       # Last modified: 29 August 2025
+       # Last modified: 31 August 2025
 
        export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient
 
@@ -242,7 +245,7 @@ Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=
        # src/functions/<functionname>.jl
        # Purpose: Implements the <FunctionName> test function with its gradient for nonlinear optimization.
        # Context: Part of NonlinearOptimizationTestFunctions.
-       # Last modified: 29 August 2025
+       # Last modified: 31 August 2025
 
        export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient
 
