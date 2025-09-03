@@ -1,9 +1,6 @@
 # src/functions/brown.jl
 # Purpose: Implements the Brown test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 01 September 2025
-
-export BROWN_FUNCTION, brown, brown_gradient
+# Last modified: September 03, 2025
 
 using LinearAlgebra
 using ForwardDiff
@@ -28,16 +25,19 @@ function brown_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     grad = zeros(T, n)
-    eps = T(1e-10)  # Avoid log(0)
-    grad[1] = 2 * x[1] * (x[2]^2 + 1) * (x[1]^2)^(x[2]^2) + 2 * x[1] * (x[2]^2)^(x[1]^2 + 1) * log(x[2]^2 + eps)
+    eps = T(1e-8)  # Increased for numerical stability
+    # k = 1
+    grad[1] = 2 * x[1] * (x[2]^2 + 1) * (x[1]^2)^(x[2]^2) + 2 * x[1] * (x[2]^2)^(x[1]^2 + 1) * log(abs(x[2]^2) + eps)
+    # k = 2, ..., n-1
     for i in 2:(n-1)
-        grad[i] = 2 * x[i-1]^2 * x[i] * (x[i-1]^2)^(x[i]^2) * log(x[i]^2 + eps) +
-                  2 * x[i] * (x[i+1]^2 + 1) * (x[i]^2)^(x[i+1]^2) +
+        grad[i] = 2 * x[i] * (x[i+1]^2 + 1) * (x[i]^2)^(x[i+1]^2) +
+                  2 * x[i] * (x[i+1]^2)^(x[i]^2 + 1) * log(abs(x[i+1]^2) + eps) +
                   2 * x[i] * (x[i-1]^2 + 1) * (x[i]^2)^(x[i-1]^2) +
-                  2 * x[i+1]^2 * x[i] * (x[i+1]^2)^(x[i]^2) * log(x[i]^2 + eps)
+                  2 * x[i] * (x[i-1]^2)^(x[i]^2 + 1) * log(abs(x[i-1]^2) + eps)
     end
-    grad[n] = 2 * x[n-1]^2 * x[n] * (x[n-1]^2)^(x[n]^2) * log(x[n]^2 + eps) +
-              2 * x[n] * (x[n-1]^2 + 1) * (x[n]^2)^(x[n-1]^2)
+    # k = n
+    grad[n] = 2 * x[n] * (x[n-1]^2 + 1) * (x[n]^2)^(x[n-1]^2) +
+              2 * x[n] * (x[n-1]^2)^(x[n]^2 + 1) * log(abs(x[n-1]^2) + eps)
     return grad
 end
 
@@ -69,3 +69,5 @@ const BROWN_FUNCTION = TestFunction(
         :math => "\\sum_{i=1}^{n-1} \\left[ (x_i^2)^{(x_{i+1}^2 + 1)} + (x_{i+1}^2)^{(x_i^2 + 1)} \\right]"
     )
 )
+
+export BROWN_FUNCTION, brown, brown_gradient

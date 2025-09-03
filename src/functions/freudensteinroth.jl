@@ -1,7 +1,7 @@
 # src/functions/freudensteinroth.jl
 # Purpose: Implements the Freudenstein-Roth test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 31 August 2025
+# Last modified: 02 September 2025
 
 export FREUDENSTEINROTH_FUNCTION, freudensteinroth, freudensteinroth_gradient
 
@@ -29,9 +29,11 @@ function freudensteinroth_gradient(x::AbstractVector{T}) where {T<:Union{Real, F
     x1, x2 = x
     a = x1 - 13 + ((5 - x2) * x2 - 2) * x2
     b = x1 - 29 + ((x2 + 1) * x2 - 14) * x2
+    da_dx2 = 10 * x2 - 3 * x2^2 - 2
+    db_dx2 = 3 * x2^2 + 2 * x2 - 14
     grad = zeros(T, 2)
     grad[1] = 2 * (a + b)
-    grad[2] = 2 * a * ((5 - x2) * x2 - 2 * x2) + 2 * b * ((x2 + 1) * x2 - 14 * x2 + x2 * (x2 + 1))
+    grad[2] = 2 * a * da_dx2 + 2 * b * db_dx2
     return grad
 end
 

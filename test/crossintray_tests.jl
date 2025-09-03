@@ -14,7 +14,7 @@ using NonlinearOptimizationTestFunctions: CROSSINTRAY_FUNCTION, crossintray, cro
 
     # Metadata tests
     @test tf.meta[:name] == "crossintray"
-    @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
+    @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "partially differentiable", "bounded", "continuous"])
     @test tf.meta[:in_molga_smutnicki_2005] == false
 
     # Function value tests

@@ -213,7 +213,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 The following test functions are planned for implementation, based on standard benchmarks. They will be added with analytical gradients, metadata, and validation, consistent with the existing collection.
 
 
-- **CarromTable** [Jamil & Yang (2013): f146]: Multimodal, non-convex, non-separable, differentiable, fixed. Minimum: -24.1568155165 at multiple. Bounds: [-10,10]^2. Dimensions: n=2.
+- **CarromTable** [Jamil & Yang (2013): f146]: Multimodal, non-convex, non-separable, differentiable. Minimum: -24.1568155165 at (±9.646157266348881,±9.646134286497169). Bounds: [-10,10]^2. Dimensions: n=2.
 - **Chichinadze** [Jamil & Yang (2013): f33]: Multimodal, non-convex, non-separable, differentiable, fixed. Minimum: -43.3159 at (5.90133, 0.5). Bounds: [-30,30]^2. Dimensions: n=2.
 - **CosineMixture** [Jamil & Yang (2013): f38]: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -0.1*n at multiple. Bounds: [-1,1]^n. Dimensions: Any n >=1.
 - **Corana** [Jamil & Yang (2013): f37]: Multimodal, non-convex, separable, differentiable, fixed. Minimum: 0 at (0,0,0,0). Bounds: [-1000,1000]^4. Dimensions: n=4.

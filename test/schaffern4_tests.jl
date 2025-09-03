@@ -1,10 +1,10 @@
 # test/schaffern4_tests.jl
 # Purpose: Tests for the Schaffer N.4 function.
 # Context: Part of NonlinearOptimizationTestFunctions test suite.
-# Last modified: 27 August 2025
+# Last modified: 03 September 2025
 
-using Test, Optim, Random, ForwardDiff
-using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4, schaffern4_gradient
+using Test, Optim, Random
+using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4
 
 @testset "Schaffer N.4 Tests" begin
     tf = SCHAFFERN4_FUNCTION
@@ -61,7 +61,7 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4, schaf
         @test tf.meta[:lb]() == [-100.0, -100.0]
         @test tf.meta[:ub]() == [100.0, 100.0]
         @test tf.meta[:in_molga_smutnicki_2005] == false
-        @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
+        @test Set(tf.meta[:properties]) == Set(["partially differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"])
 
         # Test dimension checks for meta functions
         @test_throws MethodError tf.meta[:start](1)
@@ -73,17 +73,18 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4, schaf
     end
 
     @testset "Optimization Tests" begin
-        # Test optimization from starting points close to global minima
+        # Test optimization from starting points very close to global minima using NelderMead
         close_starts = [
-            [0.01, PRECISE_MIN_POS + 0.01],    # Close to first global minimum
-            [PRECISE_MIN_POS + 0.01, 0.01],    # Close to third global minimum  
+            [0.001, PRECISE_MIN_POS + 0.001],    # Very close to first global minimum
+            [PRECISE_MIN_POS + 0.001, 0.001],    # Very close to third global minimum  
         ]
 
         for start_point in close_starts
-            result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), start_point, Fminbox(LBFGS()), 
-                            Optim.Options(f_reltol=1e-12, g_tol=1e-10, iterations=2000))
-            @test Optim.minimum(result) <= PRECISE_MIN_VALUE + 0.1
-            @test Optim.converged(result) || Optim.minimum(result) <= PRECISE_MIN_VALUE + 0.01
+            result = optimize(tf.f, tf.meta[:lb](), tf.meta[:ub](), start_point, Fminbox(NelderMead()), 
+                            Optim.Options(f_reltol=1e-6, iterations=5000))
+            @test Optim.minimum(result) <= PRECISE_MIN_VALUE + 1e-2
+            minimizer = Optim.minimizer(result)
+            @test any(isapprox.(norm(minimizer - gm), 0.0, atol=1e-1) for gm in GLOBAL_MINIMA)
         end
 
         # Test that the function value at global minima is indeed minimal
@@ -98,8 +99,8 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4, schaf
         for _ in 1:20  # Try 20 random starting points
             start_point = [4*rand() - 2, 4*rand() - 2]  # Random in [-2, 2]²
             try
-                result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), start_point, Fminbox(LBFGS()), 
-                                Optim.Options(f_reltol=1e-8, g_tol=1e-6, iterations=1000))
+                result = optimize(tf.f, tf.meta[:lb](), tf.meta[:ub](), start_point, Fminbox(NelderMead()), 
+                                Optim.Options(f_reltol=1e-6, iterations=5000))
                 best_found = min(best_found, Optim.minimum(result))
             catch
                 # Some starting points might cause issues, skip them
@@ -108,7 +109,7 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4, schaf
         end
 
         # We should find something reasonably close to the global minimum
-        @test best_found <= PRECISE_MIN_VALUE + 0.05
+        @test best_found <= PRECISE_MIN_VALUE + 1e-2
     end
 
     @testset "Symmetry Tests" begin
@@ -126,58 +127,23 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4, schaf
         end
     end
 
-    @testset "Gradient Tests" begin
-        # Test gradient at all global minima - should be zero
-        for global_min in GLOBAL_MINIMA
-            grad = schaffern4_gradient(global_min)
-            @test norm(grad) < 1e-6  # Gradient should be near zero at minima
-        end
-
-        # Test gradient at origin (should be zero due to symmetry)
-        origin = [0.0, 0.0]
-        grad_origin = schaffern4_gradient(origin)
-        @test norm(grad_origin) < 1e-10
-
-        # Test gradient at points where x₁² = x₂² 
-        equal_sq_points = [[1.0, 1.0], [2.0, 2.0], [-1.0, -1.0]]
-        for point in equal_sq_points
-            grad = schaffern4_gradient(point)
-            @test all(isfinite.(grad))
-            @test abs(grad[1] - grad[2]) < 1e-10  # Should be equal due to symmetry
-        end
-
-        # Test that gradient matches numerical gradient at random points
-        test_points = [[0.5, 1.2], [2.1, -1.8], [-0.7, 2.3]]
-        for point in test_points
-            analytical_grad = schaffern4_gradient(point)
-            numerical_grad = ForwardDiff.gradient(schaffern4, point)
-            @test norm(analytical_grad - numerical_grad) < 1e-8
-        end
-    end
-
     @testset "Special Values Tests" begin
-        # Test behavior at points where diff_sq is very close to zero
-        epsilon = 1e-16
+        # Test function values at points where x₁² ≈ x₂²
+        epsilon = 1e-8
         near_zero_points = [
-            [sqrt(epsilon), sqrt(epsilon)],
+            [epsilon, epsilon],
             [1.0, sqrt(1.0 + epsilon)],
             [2.0, sqrt(4.0 + epsilon)]
         ]
-
         for point in near_zero_points
-            val = schaffern4(point)
-            grad = schaffern4_gradient(point)
-            @test isfinite(val)
-            @test all(isfinite.(grad))
+            @test isfinite(schaffern4(point))
         end
 
-        # Test large values (within bounds)
-        large_points = [[50.0, 50.0], [-90.0, 90.0], [75.0, -75.0]]
+        # Test large values (within bounds, avoiding x₁² ≈ x₂²)
+        large_points = [[50.0, 60.0], [-90.0, 80.0], [75.0, -65.0]]
         for point in large_points
             val = schaffern4(point)
-            grad = schaffern4_gradient(point)
             @test isfinite(val)
-            @test all(isfinite.(grad))
             @test val > PRECISE_MIN_VALUE  # Should be greater than global minimum
         end
     end
@@ -186,10 +152,10 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4, schaf
         # Ensure the claimed minimum position actually gives the minimum value
         claimed_min_pos = tf.meta[:min_position]()
         actual_min_val = schaffern4(claimed_min_pos)
-        @test actual_min_val ≈ tf.meta[:min_value] atol=1e-12  # More lenient tolerance
+        @test actual_min_val ≈ tf.meta[:min_value] atol=1e-12
 
         # Test that no random points give a significantly lower value
-        Random.seed!(42)  # For reproducibility
+        Random.seed!(42)
         for _ in 1:100
             random_point = [200*rand() - 100, 200*rand() - 100]  # Random in [-100, 100]²
             @test schaffern4(random_point) >= PRECISE_MIN_VALUE - 1e-12

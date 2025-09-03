@@ -25,7 +25,7 @@ using NonlinearOptimizationTestFunctions: HOLDERTABLE_FUNCTION, holdertable
         @test tf.meta[:min_value] ≈ -19.2085025678845 atol=1e-6
         @test tf.meta[:lb]() == [-10.0, -10.0]
         @test tf.meta[:ub]() == [10.0, 10.0]
-        @test tf.meta[:properties] == Set(["multimodal", "continuous", "differentiable", "separable", "bounded", "non-convex"])
+        @test tf.meta[:properties] == Set(["multimodal", "continuous", "partially differentiable", "separable", "bounded", "non-convex"])
     end
 
     @testset "Optimization Tests" begin

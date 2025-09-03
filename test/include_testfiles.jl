@@ -69,6 +69,8 @@ include("colville_tests.jl")
 include("brent_tests.jl")
 include("freudensteinroth_tests.jl")
 include("brown_tests.jl")
+include("carromtable_tests.jl")
+
 
 
 

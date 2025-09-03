@@ -98,7 +98,7 @@ Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=
    - Falls die Funktion Matrizen verwendet (z. B. quadratische Funktion), stelle sicher, dass generierte Matrizen robust positiv definit sind, z. B. durch Verwendung von Diagonal mit positiven Werten oder durch Überprüfung mit eigvals.
    - Falls neue Bibliotheken (z. B. Random) verwendet werden, trage diese in Project.toml ein und führe Pkg.resolve() und Pkg.instantiate() aus.
    - Recherchiere an verschiedenen Stellen im Internet (z. B. al-roomi.org, sfu.ca, geatbx.com, indusmic.com), um die präzisesten Werte für :min_position und :min_value zu ermitteln. Überprüfe diese Werte durch manuelle Berechnung oder Ausführen der Funktion, um sicherzustellen, dass sie mit der Implementierung übereinstimmen.
-   - Für nicht-differenzierbare Funktionen (z. B. BartelsConn), definiere einen Subgradienten und teste dessen Nicht-Differenzierbarkeit mit @test_throws DomainError in den Tests.
+   - Für nicht-differenzierbare Funktionen (z. B. BartelsConn), definiere einen Subgradienten und werfe einen Domeinerror wenn der gradient nicht berechnet werden kann und teste dessen Nicht-Differenzierbarkeit mit @test_throws DomainError in den Tests.
    - Verwende für die Funktionssignatur AbstractVector ohne Typbeschränkung T<:Union{Real, ForwardDiff.Dual}, um Edge Cases wie leere Vektoren (Vector{Any}) korrekt zu behandeln, bevor ein ArgumentError ausgelöst wird. Beispiel: function <functionname>(x::AbstractVector).
 
 2. Funktion in src/include_testfunctions.jl einbinden:

@@ -31,11 +31,12 @@ function easom_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.
     any(isnan.(x)) && return fill(T(NaN), 2)
     any(isinf.(x)) && return fill(T(Inf), 2)
     x1, x2 = x
-    common = -cos(x1) * cos(x2) * exp(-((x1 - pi)^2 + (x2 - pi)^2))
-    g1 = common * (tan(x1) + 2 * (x1 - pi))
-    g2 = common * (tan(x2) + 2 * (x2 - pi))
+    exp_term = exp(-((x1 - pi)^2 + (x2 - pi)^2))
+    g1 = cos(x2) * exp_term * (sin(x1) + 2 * (x1 - pi) * cos(x1))
+    g2 = cos(x1) * exp_term * (sin(x2) + 2 * (x2 - pi) * cos(x2))
     return [g1, g2]
 end
+
 
 const EASOM_FUNCTION = TestFunction(
     easom,

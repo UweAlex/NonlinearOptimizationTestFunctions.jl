@@ -69,6 +69,8 @@ include("functions/colville.jl")
 include("functions/brent.jl")
 include("functions/freudensteinroth.jl")
 include("functions/brown.jl")
+include("functions/carromtable.jl")
+
 
 
 

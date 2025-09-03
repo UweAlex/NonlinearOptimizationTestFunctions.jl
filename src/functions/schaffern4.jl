@@ -1,7 +1,7 @@
 # src/functions/schaffern4.jl
 # Purpose: Implements the Schaffer N.4 test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: August 24, 2025
+# Last modified: September 03, 2025
 
 export SCHAFFERN4_FUNCTION, schaffern4, schaffern4_gradient
 
@@ -47,6 +47,7 @@ end
 
 Computes the gradient of the Schaffer N.4 function. Returns a vector of length 2.
 Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
+Throws `DomainError` if the function is not differentiable at the given point (|x₁² - x₂²| ≈ 0).
 """
 function schaffern4_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
@@ -61,16 +62,15 @@ function schaffern4_gradient(x::AbstractVector{T}) where {T<:Union{Real, Forward
     x2_sq = x2^2
     sum_sq = x1_sq + x2_sq
     diff_sq = x1_sq - x2_sq
-    diff_sq_abs = abs(diff_sq)
     
-    # Handle the case where diff_sq is very close to zero
-    # Use a more robust threshold
-    if abs(diff_sq) < 1e-12
-        return [T(0), T(0)]
+    # Prüfe Nicht-Differenzierbarkeit
+    if abs(diff_sq) < 1e-10  # Numerische Toleranz
+        throw(DomainError(x, "Schaffer N.4 is not differentiable at |x₁² - x₂²| ≈ 0"))
     end
     
     sign_diff = diff_sq >= 0 ? T(1) : T(-1)
     
+    diff_sq_abs = abs(diff_sq)
     sin_abs_diff = sin(diff_sq_abs)
     cos_sin = cos(sin_abs_diff)
     cos_abs_diff = cos(diff_sq_abs)
@@ -111,7 +111,7 @@ const SCHAFFERN4_FUNCTION = TestFunction(
         :start => () -> [0.0, 1.253131828792882],
         :min_position => () -> [0.0, 1.253131828792882],
         :min_value => 0.292578632035980,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
+        :properties => Set(["partially differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"]),
         :lb => () -> [-100.0, -100.0],
         :ub => () -> [100.0, 100.0],
         :in_molga_smutnicki_2005 => false,

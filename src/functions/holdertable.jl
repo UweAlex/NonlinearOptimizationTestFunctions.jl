@@ -54,11 +54,11 @@ const HOLDERTABLE_FUNCTION = TestFunction(
         :start => () -> [0.0, 0.0],
         :min_position => () -> [8.055023, 9.664590],
         :min_value => -19.2085025678845,
-        :properties => Set(["multimodal", "continuous", "differentiable", "separable", "bounded", "non-convex"]),
+        :properties => Set(["multimodal", "continuous", "partially differentiable", "separable", "bounded", "non-convex"]),
         :lb => () -> [-10.0, -10.0],
         :ub => () -> [10.0, 10.0],
         :in_molga_smutnicki_2005 => false,
-        :description => "Holder Table function: Multimodal, continuous, differentiable, separable, bounded, non-convex. Four global minima at (±8.055023, ±9.664590), f* = -19.2085025678845. Bounds: [-10, 10]^2. Dimensions: n=2.",
+        :description => "Holder Table function: Multimodal, continuous, partially differentiable, separable, bounded, non-convex. Four global minima at (±8.055023, ±9.664590), f* = -19.2085025678845. Bounds: [-10, 10]^2. Dimensions: n=2.",
         :math => "-\\left| \\sin(x_1) \\cos(x_2) \\exp\\left(\\left|1 - \\sqrt{x_1^2 + x_2^2}/\\pi\\right|\\right) \\right|"
     )
 )

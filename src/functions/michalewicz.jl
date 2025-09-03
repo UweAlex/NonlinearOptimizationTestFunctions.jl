@@ -1,13 +1,11 @@
 # src/functions/michalewicz.jl
 # Purpose: Implements the Michalewicz test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions, used in optimization demos and tests.
-# Last modified: 17. Juli 2025
+# Last modified: September 03, 2025
 
-"""
-    michalewicz(x::AbstractVector)
-Computes the Michalewicz function value at point `x`. Requires at least 2 dimensions.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
+using LinearAlgebra
+using ForwardDiff
+
 function michalewicz(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) >= 2 || throw(ArgumentError("Michalewicz requires at least 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
@@ -26,10 +24,6 @@ function michalewicz(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     return -s
 end
 
-"""
-    michalewicz_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Michalewicz function. Returns a vector of length n.
-"""
 function michalewicz_gradient(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) >= 2 || throw(ArgumentError("Michalewicz requires at least 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), length(x))
@@ -67,6 +61,8 @@ const MICHALEWICZ_FUNCTION = TestFunction(
             n >= 2 || throw(ArgumentError("Michalewicz requires at least 2 dimensions"))
             if n == 2
                 return [2.2029055201726, 1.5707963267949]
+            elseif n == 4
+                return [1.1207317360799627, 1.5707963267094696, 1.7382973347492041, 1.5707963267948966]
             elseif n == 5
                 return [2.2029, 1.5708, 1.2849, 1.9231, 1.7205]
             elseif n == 10
@@ -79,6 +75,8 @@ const MICHALEWICZ_FUNCTION = TestFunction(
             n >= 2 || throw(ArgumentError("Michalewicz requires at least 2 dimensions"))
             if n == 2
                 return -1.8013
+            elseif n == 4
+                return -1.0000000057405447  # Optimierten Wert verwenden
             elseif n == 5
                 return -4.687658
             elseif n == 10
@@ -87,7 +85,7 @@ const MICHALEWICZ_FUNCTION = TestFunction(
                 return -0.8013 * n  # Approximate scaling
             end
         end,
-        :properties => Set(["multimodal", "non-separable", "differentiable", "scalable", "bounded","bounded","continuous"]),
+        :properties => Set(["multimodal", "non-separable", "differentiable", "scalable", "bounded", "continuous"]),  # "bounded" nur einmal
         :lb => (n::Int=2) -> begin
             n >= 2 || throw(ArgumentError("Michalewicz requires at least 2 dimensions"))
             fill(0.0, n)
@@ -101,3 +99,5 @@ const MICHALEWICZ_FUNCTION = TestFunction(
         :in_molga_smutnicki_2005 => true
     )
 )
+
+export MICHALEWICZ_FUNCTION, michalewicz, michalewicz_gradient

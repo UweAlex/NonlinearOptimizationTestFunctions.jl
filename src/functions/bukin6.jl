@@ -37,7 +37,8 @@ function bukin6_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff
     v = x1 + 10
     grad = zeros(T, 2)
     if u == 0 || v == 0
-        grad .= T(NaN)
+        throw(DomainError(x, "bukin6 function is not differentiable at this point"))
+
     else
         grad[1] = -x1 * sign(u) / sqrt(abs(u)) + 0.01 * sign(v)
         grad[2] = 50 * sign(u) / sqrt(abs(u))

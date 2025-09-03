@@ -50,11 +50,11 @@ const ACKLEY2_META = Dict(
     :start => () -> [0.0, 0.0],
     :min_position => () -> [0.0, 0.0],
     :min_value => -200.0,
-    :properties => Set(["unimodal", "non-convex", "non-separable", "differentiable", "continuous", "bounded"]),
+    :properties => Set(["unimodal", "non-convex", "non-separable", "partially differentiable", "continuous", "bounded"]),
     :lb => () -> [-32.0, -32.0],
     :ub => () -> [32.0, 32.0],
     :in_molga_smutnicki_2005 => false,
-    :description => "Ackley2 function: Continuous, differentiable, non-separable, non-scalable, unimodal.",
+    :description => "Ackley2 function: Continuous, partially differentiable, non-separable, non-scalable, unimodal.",
     :math => "\\f(x) = -200 e^{-0.02 \\sqrt{x_1^2 + x_2^2}}"
 )
 
