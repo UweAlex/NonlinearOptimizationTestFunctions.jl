@@ -1,5 +1,5 @@
 # NonlinearOptimizationTestFunctions
-# Last modified: 28 August 2025, 06:58 PM CEST
+# Last modified: 04 September 2025, 10:22 AM CEST
 
 ## Table of Contents
 
@@ -7,6 +7,8 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [Examples](#examples)
+    - [Getting Himmelblau Dimension](#getting-himmelblau-dimension)
+    - [Listing Test Functions with Dimension n > 2](#listing-test-functions-with-dimension-n--2)
     - [Evaluating the Eggholder Function](#evaluating-the-eggholder-function)
     - [Comparing Optimization Methods](#comparing-optimization-methods)
     - [Computing Hessian with Zygote](#computing-hessian-with-zygote)
@@ -15,7 +17,8 @@
     - [Optimizing with NLopt](#optimizing-with-nlopt)
     - [Filtering Test Functions by Properties](#filtering-test-functions-by-properties)
 - [Test Functions](#test-functions)
-- [**Properties of Test Functions**](#properties-of-test-functions)
+- [Upcoming Test Functions](#upcoming-test-functions)
+- [Properties of Test Functions](#properties-of-test-functions)
 - [Valid Properties](#valid-properties)
   - [Modality](#modality)
   - [Convexity](#convexity)
@@ -31,15 +34,14 @@
 
 NonlinearOptimizationTestFunctions is a Julia package designed for testing and benchmarking nonlinear optimization algorithms. It provides a comprehensive collection of standard test functions, each equipped with analytical gradients, metadata, and validation mechanisms. The package supports scalable and non-scalable functions, ensuring compatibility with high-dimensional optimization problems and automatic differentiation tools like ForwardDiff. Key features include:
 
-- **Standardized Test Functions**: A curated set of well-known optimization test functions (e.g., Rosenbrock, Ackley, Branin) with consistent interfaces.
-- **Analytical Gradients**: Each function includes an analytical gradient for efficient optimization and testing.
-- **TestFunction Structure**: Encapsulates function, gradient, and metadata (e.g., name, start point, global minimum, properties, bounds).
-- **Validation and Flexibility**: Metadata validation ensures correctness, and properties like unimodal, multimodal, or differentiable enable filtering for specific use cases.
-- **Integration with Optimization Libraries**: Seamless compatibility with Optim.jl, NLopt.jl, and other Julia optimization packages.
+- Standardized Test Functions: A curated set of well-known optimization test functions (e.g., Rosenbrock, Ackley, Branin) with consistent interfaces.
+- Analytical Gradients: Each function includes an analytical gradient for efficient optimization and testing.
+- TestFunction Structure: Encapsulates function, gradient, and metadata (e.g., name, start point, global minimum, properties, bounds).
+- Validation and Flexibility: Metadata validation ensures correctness, and properties like unimodal, multimodal, or differentiable enable filtering for specific use cases.
+- Integration with Optimization Libraries: Seamless compatibility with Optim.jl, NLopt.jl, and other Julia optimization packages.
 
 The package is ideal for researchers, developers, and students evaluating optimization algorithms, offering a robust framework for nonlinear optimization benchmarking.
 
----
 ## Installation
 
 To install the package, use the Julia Package Manager:
@@ -49,95 +51,146 @@ To install the package, use the Julia Package Manager:
 
 Ensure dependencies like LinearAlgebra, ForwardDiff, and Optim are installed automatically. For specific examples, additional packages (e.g., NLopt, Zygote) may be required.
 
----
 ## Usage
 
-The package provides a `TestFunction` structure containing the function (`f`), gradient (`grad`), in-place gradient (`gradient!`), and metadata (`meta`). Functions are stored in `TEST_FUNCTIONS`, a dictionary mapping function names to `TestFunction` instances. Below are examples demonstrating the package's capabilities, corresponding to files in the examples directory.
+The package provides a TestFunction structure containing the function (f), gradient (grad), in-place gradient (gradient!), and metadata (meta). Functions are stored in TEST_FUNCTIONS, a dictionary mapping function names to TestFunction instances. Below are examples demonstrating the package's capabilities, corresponding to files in the examples directory.
 
 ### Examples
+
+#### Getting Himmelblau Dimension
+Prints the dimension of the Himmelblau test function using get_n, demonstrating how to access a specific function's dimension from TEST_FUNCTIONS.
+
+    using NonlinearOptimizationTestFunctions
+
+    # Print dimension of Himmelblau function
+    function get_himmelblau_dimension()
+        # Access Himmelblau function from TEST_FUNCTIONS (a Dict{String, TestFunction})
+        tf = TEST_FUNCTIONS["himmelblau"]
+        
+        # Get dimension using get_n:
+        # 1. Checks if 'scalable' is in tf.meta[:properties] via has_property
+        # 2. Returns -1 for scalable functions
+        # 3. For non-scalable (like Himmelblau), returns length(tf.meta[:min_position]())
+        # 4. Throws ArgumentError if :min_position fails
+        dim = get_n(tf)
+        
+        println("Dimension of Himmelblau function: $dim")
+    end
+
+    # Run the function
+    get_himmelblau_dimension()
+
+#### Listing Test Functions with Dimension n > 2
+Lists all non-scalable test functions with dimension n > 2 using get_n, showing how to iterate over TEST_FUNCTIONS and filter by dimension.
+
+    using NonlinearOptimizationTestFunctions
+
+    # List non-scalable functions with n > 2
+    function list_functions_n_greater_than_2()
+        println("Non-scalable test functions with dimension n > 2:")
+        
+        # Iterate over TEST_FUNCTIONS (a Dict{String, TestFunction})
+        for tf in values(TEST_FUNCTIONS)
+            # Determine dimension using get_n:
+            # 1. Checks if 'scalable' is in tf.meta[:properties] via has_property
+            # 2. Returns -1 for scalable functions
+            # 3. For non-scalable, returns length(tf.meta[:min_position]())
+            # 4. Throws ArgumentError if :min_position fails
+            dim = get_n(tf)
+            
+            # Filter non-scalable functions with n > 2
+            if dim != -1 && dim > 2
+                meta = tf.meta
+                println("Function: $(meta[:name]), Dimension: $dim, Properties: $(meta[:properties]), Minimum: $(meta[:min_value]) at $(meta[:min_position]()), Bounds: [$(meta[:lb]()), $(meta[:ub]())]")
+            end
+        end
+    end
+
+    # Run the function
+    list_functions_n_greater_than_2()
 
 #### Evaluating the Eggholder Function
 Evaluates the Eggholder function and its analytical gradient at the origin, demonstrating basic usage of a test function and its gradient.
 
-        using NonlinearOptimizationTestFunctions
-        println(eggholder([0,0]))
-        println(eggholder_gradient([0,0]))
+    using NonlinearOptimizationTestFunctions
+    println(eggholder([0,0]))
+    println(eggholder_gradient([0,0]))
 
 #### Comparing Optimization Methods
-Compares Gradient Descent and L-BFGS on the Rosenbrock function, demonstrating how to use `TestFunction` with Optim.jl to evaluate different algorithms.
+Compares Gradient Descent and L-BFGS on the Rosenbrock function, demonstrating how to use TestFunction with Optim.jl to evaluate different algorithms.
 
-        using NonlinearOptimizationTestFunctions, Optim
-        tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
-        n = 2
-        result_gd = optimize(tf.f, tf.gradient!, tf.meta[:start](n), GradientDescent(), Optim.Options(f_reltol=1e-6))
-        result_lbfgs = optimize(tf.f, tf.gradient!, tf.meta[:start](n), LBFGS(), Optim.Options(f_reltol=1e-6))
-        println("Gradient Descent on $(tf.meta[:name]): $(Optim.minimizer(result_gd)), $(Optim.minimum(result_gd))")
-        println("L-BFGS on $(tf.meta[:name]): $(Optim.minimizer(result_lbfgs)), $(Optim.minimum(result_lbfgs))")
+    using NonlinearOptimizationTestFunctions, Optim
+    tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
+    n = 2
+    result_gd = optimize(tf.f, tf.gradient!, tf.meta[:start](n), GradientDescent(), Optim.Options(f_reltol=1e-6))
+    result_lbfgs = optimize(tf.f, tf.gradient!, tf.meta[:start](n), LBFGS(), Optim.Options(f_reltol=1e-6))
+    println("Gradient Descent on $(tf.meta[:name]): $(Optim.minimizer(result_gd)), $(Optim.minimum(result_gd))")
+    println("L-BFGS on $(tf.meta[:name]): $(Optim.minimizer(result_lbfgs)), $(Optim.minimum(result_lbfgs))")
 
 #### Computing Hessian with Zygote
 Performs three Newton steps on the Rosenbrock function using analytical gradients and Zygote's Hessian computation, showcasing integration with automatic differentiation.
 
-        using NonlinearOptimizationTestFunctions, Zygote, LinearAlgebra
-        tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
-        n = 2
-        x = tf.meta[:start](n)
-        x = x - inv(Zygote.hessian(tf.f, x)) * tf.grad(x)
-        x = x - inv(Zygote.hessian(tf.f, x)) * tf.grad(x)
-        x = x - inv(Zygote.hessian(tf.f, x)) * tf.grad(x)
-        println("Nach 3 Newton-Schritten für $(tf.meta[:name]): $x")
+    using NonlinearOptimizationTestFunctions, Zygote, LinearAlgebra
+    tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
+    n = 2
+    x = tf.meta[:start](n)
+    x = x - inv(Zygote.hessian(tf.f, x)) * tf.grad(x)
+    x = x - inv(Zygote.hessian(tf.f, x)) * tf.grad(x)
+    x = x - inv(Zygote.hessian(tf.f, x)) * tf.grad(x)
+    println("Nach 3 Newton-Schritten für $(tf.meta[:name]): $x")
 
 #### Listing Test Functions and Properties
 Displays all available test functions with their start points, minima, and properties, useful for inspecting function characteristics.
 
-        using NonlinearOptimizationTestFunctions
-        n = 2
-        for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
-            println("$(tf.meta[:name]): Start at $(tf.meta[:start](n)), Minimum at $(tf.meta[:min_position](n)), Value $(tf.meta[:min_value]), Properties: $(join(tf.meta[:properties], ", "))")
-        end
+    using NonlinearOptimizationTestFunctions
+    n = 2
+    for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
+        println("$(tf.meta[:name]): Start at $(tf.meta[:start](n)), Minimum at $(tf.meta[:min_position](n)), Value $(tf.meta[:min_value]), Properties: $(join(tf.meta[:properties], ", "))")
+    end
 
 #### Optimizing All Functions
 Optimizes all test functions using Optim.jl's L-BFGS algorithm, demonstrating batch processing of test functions.
 
-        using NonlinearOptimizationTestFunctions, Optim
-        n = 2
-        for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
-            result = optimize(tf.f, tf.gradient!, tf.meta[:start](n), LBFGS(), Optim.Options(f_reltol=1e-6))
-            println("$(tf.meta[:name]): $(Optim.minimizer(result)), $(Optim.minimum(result))")
-        end
+    using NonlinearOptimizationTestFunctions, Optim
+    n = 2
+    for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
+        result = optimize(tf.f, tf.gradient!, tf.meta[:start](n), LBFGS(), Optim.Options(f_reltol=1e-6))
+        println("$(tf.meta[:name]): $(Optim.minimizer(result)), $(Optim.minimum(result))")
+    end
 
 #### Optimizing with NLopt
-Optimizes the Rosenbrock function using NLopt.jl's `LD_LBFGS` algorithm, highlighting compatibility with external optimization libraries.
+Optimizes the Rosenbrock function using NLopt.jl's LD_LBFGS algorithm, highlighting compatibility with external optimization libraries.
 
-        using NonlinearOptimizationTestFunctions
-        if isdefined(Main, :NLopt)
-            using NLopt
-            tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
-            n = 2
-            opt = Opt(:LD_LBFGS, n)
-            NLopt.ftol_rel!(opt, 1e-6)
-            NLopt.lower_bounds!(opt, tf.meta[:lb](n))
-            NLopt.upper_bounds!(opt, tf.meta[:ub](n))
-            NLopt.min_objective!(opt, (x, grad) -> begin
-                f = tf.f(x)
-                if length(grad) > 0
-                    tf.gradient!(grad, x)
-                end
-                f
-            end)
-            minf, minx, ret = optimize(opt, tf.meta[:start](n))
-            println("$(tf.meta[:name]): $minx, $minf")
-        else
-            println("NLopt.jl is not installed. Please install it to run this example.")
-        end
+    using NonlinearOptimizationTestFunctions
+    if isdefined(Main, :NLopt)
+        using NLopt
+        tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
+        n = 2
+        opt = Opt(:LD_LBFGS, n)
+        NLopt.ftol_rel!(opt, 1e-6)
+        NLopt.lower_bounds!(opt, tf.meta[:lb](n))
+        NLopt.upper_bounds!(opt, tf.meta[:ub](n))
+        NLopt.min_objective!(opt, (x, grad) -> begin
+            f = tf.f(x)
+            if length(grad) > 0
+                tf.gradient!(grad, x)
+            end
+            f
+        end)
+        minf, minx, ret = optimize(opt, tf.meta[:start](n))
+        println("$(tf.meta[:name]): $minx, $minf")
+    else
+        println("NLopt.jl is not installed. Please install it to run this example.")
+    end
 
 #### Filtering Test Functions by Properties
-Filters test functions based on specific properties (e.g., multimodal or `finite_at_inf`), demonstrating how to select functions for targeted benchmarking.
+Filters test functions based on specific properties (e.g., multimodal or finite_at_inf), demonstrating how to select functions for targeted benchmarking.
 
-        using NonlinearOptimizationTestFunctions
-        multimodal_funcs = filter_testfunctions(tf -> has_property(tf, "multimodal"))
-        println("Multimodal functions: ", [tf.meta[:name] for tf in multimodal_funcs])
-        finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
-        println("Functions with finite_at_inf: ", [tf.meta[:name] for tf in finite_at_inf_funcs])
+    using NonlinearOptimizationTestFunctions
+    multimodal_funcs = filter_testfunctions(tf -> has_property(tf, "multimodal"))
+    println("Multimodal functions: ", [tf.meta[:name] for tf in multimodal_funcs])
+    finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
+    println("Functions with finite_at_inf: ", [tf.meta[:name] for tf in finite_at_inf_funcs])
 
 ---
 ## Test Functions
