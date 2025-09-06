@@ -40,7 +40,7 @@ using LinearAlgebra
         [-9.646157266348881, 9.646134286497169],
         [-9.646157266348881, -9.646134286497169]
     ]
-    println("Minimizer: ", minimizer, ", Minimum value: ", minimum_value)
+    #println("Minimizer: ", minimizer, ", Minimum value: ", minimum_value)
     @test all(tf.meta[:lb]() .<= minimizer .<= tf.meta[:ub]())  # Check bounds
     @test any(min -> norm(minimizer - min) < 0.5, global_minima)  # Relaxed tolerance
     @test minimum_value ≈ -24.156815516506536 atol=1e-3  # Relaxed tolerance

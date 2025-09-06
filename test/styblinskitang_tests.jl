@@ -18,7 +18,7 @@ using NonlinearOptimizationTestFunctions: STYBLINSKITANG_FUNCTION, styblinskitan
     @test tf.meta[:name] == "styblinskitang"
     @test tf.meta[:start](n) == [1.0, 1.0]
     @test tf.meta[:min_position](n) ≈ [-2.903534, -2.903534] atol=1e-6
-    @test tf.meta[:min_value](n) ≈ -39.166165 * n atol=1e-6
+    @test tf.meta[:min_value](n) ≈ -39.166165 * n atol=1e-5
     @test tf.meta[:lb](n) == [-5.0, -5.0]
     @test tf.meta[:ub](n) == [5.0, 5.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true

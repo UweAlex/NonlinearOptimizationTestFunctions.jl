@@ -13,7 +13,7 @@ using NonlinearOptimizationTestFunctions: ALPINEN2_FUNCTION, alpinen2, alpinen2_
 
     # Test metadata
     @test tf.meta[:name] == "alpinen2"
-    @test tf.meta[:properties] == Set(["multimodal", "non-convex", "separable", "differentiable", "scalable", "bounded"])
+    @test tf.meta[:properties] == Set(["multimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"])
     @test tf.meta[:in_molga_smutnicki_2005] == false
 
     # Test function values

@@ -1,6 +1,6 @@
-# gradient_accuracy_tests.jl
+# test/gradient_accuracy_tests.jl
 # Purpose: Test analytical gradients against AD and numerical gradients
-# Last modified: September 03, 2025
+# Last modified: September 05, 2025
 
 using Test, ForwardDiff
 using NonlinearOptimizationTestFunctions
@@ -78,38 +78,28 @@ end
     for tf in values(TEST_FUNCTIONS)
         fn_name = tf.meta[:name]
         an_ad_vec, num_ad_vec, an_num_vec = diff_vectors[fn_name]
-        is_cont = "continuous" in tf.meta[:properties] || "partially continuous" in tf.meta[:properties]
-        is_diff = "differentiable" in tf.meta[:properties] || "partially differentiable" in tf.meta[:properties]
-        if !is_cont || !is_diff
-            println("Skipping $fn_name: not continuous or not differentiable")
-            push!(problematic_functions, fn_name)
-            continue
-        end
         is_scalable = "scalable" in tf.meta[:properties]
         n = is_scalable ? 4 : 2
         min_pos = try
             get_meta_value(tf.meta[:min_position], n, is_scalable, fn_name, "min_position")
         catch e
-            println("Skipping $fn_name: error in min_position: $e")
+            println("Error in min_position for $fn_name: $e")
             error_counts[fn_name] += 1
-            push!(problematic_functions, fn_name)
             continue
         end
         n = length(min_pos)
         points = try
-            generate_random_points(tf, n, 40)
+            generate_random_points(tf, n, 40) # 40 zufällige Punkte
         catch e
-            println("Skipping $fn_name: error in generate_random_points: $e")
+            println("Error in generate_random_points for $fn_name: $e")
             error_counts[fn_name] += 1
-            push!(problematic_functions, fn_name)
             continue
         end
         start_pos = try
             get_meta_value(tf.meta[:start], n, is_scalable, fn_name, "start")
         catch e
-            println("Skipping $fn_name: error in start_pos: $e")
+            println("Error in start_pos for $fn_name: $e")
             error_counts[fn_name] += 1
-            push!(problematic_functions, fn_name)
             continue
         end
         push!(points, start_pos)
@@ -117,17 +107,15 @@ end
             lb = try
                 get_meta_value(tf.meta[:lb], n, is_scalable, fn_name, "lb")
             catch e
-                println("Skipping $fn_name: error in lb: $e")
+                println("Error in lb for $fn_name: $e")
                 error_counts[fn_name] += 1
-                push!(problematic_functions, fn_name)
                 continue
             end
             ub = try
                 get_meta_value(tf.meta[:ub], n, is_scalable, fn_name, "ub")
             catch e
-                println("Skipping $fn_name: error in ub: $e")
+                println("Error in ub for $fn_name: $e")
                 error_counts[fn_name] += 1
-                push!(problematic_functions, fn_name)
                 continue
             end
             push!(points, lb + 1e-3 * (ub - lb))
@@ -143,9 +131,14 @@ end
                     tf.f(x)
                 catch e
                     println("Function error for $fn_name at x=$x: $e")
-                    fx = NaN
+                    error_counts[fn_name] += 1
+                    points[i] = generate_random_points(tf, n, 1)[1]
+                    x = points[i]
+                    attempts += 1
+                    continue
                 end
                 if !isfinite(fx)
+                    println("Non-finite function value for $fn_name at x=$x")
                     error_counts[fn_name] += 1
                     points[i] = generate_random_points(tf, n, 1)[1]
                     x = points[i]
@@ -155,18 +148,12 @@ end
                 an_grad = try
                     tf.grad(x)
                 catch e
-                    if isa(e, DomainError) && "partially differentiable" in tf.meta[:properties]
-                        println("Expected DomainError for $fn_name at x=$x (partially differentiable)")
-                        valid = true
-                        break
-                    else
-                        println("Unexpected error in gradient for $fn_name at x=$x: $e")
-                        error_counts[fn_name] += 1
-                        points[i] = generate_random_points(tf, n, 1)[1]
-                        x = points[i]
-                        attempts += 1
-                        continue
-                    end
+                    println("Gradient error for $fn_name at x=$x: $e")
+                    error_counts[fn_name] += 1
+                    points[i] = generate_random_points(tf, n, 1)[1]
+                    x = points[i]
+                    attempts += 1
+                    continue
                 end
                 if !all(isfinite, an_grad)
                     println("Non-finite analytical gradient for $fn_name at x=$x")
@@ -179,18 +166,12 @@ end
                 ad_grad = try
                     ForwardDiff.gradient(tf.f, x)
                 catch e
-                    if isa(e, DomainError) && "partially differentiable" in tf.meta[:properties]
-                        println("Expected DomainError in AD for $fn_name at x=$x (partially differentiable)")
-                        valid = true
-                        break
-                    else
-                        println("Unexpected error in AD gradient for $fn_name at x=$x: $e")
-                        error_counts[fn_name] += 1
-                        points[i] = generate_random_points(tf, n, 1)[1]
-                        x = points[i]
-                        attempts += 1
-                        continue
-                    end
+                    println("AD gradient error for $fn_name at x=$x: $e")
+                    error_counts[fn_name] += 1
+                    points[i] = generate_random_points(tf, n, 1)[1]
+                    x = points[i]
+                    attempts += 1
+                    continue
                 end
                 if !all(isfinite, ad_grad)
                     println("Non-finite AD gradient for $fn_name at x=$x")
@@ -204,6 +185,14 @@ end
                     finite_difference_gradient(tf.f, x)
                 catch e
                     println("Error in numerical gradient for $fn_name at x=$x: $e")
+                    error_counts[fn_name] += 1
+                    points[i] = generate_random_points(tf, n, 1)[1]
+                    x = points[i]
+                    attempts += 1
+                    continue
+                end
+                if !all(isfinite, num_grad)
+                    println("Non-finite numerical gradient for $fn_name at x=$x")
                     error_counts[fn_name] += 1
                     points[i] = generate_random_points(tf, n, 1)[1]
                     x = points[i]
@@ -225,8 +214,6 @@ end
             end
             if !valid && attempts >= max_attempts
                 error_counts[fn_name] += 1
-                push!(problematic_functions, fn_name)
-                push!(an_ad_vec, NaN); push!(num_ad_vec, NaN); push!(an_num_vec, NaN)
                 println("All attempts failed for $fn_name at x=$x")
             end
         end
@@ -258,5 +245,5 @@ end
     if !any_problems
         println("  No significant issues detected.")
     end
-    @test isempty(problematic_functions) skip=true
+    @test isempty(problematic_functions)
 end

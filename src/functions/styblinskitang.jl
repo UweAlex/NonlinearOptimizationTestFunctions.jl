@@ -1,7 +1,7 @@
 # src/functions/styblinskitang.jl
 # Purpose: Implements the Styblinski-Tang test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 02 August 2025
+# Last modified: 05 September 2025
 
 export STYBLINSKITANG_FUNCTION, styblinskitang, styblinskitang_gradient
 
@@ -51,13 +51,13 @@ const STYBLINSKITANG_FUNCTION = TestFunction(
         end,
         :min_position => (n::Int) -> begin
             n >= 1 || throw(ArgumentError("Styblinski-Tang requires at least 1 dimension"))
-            fill(-2.903534, n)
+            fill(-2.9035340276126953, n)
         end,
         :min_value => (n::Int) -> begin
             n >= 1 || throw(ArgumentError("Styblinski-Tang requires at least 1 dimension"))
-            -39.166165 * n
+            -39.16616570377141 * n
         end,
-        :properties => Set(["differentiable", "non-convex", "scalable", "multimodal","bounded","continuous"]),
+        :properties => Set(["differentiable", "non-convex", "scalable", "multimodal", "bounded", "continuous"]),
         :lb => (n::Int) -> begin
             n >= 1 || throw(ArgumentError("Styblinski-Tang requires at least 1 dimension"))
             fill(-5.0, n)
@@ -67,7 +67,7 @@ const STYBLINSKITANG_FUNCTION = TestFunction(
             fill(5.0, n)
         end,
         :in_molga_smutnicki_2005 => true,
-        :description => "Styblinski-Tang function: Multimodal, non-convex, scalable function with global minimum at approximately -39.166165 * n.",
+        :description => "Styblinski-Tang function: Multimodal, non-convex, scalable function with global minimum at approximately -39.16616570377141 * n.",
         :math => "\\frac{1}{2} \\sum_{i=1}^n (x_i^4 - 16 x_i^2 + 5 x_i)"
     )
 )

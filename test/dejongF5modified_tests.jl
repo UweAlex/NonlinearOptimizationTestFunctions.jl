@@ -43,7 +43,7 @@ using NonlinearOptimizationTestFunctions: DEJONGF5MODIFIED_FUNCTION, dejongf5mod
             Fminbox(NelderMead(initial_simplex=Optim.AffineSimplexer(a=1e-10, b=2e-10))),
             Optim.Options(f_reltol=1e-4, iterations=1000)
         )
-        @show start, Optim.converged(result), Optim.minimum(result), Optim.minimizer(result)  # Debugging output
+        # @show start, Optim.converged(result), Optim.minimum(result), Optim.minimizer(result)  # Debugging output
         found_global = Optim.converged(result) && isapprox(Optim.minimum(result), tf.meta[:min_value], atol=1e-4)
         @test found_global skip=(found_global == false)  # Skip if not converged to global minimum
         if found_global

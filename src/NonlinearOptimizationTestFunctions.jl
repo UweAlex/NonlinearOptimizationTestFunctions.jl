@@ -1,7 +1,7 @@
 # src/NonlinearOptimizationTestFunctions.jl
 # Purpose: Defines the core module for nonlinear optimization test functions.
-# Context: Provides TestFunction structure, metadata validation, and function registry.
-# Last modified: 20 July 2025
+# Context: Provides TestFunction structure, metadata validation, function registry, and utility functions.
+# Last modified: 04 September 2025
 
 module NonlinearOptimizationTestFunctions
 
@@ -12,10 +12,8 @@ const VALID_PROPERTIES = Set([
     "unimodal", "multimodal", "highly multimodal", "deceptive",
     "convex", "non-convex", "quasi-convex", "strongly convex",
     "separable", "non-separable", "partially separable", "fully non-separable",
-    "differentiable","partially differentiable", "scalable", "continuous", "bounded", "has_constraints",
-    "controversial", "has_noise","finite_at_inf"
-
-  
+    "differentiable", "partially differentiable", "scalable", "continuous", "bounded", "has_constraints",
+    "controversial", "has_noise", "finite_at_inf"
 ])
 
 struct TestFunction
@@ -31,6 +29,20 @@ struct TestFunction
         all(p in VALID_PROPERTIES for p in meta[:properties]) || throw(ArgumentError("Invalid properties: $(setdiff(meta[:properties], VALID_PROPERTIES))"))
         gradient! = (G, x) -> copyto!(G, grad(x))
         new(f, grad, gradient!, meta)
+    end
+end
+
+# Determine the dimension of a TestFunction
+function get_n(tf::TestFunction)
+    is_scalable = "scalable" in tf.meta[:properties]
+    if is_scalable
+        return -1
+    else
+        try
+            return length(tf.meta[:min_position]())
+        catch e
+            throw(ArgumentError("Invalid min_position for $(tf.meta[:name]): $e"))
+        end
     end
 end
 
@@ -83,6 +95,6 @@ for tf in values(TEST_FUNCTIONS)
     isdefined(@__MODULE__, export_constant) && @eval export $export_constant
 end
 
-export TEST_FUNCTIONS, filter_testfunctions, TestFunction, use_testfunction, has_property, add_property
+export TEST_FUNCTIONS, filter_testfunctions, TestFunction, use_testfunction, has_property, add_property, get_n
 
 end # module

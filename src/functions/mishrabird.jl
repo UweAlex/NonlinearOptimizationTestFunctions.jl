@@ -1,7 +1,7 @@
 # src/functions/mishrabird.jl
 # Purpose: Implements the MishraBird test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: August 24, 2025
+# Last modified: September 04, 2025
 
 export MISHRAbird_FUNCTION, mishrabird, mishrabird_gradient
 
@@ -61,9 +61,9 @@ const MISHRAbird_FUNCTION = TestFunction(
     Dict(
         :name => "mishrabird",
         :start => () -> [-1.0, -1.0],
-        :min_position => () -> [-3.1302468, -1.5821422], # One of the two global minima
-        :min_value => -106.764537,
-        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded","continuous"]),
+        :min_position => () -> [-3.1302468034308637, -1.5821421769356672], # Updated via LBFGS optimization to achieve gradient norm < 1e-6
+        :min_value => -106.76453674926466,                                   # Updated via LBFGS optimization to match the precise minimum
+        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"]),
         :lb => () -> [-10.0, -6.5],
         :ub => () -> [0.0, 0.0],
         :in_molga_smutnicki_2005 => false,

@@ -1,7 +1,7 @@
 # src/functions/levyjamil.jl
 # Purpose: Implements the Levy function from Jamil & Yang (2013) with its gradient.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: August 27, 2025
+# Last modified: September 05, 2025
 
 using LinearAlgebra
 using ForwardDiff
@@ -36,11 +36,11 @@ function levyjamil(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}
 end
 
 """
-    levyjamilgradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+    levyjamil_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
 Computes the gradient of the Levy function (Jamil & Yang, 2013). Returns a vector of length n.
 Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
-function levyjamilgradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function levyjamil_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
     n < 1 && throw(ArgumentError("Levy (Jamil) requires at least 1 dimension"))
@@ -55,20 +55,20 @@ function levyjamilgradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDi
     # Gradient for x_2 to x_(n-1)
     for i in 2:n-1
         grad[i] = 2 * (x[i] - 1) * (1 + sin(3 * π * x[i+1])^2) +
-                  6 * π * sin(3 * π * x[i]) * cos(3 * π * x[i]) * (x[i-1] - 1)^2
+                  6 * π * (x[i-1] - 1)^2 * sin(3 * π * x[i]) * cos(3 * π * x[i])
     end
     # Gradient for x_n
     grad[n] = 2 * (x[n] - 1) * (1 + sin(2 * π * x[n])^2) +
-              4 * π * sin(2 * π * x[n]) * cos(2 * π * x[n]) * (x[n] - 1)
+              4 * π * (x[n] - 1)^2 * sin(2 * π * x[n]) * cos(2 * π * x[n])
     if n > 1
-        grad[n] += 6 * π * sin(3 * π * x[n]) * cos(3 * π * x[n]) * (x[n-1] - 1)^2
+        grad[n] += 6 * π * (x[n-1] - 1)^2 * sin(3 * π * x[n]) * cos(3 * π * x[n])
     end
     grad
 end
 
-const LEVYJAMILFUNCTION = TestFunction(
+const LEVYJAMIL_FUNCTION = TestFunction(
     levyjamil,
-    levyjamilgradient,
+    levyjamil_gradient,
     Dict(
         :name => "levyjamil",
         :start => (n::Int) -> begin
@@ -89,11 +89,11 @@ const LEVYJAMILFUNCTION = TestFunction(
             n < 1 && throw(ArgumentError("Levy (Jamil) requires at least 1 dimension"))
             fill(10.0, n)
         end,
-        :in_molga_smutnicki_2005 => true,
-        :description => "Levy function (Jamil & Yang, 2013): Multimodal, differentiable, non-convex, scalable, bounded, continuous. Global minimum at x* = (1, ..., 1), f* = 0. Bounds: [-10, 10]^n. Note: Follows Jamil & Yang (2013), which likely contains typos (e.g., missing coefficient, incorrect 3π scaling). The standard Levy function (see levy.jl) uses w_i = 1 + (x_i - 1)/4. The function is also non-separable, but this property is omitted in tests for consistency. Included in [Molga & Smutnicki (2005)].",
+        :in_molga_smutnicki_2005 => false,
+        :description => "Levy function (Jamil & Yang, 2013): Multimodal, differentiable, non-convex, scalable, bounded, continuous. Global minimum at x* = (1, ..., 1), f* = 0. Bounds: [-10, 10]^n. Note: Follows Jamil & Yang (2013), which may contain typos (e.g., missing coefficient, incorrect 3π scaling). The standard Levy function (see levy.jl) uses w_i = 1 + (x_i - 1)/4. The function is also non-separable, but this property is omitted in tests for consistency.",
         :math => "\\sin^2(3\\pi x_1) + \\sum_{i=1}^{n-1} (x_i - 1)^2 [1 + \\sin^2(3\\pi x_{i+1})] + (x_n - 1)^2 [1 + \\sin^2(2\\pi x_n)]"
     )
 )
 
 # Export after defining all symbols
-export LEVYJAMILFUNCTION, levyjamil, levyjamilgradient
+export LEVYJAMIL_FUNCTION, levyjamil, levyjamil_gradient
