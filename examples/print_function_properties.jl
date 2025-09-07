@@ -38,7 +38,9 @@ function print_function_properties()
         catch
             length(tf.meta[:min_position]())  # Fallback for fixed dimensions (e.g., shekel, hartmann)
         end
-        dimensions = is_scalable ? (name == "rosenbrock" ? "Any n >= 2" : "Any n >= 1") : "n=$n"
+        dimensions =get_n(tf) 
+
+#is_scalable ? (name == "rosenbrock" ? "Any n >= 2" : "Any n >= 1") : "n=$n"
         
         # Extract metadata
         # Handle min_value as a function or scalar

@@ -51,7 +51,7 @@ const BUKIN6_FUNCTION = TestFunction(
     bukin6_gradient,
     Dict(
         :name => "bukin6",
-        :start => () -> [0.0, 0.0],
+        :start => () -> [-9.0, 0.5],
         :min_position => () -> [-10.0, 1.0],
         :min_value => 0.0,
         :properties => Set(["partially differentiable", "non-convex", "multimodal", "bounded", "continuous"]),
