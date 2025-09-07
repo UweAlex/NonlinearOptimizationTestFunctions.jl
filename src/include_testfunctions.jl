@@ -74,6 +74,8 @@ include("functions/trid.jl")
 include("functions/wood.jl")
 include("functions/zakharov.jl")
 include("functions/bukin2.jl")
+include("functions/bohachevsky3.jl")
+
 
 
 
