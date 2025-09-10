@@ -347,27 +347,27 @@ The following test functions are planned for implementation, based on standard b
 
 The following properties are used to characterize the test functions in this package, as defined in `VALID_PROPERTIES` in `src/NonlinearOptimizationTestFunctions.jl`. Properties like `continuous` (stetig), `differentiable`, and `partially differentiable` are standard mathematical terms and not further explained. This list is based on standard optimization literature, including [Molga & Smutnicki (2005)].
 
-1. **bounded**: The function is defined within finite bounds (e.g., \( x \in [-a, a]^n \)).
-1. **continuous**: The function is continuous (no explanation needed).
-1. **controversial**: The function's properties or behavior may be debated in literature.
-1. **convex**: The function is convex, ensuring a single global optimum.
-1. **deceptive**: The function misleads optimization algorithms toward suboptimal solutions.
-1. **differentiable**: The function is differentiable (no explanation needed).
-1. **finite_at_inf**: The function yields finite values even as inputs approach infinity.
-1. **fully non-separable**: The function's variables are fully interdependent, preventing any decomposition.
-1. **has_constraints**: The function includes constraints (e.g., equality or inequality constraints).
-1. **has_noise**: The function includes stochastic or noisy components.
-1. **highly multimodal**: The function has a very large number of local minima/maxima.
-1. **multimodal**: The function has multiple local minima/maxima, with at least one global optimum.
-1. **non-convex**: The function is not convex, allowing multiple optima or complex landscapes.
-1. **non-separable**: The function's variables are interdependent, preventing decomposition into independent subproblems.
-1. **partially differentiable**: The function is differentiable only in some variables or regions (no explanation needed).
-1. **partially separable**: The function can be partially decomposed into independent subproblems.
-1. **quasi-convex**: The function has convex level sets, but is not strictly convex.
-1. **scalable**: The function can be defined for any dimension \( n \geq 1 \).
-1. **separable**: The function can be decomposed into independent subproblems for each variable.
-1. **strongly convex**: The function is convex with a unique global optimum and strong curvature.
-1. **unimodal**: The function has exactly one global minimum/maximum and no local optima.
+- **bounded**: The function is defined within finite bounds (e.g., \( x \in [-a, a]^n \)).
+- **continuous**: The function is continuous (no explanation needed).
+- **controversial**: The function's properties or behavior may be debated in literature.
+- **convex**: The function is convex, ensuring a single global optimum.
+- **deceptive**: The function misleads optimization algorithms toward suboptimal solutions.
+- **differentiable**: The function is differentiable (no explanation needed).
+- **finite_at_inf**: The function yields finite values even as inputs approach infinity.
+- **fully non-separable**: The function's variables are fully interdependent, preventing any decomposition.
+- **has_constraints**: The function includes constraints (e.g., equality or inequality constraints).
+- **has_noise**: The function includes stochastic or noisy components.
+- **highly multimodal**: The function has a very large number of local minima/maxima.
+- **multimodal**: The function has multiple local minima/maxima, with at least one global optimum.
+- **non-convex**: The function is not convex, allowing multiple optima or complex landscapes.
+- **non-separable**: The function's variables are interdependent, preventing decomposition into independent subproblems.
+- **partially differentiable**: The function is differentiable only in some variables or regions (no explanation needed).
+- **partially separable**: The function can be partially decomposed into independent subproblems.
+- **quasi-convex**: The function has convex level sets, but is not strictly convex.
+- **scalable**: The function can be defined for any dimension \( n \geq 1 \).
+- **separable**: The function can be decomposed into independent subproblems for each variable.
+- **strongly convex**: The function is convex with a unique global optimum and strong curvature.
+- **unimodal**: The function has exactly one global minimum/maximum and no local optima.
 
 ---
 ## Valid Properties
@@ -375,35 +375,35 @@ The following properties are used to characterize the test functions in this pac
 Each test function is associated with a set of properties that describe its mathematical characteristics, enabling filtering for specific use cases (e.g., multimodal or scalable functions). The following properties are defined in the package and can be assigned to test functions via their metadata (`meta[:properties]`). Note that not all properties are assigned to every function; for example, `finite_at_inf` is currently only applied to `De Jong F5` and `Shekel`, while `Langermann` does not have this property despite returning finite values at infinity.
 
 ### Modality
-1. **unimodal**: The function has a single global minimum and no local minima.
-1. **multimodal**: The function has multiple local minima, making it challenging for optimization algorithms.
-1. **highly multimodal**: A subset of multimodal functions with a particularly large number of local minima.
-1. **deceptive**: The function has features that may mislead optimization algorithms toward suboptimal solutions.
+- **unimodal**: The function has a single global minimum and no local minima.
+- **multimodal**: The function has multiple local minima, making it challenging for optimization algorithms.
+- **highly multimodal**: A subset of multimodal functions with a particularly large number of local minima.
+- **deceptive**: The function has features that may mislead optimization algorithms toward suboptimal solutions.
 
 ### Convexity
-1. **convex**: The function is convex, ensuring a unique global minimum for continuous functions.
-1. **non-convex**: The function is not convex, potentially having multiple minima or saddle points.
-1. **quasi-convex**: The function is not convex but has a convex sublevel set, useful for certain optimization algorithms.
-1. **strongly convex**: The function is convex with a strong curvature, guaranteeing faster convergence for some methods.
+- **convex**: The function is convex, ensuring a unique global minimum for continuous functions.
+- **non-convex**: The function is not convex, potentially having multiple minima or saddle points.
+- **quasi-convex**: The function is not convex but has a convex sublevel set, useful for certain optimization algorithms.
+- **strongly convex**: The function is convex with a strong curvature, guaranteeing faster convergence for some methods.
 
 ### Separability
-1. **separable**: The function can be optimized independently along each dimension.
-1. **non-separable**: The function's variables are interdependent, requiring joint optimization.
-1. **partially separable**: The function can be partially decomposed into separable components.
-1. **fully non-separable**: The function is entirely non-separable, with strong interdependencies across all variables.
+- **separable**: The function can be optimized independently along each dimension.
+- **non-separable**: The function's variables are interdependent, requiring joint optimization.
+- **partially separable**: The function can be partially decomposed into separable components.
+- **fully non-separable**: The function is entirely non-separable, with strong interdependencies across all variables.
 
 ### Differentiability
-1. **differentiable**: The function has a well-defined gradient everywhere in its domain.
-1. **partially differentiable**: The function is differentiable in parts of its domain but may have non-differentiable points.
+- **differentiable**: The function has a well-defined gradient everywhere in its domain.
+- **partially differentiable**: The function is differentiable in parts of its domain but may have non-differentiable points.
 
 ### Other Properties
-1. **scalable**: The function can be defined for any number of dimensions (n >= 1).
-1. **continuous**: The function is continuous across its domain.
-1. **bounded**: The function is defined within finite bounds (e.g., [a, b]^n), and evaluations outside these bounds are typically undefined or irrelevant. Tests for bounded functions check finite values at the bounds (`lb`, `ub`) rather than at infinity.
-1. **has_constraints**: The function includes explicit constraints (e.g., equality or inequality constraints).
-1. **controversial**: The function has debated properties or inconsistent definitions in the literature.
-1. **has_noise**: The function includes stochastic or noisy components, simulating real-world uncertainty.
-1. **finite_at_inf**: The function returns finite values when evaluated at infinity (e.g., f([Inf, ..., Inf]) is finite).
+- **scalable**: The function can be defined for any number of dimensions (n >= 1).
+- **continuous**: The function is continuous across its domain.
+- **bounded**: The function is defined within finite bounds (e.g., [a, b]^n), and evaluations outside these bounds are typically undefined or irrelevant. Tests for bounded functions check finite values at the bounds (`lb`, `ub`) rather than at infinity.
+- **has_constraints**: The function includes explicit constraints (e.g., equality or inequality constraints).
+- **controversial**: The function has debated properties or inconsistent definitions in the literature.
+- **has_noise**: The function includes stochastic or noisy components, simulating real-world uncertainty.
+- **finite_at_inf**: The function returns finite values when evaluated at infinity (e.g., f([Inf, ..., Inf]) is finite).
 
 These properties are validated in the test suite (e.g., `test/runtests.jl`) to ensure consistency and correctness.
 
@@ -427,57 +427,57 @@ This package is licensed under the MIT License. See LICENSE for details.
 
 Some test functions are referred to by different names in the literature. Below is a list connecting the names used in this package to common alternatives.
 
-1. **ackley**: Ackley's function, Ackley No. 1, Ackley Path Function.
-1. **alpinen1**: Alpine No. 1 function, Alpine function.
-1. **alpinen2**: Alpine No. 2 function, Alpine function.
-1. **axisparallelhyperellipsoid**: Axis parallel hyper-ellipsoid function, Sum squares function, Weighted sphere model, Quadratic function (axis-aligned variant).
-1. **beale**: Beale's function.
-1. **bird**: Bird's function.
-1. **bohachevsky**: Bohachevsky's function, Bohachevsky No. 1 (for the standard variant).
-1. **booth**: Booth's function.
-1. **branin**: Branin's rcos function, Branin-Hoo function, Branin function.
-1. **bukin6**: Bukin function No. 6.
-1. **crossintray**: Cross-in-Tray function.
-1. **deckkersaarts**: Deckkers-Aarts function, Deckkers and Aarts function.
-1. **dejongf4**: De Jong F4, Quartic function with noise, Noisy quartic function.
-1. **dejongf5**: De Jong F5, Foxholes function.
-1. **dixonprice**: Dixon-Price function.
-1. **dropwave**: Drop-Wave function.
-1. **easom**: Easom's function.
-1. **eggholder**: Egg Holder function, Egg Crate function, Holder Table function.
-1. **giunta**: Giunta function.
-1. **goldsteinprice**: Goldstein-Price function.
-1. **griewank**: Griewank's function, Griewangk’s function, Griewank function.
-1. **hartmann**: Hartmann function (Hartmann 3, 4 or 6).
-1. **himmelblau**: Himmelblau's function.
-1. **holdertable**: Holder Table function.
-1. **kearfott**: Kearfott's function.
-1. **keane**: Keane's function, Bump function.
-1. **langermann**: Langermann's function.
-1. **levy**: Levy function No. 13, Levy N.13.
-1. **matyas**: Matyas function.
-1. **mccormick**: McCormick's function.
-1. **michalewicz**: Michalewicz's function.
-1. **mishrabird**: Mishra's Bird function (often associated with a constraint).
-1. **quadratic**: Quadratic function, Paraboloid, General quadratic form (often customized with matrix A, vector b, scalar c).
-1. **rana**: Rana's function.
-1. **rastrigin**: Rastrigin's function.
-1. **rosenbrock**: Rosenbrock's valley, De Jong F2, Banana function.
-1. **rotatedhyperellipsoid**: Rotated Hyper-Ellipsoid function, Schwefel's function 1.2, Extended sum squares function, Extended Rosenbrock function (in some contexts).
-1. **schaffern1**: Schaffer function N. 1.
-1. **schaffern2**: Schaffer function N. 2.
-1. **schaffern4**: Schaffer function N. 4.
-1. **schwefel**: Schwefel's function, Schwefel 2.26, Schwefel Problem 2.26.
-1. **shekel**: Shekel's function, Shekel's foxholes, Foxholes function.
-1. **shubert**: Shubert's function.
-1. **sineenvelope**: Sine Envelope Sine Wave Sine function, Sine envelope function.
-1. **sixhumpcamelback**: Six-Hump Camelback function, Camel function, Six-hump camel function.
-1. **sphere**: Sphere function, De Jong F1, Quadratic sphere, Parabola function, Sum of squares (unweighted).
-1. **step**: Step function, De Jong F3.
-1. **styblinskitang**: Styblinski-Tang function, Tang function.
-1. **sumofpowers**: Sum of different powers function, Absolute value function, Sum of increasing powers.
-1. **threehumpcamel**: Three-Hump Camel function, Camel Three Humps function.
-1. **zakharov**: Zakharov's function.
+- **ackley**: Ackley's function, Ackley No. 1, Ackley Path Function.
+- **alpinen1**: Alpine No. 1 function, Alpine function.
+- **alpinen2**: Alpine No. 2 function, Alpine function.
+- **axisparallelhyperellipsoid**: Axis parallel hyper-ellipsoid function, Sum squares function, Weighted sphere model, Quadratic function (axis-aligned variant).
+- **beale**: Beale's function.
+- **bird**: Bird's function.
+- **bohachevsky**: Bohachevsky's function, Bohachevsky No. 1 (for the standard variant).
+- **booth**: Booth's function.
+- **branin**: Branin's rcos function, Branin-Hoo function, Branin function.
+- **bukin6**: Bukin function No. 6.
+- **crossintray**: Cross-in-Tray function.
+- **deckkersaarts**: Deckkers-Aarts function, Deckkers and Aarts function.
+- **dejongf4**: De Jong F4, Quartic function with noise, Noisy quartic function.
+- **dejongf5**: De Jong F5, Foxholes function.
+- **dixonprice**: Dixon-Price function.
+- **dropwave**: Drop-Wave function.
+- **easom**: Easom's function.
+- **eggholder**: Egg Holder function, Egg Crate function, Holder Table function.
+- **giunta**: Giunta function.
+- **goldsteinprice**: Goldstein-Price function.
+- **griewank**: Griewank's function, Griewangk’s function, Griewank function.
+- **hartmann**: Hartmann function (Hartmann 3, 4 or 6).
+- **himmelblau**: Himmelblau's function.
+- **holdertable**: Holder Table function.
+- **kearfott**: Kearfott's function.
+- **keane**: Keane's function, Bump function.
+- **langermann**: Langermann's function.
+- **levy**: Levy function No. 13, Levy N.13.
+- **matyas**: Matyas function.
+- **mccormick**: McCormick's function.
+- **michalewicz**: Michalewicz's function.
+- **mishrabird**: Mishra's Bird function (often associated with a constraint).
+- **quadratic**: Quadratic function, Paraboloid, General quadratic form (often customized with matrix A, vector b, scalar c).
+- **rana**: Rana's function.
+- **rastrigin**: Rastrigin's function.
+- **rosenbrock**: Rosenbrock's valley, De Jong F2, Banana function.
+- **rotatedhyperellipsoid**: Rotated Hyper-Ellipsoid function, Schwefel's function 1.2, Extended sum squares function, Extended Rosenbrock function (in some contexts).
+- **schaffern1**: Schaffer function N. 1.
+- **schaffern2**: Schaffer function N. 2.
+- **schaffern4**: Schaffer function N. 4.
+- **schwefel**: Schwefel's function, Schwefel 2.26, Schwefel Problem 2.26.
+- **shekel**: Shekel's function, Shekel's foxholes, Foxholes function.
+- **shubert**: Shubert's function.
+- **sineenvelope**: Sine Envelope Sine Wave Sine function, Sine envelope function.
+- **sixhumpcamelback**: Six-Hump Camelback function, Camel function, Six-hump camel function.
+- **sphere**: Sphere function, De Jong F1, Quadratic sphere, Parabola function, Sum of squares (unweighted).
+- **step**: Step function, De Jong F3.
+- **styblinskitang**: Styblinski-Tang function, Tang function.
+- **sumofpowers**: Sum of different powers function, Absolute value function, Sum of increasing powers.
+- **threehumpcamel**: Three-Hump Camel function, Camel Three Humps function.
+- **zakharov**: Zakharov's function.
 
 ---
 ## References
