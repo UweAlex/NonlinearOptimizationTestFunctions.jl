@@ -228,6 +228,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **bohachevsky** [Jamil & Yang (2013):f17]: bounded, continuous, differentiable, multimodal, non-convex, scalable. Minimum: 0 at (0, 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: Any n >= 1.
 - **bohachevsky2** [Jamil & Yang (2013): f18]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (0, 0). Bounds: [-100, 100]^2. Dimensions: n=2.
 - **booth** [Jamil & Yang (2013):f20]: bounded, continuous, convex, differentiable, separable, unimodal. Minimum: 0 at (1, 3). Bounds: [(-10, -10), (10, 10)]. Dimensions: n=2.
+- **boxbetts** [Jamil & Yang (2013): f21]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1). Bounds: [0.9, 1.2] x [9, 11.2] x [0.9, 1.2]. Dimensions: n=3.
 - **branin** [Molga & Smutnicki (2005):2.12]: bounded, continuous, differentiable, multimodal, non-convex, non-separable. Minimum: 0.397887 at (-3.14159265, 12.275). Bounds: [(-5, 0), (10, 15)]. Dimensions: n=2.
 - **brown** [Jamil & Yang (2013): f25]: Unimodal, non-separable, differentiable, scalable, continuous, bounded. Minimum: 0 at (0, ..., 0). Bounds: [-1, 4]^n. Dimensions: Any n >= 2. Note: Highly sensitive to changes in variables due to exponential terms.
 - **brent** [Jamil & Yang (2013): f24]: Unimodal, non-convex, non-separable, differentiable. Minimum: 0 at (0, 0). Bounds: [-10, 10]^2. Dimensions: n=2.
@@ -235,6 +236,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **bukin6** [Jamil & Yang (2013):f28]: bounded, continuous, multimodal, non-convex, partially differentiable. Minimum: 0 at (-10, 1). Bounds: [(-15, -3), (-5, 3)]. Dimensions: n=2.
 - **carromTable** [Jamil & Yang (2013): f146]: Multimodal, non-convex, non-separable, differentiable. Minimum: -24.1568155165 at (±9.646157266348881,±9.646134286497169). Bounds: [-10,10]^2. Dimensions: n=2.
 - **colville** [Jamil & Yang (2013): f36]: Unimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1,1,1,1). Bounds: [-10,10]^4. Dimensions: n=4.
+- **chen** [Jamil & Yang (2013): f31- **Chen V** [Naser et al. (2024)], [al-roomi.org]: Multimodal, non-convex, non-separable, differentiable, bounded, continuous. Minimum: -2000 at (0.388888888888889, 0.722222222222222). Bounds: [-500, 500]^2. Dimensions: n=2.
 - **crossintray** [Jamil & Yang (2013):f39]: bounded, continuous, differentiable, multimodal, non-convex, non-separable. Minimum: -2.06261187 at (1.34940658, 1.34940658). Bounds: [(-10, -10), (10, 10)]. Dimensions: n=2.
 - **dejongf4** [Molga & Smutnicki (2005)]: bounded, continuous, convex, has_noise, partially differentiable, scalable, separable, unimodal. Minimum: 0 at (0, 0). Bounds: [(-1.28, -1.28), (1.28, 1.28)]. Dimensions: Any n >= 1.
 - **dejongf5modified** : bounded, continuous, differentiable, finite_at_inf, multimodal, non-convex, non-separable. Minimum: -0.99800384 at (-31.97833, -31.97833). Bounds: [(-65.536, -65.536), (65.536, 65.536)]. Dimensions: n=2.
@@ -303,10 +305,8 @@ The following test functions are planned for implementation, based on standard b
 - **Biggs EXP5** [Jamil & Yang (2013): f14]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1, 5, 4). Bounds: [0, 20]^5. Dimensions: n=5.
 - **Biggs EXP6** [Jamil & Yang (2013): f15]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1, 5, 4, 3). Bounds: [-20, 20]^6. Dimensions: n=6.
 - **Bohachevsky 3** [Jamil & Yang (2013): f19]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (0, 0). Bounds: [-100, 100]^2. Dimensions: n=2.
-- **Box-Betts Quadratic Sum** [Jamil & Yang (2013): f21]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1). Bounds: [0.9, 1.2] x [9, 11.2] x [0.9, 1.2]. Dimensions: n=3.
 - **Branin RCOS 2** [Jamil & Yang (2013): f23]: Multimodal, non-convex, non-separable, differentiable. Minimum: 5.559037 at (-3.2, 12.53). Bounds: [-5, 15]^2. Dimensions: n=2.
 - **Bukin 4** [Jamil & Yang (2013): f27]: Multimodal, non-convex, separable, non-differentiable. Minimum: 0 at (-10, 0). Bounds: [-15, -5] x [-3, 3]. Dimensions: n=2.
-- **Chen V** [Jamil & Yang (2013): f31]: Multimodal, non-convex, non-separable, differentiable. Minimum: -2000 at (-0.3889, 0.7222). Bounds: [-500, 500]^2. Dimensions: n=2.
 - **Chung Reynolds** [Jamil & Yang (2013): f34]: Unimodal, convex, partially-separable, differentiable, scalable. Minimum: 0 at (0, ..., 0). Bounds: [-100, 100]^n. Dimensions: any n.
 - **Cola** [Jamil & Yang (2013): f35]: Multimodal, non-convex, non-separable, differentiable. Minimum: 11.7464. Bounds: [0, 4] x [-4, 4]^16. Dimensions: n=17.
 - **Deb 1** [Jamil & Yang (2013): f43]: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -1. Bounds: [-1, 1]^n. Dimensions: any n.
@@ -487,5 +487,6 @@ Some test functions are referred to by different names in the literature. Below 
 - Hedar, A.-R. (2005). Global optimization test problems. http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm
 - Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. *International Journal of Mathematical Modelling and Numerical Optimisation*, 4(2), 150–194. https://arxiv.org/abs/1308.4008
 - Molga, M., & Smutnicki, C. (2005). Test functions for optimization needs. http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
+- Naser, M.Z., al-Bashiti, M.K., Teymori Gharah Tapeh, A., Dadras Eslamlou, A., Naser, A., Kodur, V., Hawileeh, R., Abdalla, J., Khodadadi, N., & Gandomi, A.H. (2024). A Review of 315 Benchmark and Test Functions for Machine Learning Optimization Algorithms and Metaheuristics with Mathematical and Visual Descriptions. arXiv:2406.09581. https://arxiv.org/abs/2406.09581
 - Suganthan, P. N., Hansen, N., Liang, J. J., Deb, K., Chen, Y.-P., Auger, A., & Tiwari, S. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization. IEEE CEC-Website. https://www.lri.fr/~hansen/Tech-Report-May-30-05.pdf
 - Adorio, E. P. (2015). Mathematical Test Functions for Global Optimization. https://www.geocities.ws/eadorio/mvf.pdf

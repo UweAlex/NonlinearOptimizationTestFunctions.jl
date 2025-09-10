@@ -56,7 +56,7 @@ const BRENT_FUNCTION = TestFunction(
     brent,  # Function
     brent_gradient,  # Gradient
     Dict(
-        :name => "Brent",  # Function name (string)
+        :name => "brent",  # Function name (string)
         :start => () -> [0.0, 0.0],  # Starting point for optimization
         :min_position => () -> [-10.0, -10.0],  # Global minimum location
         :min_value => 0.0,  # Function value at minimum

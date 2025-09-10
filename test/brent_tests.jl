@@ -13,7 +13,7 @@ using ForwardDiff
     tf = BRENT_FUNCTION
 
     # Test metadata
-    @test tf.meta[:name] == "Brent"  # Verify function name
+    @test tf.meta[:name] == "brent"  # Verify function name
     @test tf.meta[:properties] == Set(["continuous", "differentiable", "non-separable", "unimodal", "bounded"])  # Verify properties
     @test tf.meta[:in_molga_smutnicki_2005] == false  # Verify source information
 

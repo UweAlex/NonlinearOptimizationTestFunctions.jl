@@ -75,6 +75,9 @@ include("wood_tests.jl")
 include("zakharov_tests.jl")
 include("bukin2_tests.jl")
 include("bohachevsky3_tests.jl")
+include("boxbetts_tests.jl")
+include("chen_tests.jl")
+
 
 
 
