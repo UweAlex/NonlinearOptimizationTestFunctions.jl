@@ -77,6 +77,8 @@ include("functions/bukin2.jl")
 include("functions/bohachevsky3.jl")
 include("functions/boxbetts.jl")
 include("functions/chen.jl")
+include("functions/bukin4.jl")
+
 
 
 
