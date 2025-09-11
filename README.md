@@ -1,5 +1,5 @@
 # NonlinearOptimizationTestFunctions
-# Last modified: 04 September 2025, 10:22 AM CEST
+# Last modified: 11 September 2025, 08:24 AM CEST
 
 ## Table of Contents
 
@@ -16,6 +16,7 @@
     - [Optimizing All Functions](#optimizing-all-functions)
     - [Optimizing with NLopt](#optimizing-with-nlopt)
     - [Filtering Test Functions by Properties](#filtering-test-functions-by-properties)
+    - [Tracking Function and Gradient Calls](#tracking-function-and-gradient-calls)
 - [Tests of the Test Functions](#tests-of-the-test-functions)
 - [Test Functions](#test-functions)
 - [Upcoming Test Functions](#upcoming-test-functions)
@@ -193,8 +194,55 @@ Filters test functions based on specific properties (e.g., multimodal or finite_
     finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
     println("Functions with finite_at_inf: ", [tf.meta[:name] for tf in finite_at_inf_funcs])
 
+#### Tracking Function and Gradient Calls
+Tracks the number of function and gradient evaluations for the Rosenbrock function during evaluation and optimization, demonstrating the use of call counters and selective gradient counter resetting.
 
----
+    using NonlinearOptimizationTestFunctions, Optim
+
+    # Track function and gradient calls for Rosenbrock
+    function run_count_calls_example()
+        # Select the Rosenbrock test function
+        tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
+        n = 2  # Dimension for scalable function
+
+        # Reset both counters before starting
+        reset_counts!(tf)  # Reset function and gradient call counters to 0
+        println("After full reset - Function calls: ", get_f_count(tf))  # Should print 0
+        println("After full reset - Gradient calls: ", get_grad_count(tf))  # Should print 0
+
+        # Evaluate function at start point
+        x = tf.meta[:start](n)  # Get start point [1.0, 1.0]
+        f_value = tf.f(x)  # Compute function value
+        println("Function value at start point $x: ", f_value)  # Should print 24.0
+        println("Function calls after evaluation: ", get_f_count(tf))  # Should print 1
+        println("Gradient calls after evaluation: ", get_grad_count(tf))  # Should print 0
+
+        # Evaluate gradient at start point
+        grad_value = tf.grad(x)  # Compute gradient
+        println("Gradient at start point $x: ", grad_value)  # Should print [400.0, -200.0]
+        println("Function calls after gradient evaluation: ", get_f_count(tf))  # Should print 1
+        println("Gradient calls after gradient evaluation: ", get_grad_count(tf))  # Should print 1
+
+        # Reset only the gradient counter
+        reset_grad_count!(tf)  # Reset only gradient call counter to 0
+        println("After gradient reset - Function calls: ", get_f_count(tf))  # Should print 1
+        println("After gradient reset - Gradient calls: ", get_grad_count(tf))  # Should print 0
+
+        # Perform optimization with L-BFGS
+        result = optimize(tf.f, tf.gradient!, x, LBFGS(), Optim.Options(f_reltol=1e-6))
+        println("Optimization result - Minimizer: ", Optim.minimizer(result))
+        println("Optimization result - Minimum: ", Optim.minimum(result))
+        println("Function calls after optimization: ", get_f_count(tf))  # Prints total function calls
+        println("Gradient calls after optimization: ", get_grad_count(tf))  # Prints total gradient calls
+
+        # Reset both counters again
+        reset_counts!(tf)  # Reset both counters to 0
+        println("After second full reset - Function calls: ", get_f_count(tf))  # Should print 0
+        println("After second full reset - Gradient calls: ", get_grad_count(tf))  # Should print 0
+    end
+
+    # Run the function
+    run_count_calls_example()
 
 ### Tests of the Test Functions
 
@@ -209,8 +257,7 @@ The test suite of the `NonlinearOptimizationTestFunctions` package ensures that 
 
 The tests utilize `Optim.jl` for optimizations, `ForwardDiff` and `Zygote` for automatic differentiation, and handle special cases such as non-differentiable functions or numerical instabilities. Debugging outputs (e.g., using `@show`) assist in verifying optimization results, while some warnings indicate potential metadata errors.
 
-**Average Number of Tests per Function**: On average, each test function undergoes approximately 50–60 tests. This includes 5–10 tests for metadata and edge cases in function-specific test files (e.g., 23 tests in `brown_tests.jl`, 24 in `dejongf5modified_tests.jl`), 42–43 gradient accuracy tests per function (40 random points, 1 start point, and 1–2 bound points for bounded functions in `gradient_accuracy_tests.jl`), and 2–5 optimization and minimum validation tests in `minima_tests.jl`.---
-
+**Average Number of Tests per Function**: On average, each test function undergoes approximately 50–60 tests. This includes 5–10 tests for metadata and edge cases in function-specific test files (e.g., 23 tests in `brown_tests.jl`, 24 in `dejongf5modified_tests.jl`), 42–43 gradient accuracy tests per function (40 random points, 1 start point, and 1–2 bound points for bounded functions in `gradient_accuracy_tests.jl`), and 2–5 optimization and minimum validation tests in `minima_tests.jl`.
 
 ## Test Functions
 
@@ -285,11 +332,9 @@ The package includes a variety of test functions for nonlinear optimization, eac
 1. **wood** [Jamil & Yang (2013):f121]: bounded, continuous, differentiable, non-convex, non-separable, unimodal. Minimum: 0 at (1, 1, 1, 1). Bounds: [(-10, -10, -10, -10), (10, 10, 10, 10)]. Dimensions: n=4.
 1. **zakharov** [Naser (2024):4.311]: bounded, continuous, convex, differentiable, non-separable, scalable, unimodal. Minimum: 0 at (0, 0). Bounds: [(-5, -5), (10, 10)]. Dimensions: Any n >= 1.
 
----
 ## Upcoming Test Functions
 
 The following test functions are planned for implementation, based on standard benchmarks. They will be added with analytical gradients, metadata, and validation, consistent with the existing collection.
-
 
 1. **Chichinadze** [Jamil & Yang (2013): f33]: Multimodal, non-convex, non-separable, differentiable. Minimum: -43.3159 at (5.90133, 0.5). Bounds: [-30,30]^2. Dimensions: n=2.
 1. **CosineMixture** [Jamil & Yang (2013): f38]: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -0.1*n at multiple. Bounds: [-1,1]^n. Dimensions: Any n >=1.
@@ -342,7 +387,6 @@ The following test functions are planned for implementation, based on standard b
 1. **Perm**: Unimodal, non-convex, non-separable, differentiable, scalable. Minimum: 0 at (1,1/2,1/3,...,1/n). Bounds: [-n, n]^n. Dimensions: Any n >=1.
 1. **Cigar**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-10,10]^n. Dimensions: Any n >=2.
 
----
 ## Properties of Test Functions
 
 The following properties are used to characterize the test functions in this package, as defined in `VALID_PROPERTIES` in `src/NonlinearOptimizationTestFunctions.jl`. Properties like `continuous` (stetig), `differentiable`, and `partially differentiable` are standard mathematical terms and not further explained. This list is based on standard optimization literature, including [Molga & Smutnicki (2005)].
@@ -365,11 +409,10 @@ The following properties are used to characterize the test functions in this pac
 - **partially separable**: The function can be partially decomposed into independent subproblems.
 - **quasi-convex**: The function has convex level sets, but is not strictly convex.
 - **scalable**: The function can be defined for any dimension \( n \geq 1 \).
-- **separable**: The function can be decomposed into independent subproblems for each variable.
+- **separable**: The function can be optimized independently along each dimension.
 - **strongly convex**: The function is convex with a unique global optimum and strong curvature.
 - **unimodal**: The function has exactly one global minimum/maximum and no local optima.
 
----
 ## Valid Properties
 
 Each test function is associated with a set of properties that describe its mathematical characteristics, enabling filtering for specific use cases (e.g., multimodal or scalable functions). The following properties are defined in the package and can be assigned to test functions via their metadata (`meta[:properties]`). Note that not all properties are assigned to every function; for example, `finite_at_inf` is currently only applied to `De Jong F5` and `Shekel`, while `Langermann` does not have this property despite returning finite values at infinity.
@@ -407,7 +450,6 @@ Each test function is associated with a set of properties that describe its math
 
 These properties are validated in the test suite (e.g., `test/runtests.jl`) to ensure consistency and correctness.
 
----
 ## Running Tests
 
 To run the test suite, execute:
@@ -417,12 +459,10 @@ To run the test suite, execute:
 
 Tests cover function evaluations, metadata validation, edge cases (NaN, Inf, 1e-308, empty input vectors, and bounds for bounded functions), and optimization with Optim.jl. For functions marked as `bounded`, tests verify finite values at the lower and upper bounds (`lb`, `ub`) instead of infinity, reflecting their constrained domain. Extensive gradient tests are conducted in `test/runtests.jl` to ensure the correctness of analytical gradients. These gradients are rigorously validated by comparing them against numerical gradients computed via finite differences and gradients obtained through automatic differentiation (AD) using ForwardDiff, ensuring high accuracy and reliability. All tests, including those for the newly added Deckkers-Aarts, Shekel, SchafferN2, and SchafferN4 functions, pass as of the last update, ensuring robustness and correctness.
 
----
 ## License
 
 This package is licensed under the MIT License. See LICENSE for details.
 
----
 ## Alternative Names for Test Functions
 
 Some test functions are referred to by different names in the literature. Below is a list connecting the names used in this package to common alternatives.
@@ -479,7 +519,6 @@ Some test functions are referred to by different names in the literature. Below 
 - **threehumpcamel**: Three-Hump Camel function, Camel Three Humps function.
 - **zakharov**: Zakharov's function.
 
----
 ## References
 
 - Al-Roomi, A. R. (2015). Unconstrained Single-Objective Benchmark Functions Repository. Dalhousie University. https://www.al-roomi.org/benchmarks/unconstrained

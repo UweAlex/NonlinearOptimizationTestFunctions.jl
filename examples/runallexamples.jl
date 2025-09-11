@@ -14,3 +14,5 @@ println("----------------------------------------------------------------------"
 include("Optimize_all_functions.jl")
 println("----------------------------------------------------------------------","\n\n","list_functions_n_greater_than_2.jl")
 include("list_functions_n_greater_than_2.jl")
+println("----------------------------------------------------------------------","\n\n","count_calls.jl")
+include("count_calls.jl")
