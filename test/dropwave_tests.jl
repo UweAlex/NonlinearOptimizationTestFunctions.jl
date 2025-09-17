@@ -19,14 +19,14 @@ using Random
         @test isfinite(dropwave(tf.meta[:ub]()))
         @test isfinite(dropwave(fill(1e-308, n)))
         @test isinf(dropwave(fill(Inf, n)))
-        @test dropwave(tf.meta[:min_position]()) ≈ tf.meta[:min_value] atol=1e-3
+        @test dropwave(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-3
         x_start = tf.meta[:start]()  # [1.0, 1.0]
         r = sqrt(2.0)  # sqrt(1^2 + 1^2)
         expected_value = -(1 + cos(12 * r)) / (0.5 * 2 + 2)
         @test dropwave(x_start) ≈ expected_value atol=1e-6
         @test tf.meta[:start]() == [1.0, 1.0]
         @test tf.meta[:min_position]() == [0.0, 0.0]
-        @test tf.meta[:min_value] ≈ -1.0 atol=1e-6
+        @test tf.meta[:min_value]() ≈ -1.0 atol=1e-6
         @test tf.meta[:lb]() == [-5.12, -5.12]
         @test tf.meta[:ub]() == [5.12, 5.12]
         @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
@@ -45,7 +45,7 @@ using Random
             Optim.Options(f_reltol=1e-6, iterations=10000, time_limit=120.0)
         )
         @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
         @test Optim.minimizer(result) ≈ tf.meta[:min_position]() atol=1e-3
     end
 

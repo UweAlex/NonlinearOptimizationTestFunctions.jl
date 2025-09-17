@@ -8,28 +8,23 @@ export STEP_FUNCTION, step, step_gradient
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    step(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the De Jong F3 (Step) function value at point `x`. Scalable to any dimension `n ≥ 1`.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
+# Computes the De Jong F3 (Step) function value at point `x`. Scalable to any dimension `n ≥ 1`.
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 function step(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     isempty(x) && throw(ArgumentError("Step function requires at least one dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     return sum(floor.(x .+ 0.5) .^ 2)
-end
+end #function
 
-"""
-    step_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the De Jong F3 (Step) function. Returns a zero vector, as the function is not differentiable.
-"""
+# Computes the gradient of the De Jong F3 (Step) function. Returns a zero vector, as the function is not differentiable.
 function step_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     isempty(x) && throw(ArgumentError("Step function requires at least one dimension"))
     any(isnan.(x)) && return fill(T(NaN), length(x))
     any(isinf.(x)) && return fill(T(Inf), length(x))
     return zeros(T, length(x))  # Gradient is zero everywhere except at discontinuities
-end
+end #function
 
 const STEP_FUNCTION = TestFunction(
     step,
@@ -44,7 +39,7 @@ const STEP_FUNCTION = TestFunction(
             n ≥ 1 || throw(ArgumentError("Step function requires at least one dimension"))
             fill(0.0, n)
         end,
-        :min_value => 0.0,
+        :min_value => (n::Int) -> 0.0,
         :properties => Set(["unimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"]),
         :lb => (n::Int) -> begin
             n ≥ 1 || throw(ArgumentError("Step function requires at least one dimension"))

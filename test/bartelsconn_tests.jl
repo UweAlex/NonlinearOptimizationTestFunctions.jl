@@ -26,7 +26,7 @@ using NonlinearOptimizationTestFunctions: BARTELSCONN_FUNCTION, bartelsconn
     @test tf.meta[:name] == "bartelsconn"
     @test tf.meta[:start]() == [0.0, 0.0]
     @test tf.meta[:min_position]() ≈ [0.0, 0.0] atol=1e-6
-    @test tf.meta[:min_value] ≈ 1.0 atol=1e-6
+    @test tf.meta[:min_value]() ≈ 1.0 atol=1e-6
     @test tf.meta[:lb]() == [-500.0, -500.0]
     @test tf.meta[:ub]() == [500.0, 500.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true

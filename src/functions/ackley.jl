@@ -57,7 +57,10 @@ const ACKLEY_FUNCTION = TestFunction(
         :name => "ackley",
         :start => (n::Int=1) -> fill(1.0, n),
         :min_position => (n::Int=1) -> fill(0.0, n),
-        :min_value => 0.0,
+        :min_value => (n::Int) -> begin
+            n < 1 && throw(ArgumentError("Ackley requires at least 1 dimension"))
+            0.0
+        end,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "scalable", "bounded", "continuous"]),
         :lb => (n::Int=1; bounds="default") -> bounds == "alternative" ? fill(-5.0, n) : fill(-32.768, n),
         :ub => (n::Int=1; bounds="default") -> bounds == "alternative" ? fill(5.0, n) : fill(32.768, n),

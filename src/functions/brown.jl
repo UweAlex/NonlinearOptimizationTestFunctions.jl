@@ -54,7 +54,10 @@ const BROWN_FUNCTION = TestFunction(
             n < 2 && throw(ArgumentError("Brown requires at least 2 dimensions"))
             zeros(n)
         end,
-        :min_value => 0.0,
+        :min_value => (n::Int) -> begin
+            n < 2 && throw(ArgumentError("Brown requires at least 2 dimensions"))
+            0.0
+        end,
         :properties => Set(["unimodal", "non-separable", "differentiable", "scalable", "continuous", "bounded"]),
         :lb => (n::Int) -> begin
             n < 2 && throw(ArgumentError("Brown requires at least 2 dimensions"))

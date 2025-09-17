@@ -11,10 +11,10 @@ using LinearAlgebra
     # Test Metadaten
     @test tf.meta[:name] == "carromtable"
     @test tf.meta[:properties] == Set(["continuous", "partially differentiable", "non-separable", "multimodal", "non-convex", "bounded"])
-    @test tf.meta[:in_molga_smutnicki_2005] == false
+   
     @test tf.meta[:start]() == [0.0, 0.0]
     @test tf.meta[:min_position]() ≈ [9.646157266348881, 9.646134286497169]
-    @test tf.meta[:min_value] ≈ -24.156815516506536
+    @test tf.meta[:min_value]() ≈ -24.156815516506536
     @test tf.meta[:lb]() == [-10.0, -10.0]
     @test tf.meta[:ub]() == [10.0, 10.0]
 

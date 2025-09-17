@@ -21,10 +21,10 @@ using NonlinearOptimizationTestFunctions: CROSSINTRAY_FUNCTION, crossintray, cro
     start = tf.meta[:start]()
     @test crossintray(start) ≈ -0.0001 atol=1e-6  # Value at [0.0, 0.0]
     min_pos = tf.meta[:min_position]()
-    @test crossintray(min_pos) ≈ tf.meta[:min_value] atol=1e-6
+    @test crossintray(min_pos) ≈ tf.meta[:min_value]() atol=1e-6
     @test start == [0.0, 0.0]
     @test min_pos ≈ [1.349406575769872, 1.349406575769872] atol=1e-6
-    @test tf.meta[:min_value] ≈ -2.062611870822739 atol=1e-6
+    @test tf.meta[:min_value]() ≈ -2.062611870822739 atol=1e-6
     @test tf.meta[:lb]() == [-10.0, -10.0]
     @test tf.meta[:ub]() == [10.0, 10.0]
 
@@ -56,14 +56,14 @@ using NonlinearOptimizationTestFunctions: CROSSINTRAY_FUNCTION, crossintray, cro
         start = [1.349406575769872, 1.349406575769872] .+ 0.01 * randn(n)
         result = optimize(tf.f, tf.gradient!, lb, ub, start, Fminbox(LBFGS()), Optim.Options(g_abstol=1e-8))
         @test Optim.converged(result)
-        @test ≈(Optim.minimum(result), tf.meta[:min_value], atol=1e-6)
+        @test ≈(Optim.minimum(result), tf.meta[:min_value](), atol=1e-6)
         @test any(norm(Optim.minimizer(result) - m) < 1e-3 for m in minima)
 
         # Optimization from a different start point
         start2 = [1.0, 1.0]
         result2 = optimize(tf.f, tf.gradient!, lb, ub, start2, Fminbox(LBFGS()), Optim.Options(g_abstol=1e-8))
         @test Optim.converged(result2)
-        @test ≈(Optim.minimum(result2), tf.meta[:min_value], atol=1e-6)
+        @test ≈(Optim.minimum(result2), tf.meta[:min_value](), atol=1e-6)
         @test any(norm(Optim.minimizer(result2) - m) < 1e-3 for m in minima)
     end
 

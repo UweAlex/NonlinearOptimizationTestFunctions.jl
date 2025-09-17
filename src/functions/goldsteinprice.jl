@@ -58,25 +58,12 @@ const GOLDSTEINPRICE_FUNCTION = TestFunction(
     goldsteinprice_gradient,
     Dict(
         :name => "goldsteinprice",
-        :start => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Goldstein-Price requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
-        :min_position => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Goldstein-Price requires exactly 2 dimensions"))
-            [0.0, -1.0]
-        end,
-        :min_value => 3.0,
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [0.0, -1.0],
+        :min_value =>  () -> 3.0,
         :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded","continuous"]),
-        :lb => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Goldstein-Price requires exactly 2 dimensions"))
-            [-2.0, -2.0]
-        end,
-        :ub => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Goldstein-Price requires exactly 2 dimensions"))
-            [2.0, 2.0]
-        end,
-        :in_molga_smutnicki_2005 => true,
+        :lb => () -> [-2.0, -2.0],
+        :ub => () -> [2.0, 2.0],
         :description => "Goldstein-Price function: Multimodal, non-convex, non-separable, differentiable, bounded (n=2 only).",
         :math => "(1 + (x_1 + x_2 + 1)^2 (19 - 14x_1 + 3x_1^2 - 14x_2 + 6x_1x_2 + 3x_2^2)) \\cdot (30 + (2x_1 - 3x_2)^2 (18 - 32x_1 + 12x_1^2 + 48x_2 - 36x_1x_2 + 27x_2^2))"
     )

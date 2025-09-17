@@ -21,7 +21,7 @@ function adjiman(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     return cos(x[1]) * sin(x[2]) - x[1] / (x[2]^2 + T(1.0))
-end
+end #function
 
 """
     adjiman_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
@@ -37,7 +37,7 @@ function adjiman_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDif
     grad1 = -sin(x[1]) * sin(x[2]) - T(1.0) / (x[2]^2 + T(1.0))
     grad2 = cos(x[1]) * cos(x[2]) + x[1] * T(2.0) * x[2] / (x[2]^2 + T(1.0))^2
     return [grad1, grad2]
-end
+end #function
 
 const ADJIMAN_FUNCTION = TestFunction(
     adjiman,
@@ -46,8 +46,8 @@ const ADJIMAN_FUNCTION = TestFunction(
         :name => "adjiman",
         :start => () -> [0.0, 0.0],
         :min_position => () -> [2.0, 0.10578347],
-        :min_value => -2.021806783359787,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
+        :min_value => () -> -2.021806783359787,
+        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> [-1.0, -1.0],
         :ub => () -> [2.0, 1.0],
         :in_molga_smutnicki_2005 => false,

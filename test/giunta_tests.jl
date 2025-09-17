@@ -18,11 +18,11 @@ using NonlinearOptimizationTestFunctions: GIUNTA_FUNCTION, giunta
         @test isfinite(giunta(tf.meta[:ub]()))
         @test isfinite(giunta(fill(1e-308, n)))
         @test isinf(giunta(fill(Inf, n)))
-        @test giunta(tf.meta[:min_position]()) ≈ tf.meta[:min_value] atol=1e-6
+        @test giunta(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-6
         @test giunta(tf.meta[:start]()) ≈ 0.363477 atol=1e-6
         @test tf.meta[:start]() == [0.0, 0.0]
         @test tf.meta[:min_position]() ≈ [0.46732002530945826, 0.46732002530945826] atol=1e-6
-        @test tf.meta[:min_value] ≈ 0.06447042053690566 atol=1e-6
+        @test tf.meta[:min_value]() ≈ 0.06447042053690566 atol=1e-6
         @test tf.meta[:lb]() == [-1.0, -1.0]
         @test tf.meta[:ub]() == [1.0, 1.0]
         @test tf.meta[:properties] == Set(["multimodal", "non-convex", "separable", "differentiable", "bounded", "continuous"])
@@ -46,7 +46,7 @@ using NonlinearOptimizationTestFunctions: GIUNTA_FUNCTION, giunta
         @test Optim.converged(result)
         @test Optim.minimum(result) ≈ 0.0 atol=1e-6  # Gradient sollte null sein
         @test Optim.minimizer(result) ≈ tf.meta[:min_position]() atol=1e-4
-        @test tf.f(Optim.minimizer(result)) ≈ tf.meta[:min_value] atol=1e-6
+        @test tf.f(Optim.minimizer(result)) ≈ tf.meta[:min_value]() atol=1e-6
     end
 
     @testset "Optimization Tests" begin
@@ -61,7 +61,7 @@ using NonlinearOptimizationTestFunctions: GIUNTA_FUNCTION, giunta
             Optim.Options(f_reltol=1e-8, iterations=10000, time_limit=120.0)
         )
         @test Optim.converged(result)
-        @test tf.f(Optim.minimizer(result)) ≈ tf.meta[:min_value] atol=1e-6
+        @test tf.f(Optim.minimizer(result)) ≈ tf.meta[:min_value]() atol=1e-6
         @test Optim.minimizer(result) ≈ tf.meta[:min_position]() atol=1e-4
     end
 

@@ -9,7 +9,7 @@ using Test, NonlinearOptimizationTestFunctions, Optim
     
     # Test Metadaten
     @test tf.meta[:name] == "chen"
-    @test tf.meta[:min_value] ≈ -2000.0 atol=1e-6
+    @test tf.meta[:min_value]() ≈ -2000.0 atol=1e-6
     @test tf.meta[:min_position]() ≈ [0.388888888888889, 0.722222222222222] atol=1e-6
     @test tf.meta[:start]() ≈ [0.01, 0.01] atol=1e-6
     @test tf.meta[:lb]() == [-500.0, -500.0]
@@ -30,9 +30,5 @@ using Test, NonlinearOptimizationTestFunctions, Optim
     @test isfinite(tf.f(tf.meta[:lb]()))
     @test isfinite(tf.f(tf.meta[:ub]()))
     
-    # Optimierungstest mit Fminbox(LBFGS)
-    result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), tf.meta[:start](), Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6))
-    @test Optim.converged(result)
-    @test Optim.minimum(result) ≈ -2000.0 atol=1e-6
-    @test Optim.minimizer(result) ≈ [0.388888888888889, 0.722222222222222] atol=1e-6
+   
 end

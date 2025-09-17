@@ -8,12 +8,11 @@ export ROTATEDHYPERELLIPSOID_FUNCTION, rotatedhyperellipsoid, rotatedhyperellips
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    rotatedhyperellipsoid(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the Rotated Hyper-Ellipsoid function value at point `x`.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-Throws `ArgumentError` if the input vector is empty.
-"""
+# Computes the Rotated Hyper-Ellipsoid function value at point `x`.
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
+#
+# Throws `ArgumentError` if the input vector is empty.
 function rotatedhyperellipsoid(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
@@ -28,13 +27,11 @@ function rotatedhyperellipsoid(x::AbstractVector{T}) where {T<:Union{Real, Forwa
         sum_val += inner_sum^2
     end
     return sum_val
-end
+end #function
 
-"""
-    rotatedhyperellipsoid_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Rotated Hyper-Ellipsoid function. Returns a vector of length n.
-Throws `ArgumentError` if the input vector is empty.
-"""
+# Computes the gradient of the Rotated Hyper-Ellipsoid function. Returns a vector of length n.
+#
+# Throws `ArgumentError` if the input vector is empty.
 function rotatedhyperellipsoid_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
@@ -46,19 +43,27 @@ function rotatedhyperellipsoid_gradient(x::AbstractVector{T}) where {T<:Union{Re
         grad[k] = 2 * sum(y[k:end])
     end
     return grad
-end
+end #function
 
 const ROTATEDHYPERELLIPSOID_FUNCTION = TestFunction(
     rotatedhyperellipsoid,
     rotatedhyperellipsoid_gradient,
     Dict(
         :name => "rotatedhyperellipsoid",
-        :start => (n::Int) -> fill(1.0, n),
-        :min_position => (n::Int) -> zeros(Float64, n),
-        :min_value => 0.0,
+        :start => (n::Int) -> begin
+            fill(1.0, n)
+        end, #function
+        :min_position => (n::Int) -> begin
+            zeros(Float64, n)
+        end, #function
+        :min_value => (n::Int) -> 0.0,
         :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "scalable","bounded","continuous"]),
-        :lb => (n::Int) -> fill(-65.536, n),
-        :ub => (n::Int) -> fill(65.536, n),
+        :lb => (n::Int) -> begin
+            fill(-65.536, n)
+        end, #function
+        :ub => (n::Int) -> begin
+            fill(65.536, n)
+        end, #function
         :in_molga_smutnicki_2005 => true,
         :description => "Rotated Hyper-Ellipsoid function: Continuous, convex, unimodal, scalable test function for optimization.",
         :math => "\\sum_{i=1}^{n} \\left( \\sum_{j=1}^{i} x_j \\right)^2"

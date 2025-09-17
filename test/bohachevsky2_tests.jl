@@ -15,7 +15,7 @@ using Optim
     @test tf.meta[:name] == "bohachevsky2"
     @test tf.meta[:start]() == [0.01, 0.01]
     @test tf.meta[:min_position]() == [0.0, 0.0]
-    @test tf.meta[:min_value] == 0.0
+    @test tf.meta[:min_value]() == 0.0
     @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"])
     @test tf.meta[:lb]() == [-100.0, -100.0]
     @test tf.meta[:ub]() == [100.0, 100.0]

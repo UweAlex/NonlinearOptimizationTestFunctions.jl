@@ -1,7 +1,7 @@
 # src/functions/quadratic.jl
 # Purpose: Implements a generic quadratic test function with optional parameters A, b, c, which are set on first call and encapsulated for subsequent calls.
 # Context: Part of NonlinearOptimizationTestFunctionsInJulia.
-# Last modified: 27 August 2025
+# Last modified: 13 September 2025
 
 export QUADRATIC_FUNCTION, quadratic, quadratic_gradient
 
@@ -57,18 +57,19 @@ function quadratic(x::AbstractVector{T}, A=nothing, b=nothing, c=nothing) where 
 end
 
 """
-    quadratic_gradient(x::AbstractVector{T}, A=nothing, b=nothing) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the quadratic function. Parameters A, b are set on first call or overridden if provided.
+    quadratic_gradient(x::AbstractVector{T}, A=nothing, b=nothing, c=nothing) where {T<:Union{Real, ForwardDiff.Dual}}
+Computes the gradient of the quadratic function. Parameters A, b, c are set on first call or overridden if provided.
 """
-function quadratic_gradient(x::AbstractVector{T}, A=nothing, b=nothing) where {T<:Union{Real, ForwardDiff.Dual}}
+function quadratic_gradient(x::AbstractVector{T}, A=nothing, b=nothing, c=nothing) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n >= 1 || throw(ArgumentError("Dimension must be at least 1"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
 
-    if !is_initialized[] || !isnothing(A) || !isnothing(b) || current_dim[] != n
+    if !is_initialized[] || !isnothing(A) || !isnothing(b) || !isnothing(c) || current_dim[] != n
         A_fixed[] = isnothing(A) ? generate_positive_definite_matrix(n, 10.0) : copy(A)
         b_fixed[] = isnothing(b) ? zeros(T, n) : copy(b)
+        c_fixed[] = isnothing(c) ? T(0.0) : T(c)  # Added to ensure c_fixed[] is initialized
         eigvals_A = eigvals(A_fixed[])
         all(eigvals_A .> 0) || throw(ArgumentError("Matrix A must be positive definite"))
         length(b_fixed[]) == n || throw(ArgumentError("Vector b must have length n"))
@@ -105,7 +106,6 @@ const QUADRATIC_FUNCTION = TestFunction(
             dim >= 1 || throw(ArgumentError("Dimension must be at least 1"))
             fill(Inf, dim)
         end,
-        :in_molga_smutnicki_2005 => false,
         :description => "Generic quadratic function f(x) = x^T A x + b^T x + c with a positive definite matrix A, initialized on first call or with user-defined parameters, scalable for testing optimization algorithms on non-separable problems with varying condition numbers.",
         :math => "x^T A x + b^T x + c"
     )

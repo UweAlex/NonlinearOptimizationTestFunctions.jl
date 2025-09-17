@@ -39,7 +39,7 @@ end
     @test tf.meta[:name] == "rosenbrock"
     @test tf.meta[:start](2) == [0.0, 0.0]
     @test tf.meta[:min_position](2) == [1.0, 1.0]
-    @test tf.meta[:min_value] ≈ 0.0
+    @test tf.meta[:min_value]() ≈ 0.0
     @test tf.meta[:lb](2) == [-5.0, -5.0]
     @test tf.meta[:ub](2) == [5.0, 5.0]
     @testset "Optimization Tests" begin

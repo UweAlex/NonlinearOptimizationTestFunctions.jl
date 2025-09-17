@@ -12,16 +12,16 @@ using NonlinearOptimizationTestFunctions: KEANE_FUNCTION, keane
 
     @testset "Basic Tests" begin
         @test tf.meta[:name] == "keane"
-        @test tf.meta[:in_molga_smutnicki_2005] == false
+        
         @test isfinite(keane(tf.meta[:lb]()))
         @test isfinite(keane(tf.meta[:ub]()))
         @test isfinite(keane(fill(1e-308, n)))
         @test isinf(keane(fill(Inf, n)))
-        @test keane(tf.meta[:min_position]()) ≈ tf.meta[:min_value] atol=1e-6
+        @test keane(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-6
         @test keane([0.0, 0.0]) ≈ 0.0 atol=1e-6
         @test tf.meta[:start]() == [0.0, 0.0]
         @test tf.meta[:min_position]() ≈ [0.0, 1.39325] atol=1e-6
-        @test tf.meta[:min_value] ≈ -0.673668 atol=1e-6
+        @test tf.meta[:min_value]() ≈ -0.673668 atol=1e-6
         @test tf.meta[:lb]() == [0.0, 0.0]
         @test tf.meta[:ub]() == [10.0, 10.0]
         @test tf.meta[:properties] == Set(["multimodal", "continuous", "differentiable", "non-separable", "bounded", "non-convex"])
@@ -41,7 +41,7 @@ using NonlinearOptimizationTestFunctions: KEANE_FUNCTION, keane
         )
         minima = [[0.0, 1.39325], [1.39325, 0.0]]
         @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
         @test any(norm(Optim.minimizer(result) - m) < 1e-3 for m in minima)
     end
 

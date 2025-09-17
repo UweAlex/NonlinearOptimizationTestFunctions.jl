@@ -34,7 +34,7 @@ end
 
     # Function value tests
     @test tf.meta[:name] == "powell"
-    @test tf.meta[:min_value] == 0.0
+    @test tf.meta[:min_value]() == 0.0
     @test tf.meta[:min_position]() == [0.0, 0.0, 0.0, 0.0]
     @test tf.meta[:start]() == [3.0, -1.0, 0.0, 1.0]
     @test tf.meta[:lb]() == fill(-4.0, 4)

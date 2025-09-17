@@ -62,7 +62,7 @@ const BRANIN_FUNCTION = TestFunction(
             n == 2 || throw(ArgumentError("Branin function requires exactly 2 dimensions"))
             [-π, 12.275]  # Eines der drei globalen Minima
         end,
-        :min_value => 0.397887,
+        :min_value =>  () ->  0.39788735772973816,
         :properties => Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Branin function requires exactly 2 dimensions"))
@@ -72,7 +72,6 @@ const BRANIN_FUNCTION = TestFunction(
             n == 2 || throw(ArgumentError("Branin function requires exactly 2 dimensions"))
             [10.0, 15.0]
         end,
-        :in_molga_smutnicki_2005 => true,
         :description => "Branin function: A multimodal, non-convex function with three global minima at [-π, 12.275], [π, 2.275], [9.424778, 2.475]. Only defined for n=2.",
         :math => "f(x) = a (x_2 - b x_1^2 + c x_1 - r)^2 + s (1 - t) \\cos(x_1) + s, a=1, b=5.1/(4\\pi^2), c=5/\\pi, r=6, s=10, t=1/(8\\pi)"
     )

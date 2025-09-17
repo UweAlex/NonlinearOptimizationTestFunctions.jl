@@ -15,7 +15,7 @@ using LinearAlgebra
     # Metadaten-Tests
     @test tf.meta[:name] == "colville"
     @test tf.meta[:properties] == Set(["unimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
-    @test tf.meta[:min_value] == 0.0
+    @test tf.meta[:min_value]() == 0.0
     @test tf.meta[:start]() == [0.0, 0.0, 0.0, 0.0]
     @test tf.meta[:min_position]() == [1.0, 1.0, 1.0, 1.0]
     @test tf.meta[:lb]() == fill(-10.0, 4)

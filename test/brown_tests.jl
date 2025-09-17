@@ -17,7 +17,7 @@ using Optim
 
     # Test Metadaten
     @test tf.meta[:name] == "brown"
-    @test tf.meta[:min_value] == 0.0
+    @test tf.meta[:min_value](2) == 0.0
     @test tf.meta[:min_position](n) == zeros(n)
     @test tf.meta[:start](n) == ones(n)
     @test tf.meta[:lb](n) == fill(-1.0, n)

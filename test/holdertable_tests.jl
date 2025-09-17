@@ -18,11 +18,11 @@ using NonlinearOptimizationTestFunctions: HOLDERTABLE_FUNCTION, holdertable
         @test isfinite(holdertable(tf.meta[:ub]()))
         @test isfinite(holdertable(fill(1e-308, n)))
         @test isinf(holdertable(fill(Inf, n)))
-        @test holdertable(tf.meta[:min_position]()) ≈ tf.meta[:min_value] atol=1e-6
+        @test holdertable(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-6
         @test holdertable([0.0, 0.0]) ≈ 0.0 atol=1e-6
         @test tf.meta[:start]() == [0.0, 0.0]
         @test tf.meta[:min_position]() ≈ [8.055023, 9.664590] atol=1e-6
-        @test tf.meta[:min_value] ≈ -19.2085025678845 atol=1e-6
+        @test tf.meta[:min_value]() ≈ -19.2085025678845 atol=1e-6
         @test tf.meta[:lb]() == [-10.0, -10.0]
         @test tf.meta[:ub]() == [10.0, 10.0]
         @test tf.meta[:properties] == Set(["multimodal", "continuous", "partially differentiable", "separable", "bounded", "non-convex"])
@@ -41,7 +41,7 @@ using NonlinearOptimizationTestFunctions: HOLDERTABLE_FUNCTION, holdertable
         )
         minima = [[8.055023, 9.664590], [-8.055023, 9.664590], [8.055023, -9.664590], [-8.055023, -9.664590]]
         @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
         @test any(norm(Optim.minimizer(result) - m) < 1e-3 for m in minima)
     end
 

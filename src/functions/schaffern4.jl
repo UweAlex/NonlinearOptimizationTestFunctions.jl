@@ -8,18 +8,14 @@ export SCHAFFERN4_FUNCTION, schaffern4, schaffern4_gradient
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    schaffern4(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-
-Computes the Schaffer N.4 function value at point `x`. Requires exactly 2 dimensions.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
-
-The Schaffer N.4 function is defined as:
-f(x) = 0.5 + (cos²(sin(|x₁² - x₂²|)) - 0.5) / (1 + 0.001(x₁² + x₂²))²
-
-Reference: Jamil & Yang (2013): f115
-"""
+# Computes the Schaffer N.4 function value at point `x`. Requires exactly 2 dimensions.
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
+#
+# The Schaffer N.4 function is defined as:
+# f(x) = 0.5 + (cos²(sin(|x₁² - x₂²|)) - 0.5) / (1 + 0.001(x₁² + x₂²))²
+#
+# Reference: Jamil & Yang (2013): f115
 function schaffern4(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
@@ -40,15 +36,12 @@ function schaffern4(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual
     denominator = (1 + T(0.001) * (x1_sq + x2_sq))^2
     
     return T(0.5) + numerator / denominator
-end
+end #function
 
-"""
-    schaffern4_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-
-Computes the gradient of the Schaffer N.4 function. Returns a vector of length 2.
-Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
-Throws `DomainError` if the function is not differentiable at the given point (|x₁² - x₂²| ≈ 0).
-"""
+# Computes the gradient of the Schaffer N.4 function. Returns a vector of length 2.
+#
+# Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
+# Throws `DomainError` if the function is not differentiable at the given point (|x₁² - x₂²| ≈ 0).
 function schaffern4_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
@@ -66,7 +59,7 @@ function schaffern4_gradient(x::AbstractVector{T}) where {T<:Union{Real, Forward
     # Prüfe Nicht-Differenzierbarkeit
     if abs(diff_sq) < 1e-10  # Numerische Toleranz
         throw(DomainError(x, "Schaffer N.4 is not differentiable at |x₁² - x₂²| ≈ 0"))
-    end
+    end #if
     
     sign_diff = diff_sq >= 0 ? T(1) : T(-1)
     
@@ -101,7 +94,7 @@ function schaffern4_gradient(x::AbstractVector{T}) where {T<:Union{Real, Forward
     grad2 = (d_num_dx2 * denom_sq - numerator * d_denom_dx2) / denom_4th
     
     return [grad1, grad2]
-end
+end #function
 
 const SCHAFFERN4_FUNCTION = TestFunction(
     schaffern4,
@@ -110,7 +103,7 @@ const SCHAFFERN4_FUNCTION = TestFunction(
         :name => "schaffern4",
         :start => () -> [0.0, 1.253131828792882],
         :min_position => () -> [0.0, 1.253131828792882],
-        :min_value => 0.292578632035980,
+        :min_value => () -> 0.29257863203598033,
         :properties => Set(["partially differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"]),
         :lb => () -> [-100.0, -100.0],
         :ub => () -> [100.0, 100.0],

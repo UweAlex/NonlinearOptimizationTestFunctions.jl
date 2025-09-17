@@ -18,11 +18,11 @@ using NonlinearOptimizationTestFunctions: EGGHOLDER_FUNCTION, eggholder
         @test isfinite(eggholder(tf.meta[:ub]()))
         @test isfinite(eggholder(fill(1e-308, n)))
         @test isinf(eggholder(fill(Inf, n)))
-        @test eggholder(tf.meta[:min_position]()) ≈ tf.meta[:min_value] atol=1e-6
+        @test eggholder(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-6
         @test eggholder(tf.meta[:start]()) ≈ -25.460337185286313 atol=1e-6
         @test tf.meta[:start]() == [0.0, 0.0]
         @test tf.meta[:min_position]() == [512.0, 404.2318058008512]
-        @test tf.meta[:min_value] ≈ -959.6406627208506 atol=1e-6
+        @test tf.meta[:min_value]() ≈ -959.6406627208506 atol=1e-6
         @test tf.meta[:lb]() == [-512.0, -512.0]
         @test tf.meta[:ub]() == [512.0, 512.0]
         @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
@@ -40,7 +40,7 @@ using NonlinearOptimizationTestFunctions: EGGHOLDER_FUNCTION, eggholder
             Optim.Options(f_reltol=1e-6, iterations=10000, time_limit=120.0)
         )
         @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-3
+        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-3
         @test Optim.minimizer(result) ≈ tf.meta[:min_position]() atol=1e-2
     end
 

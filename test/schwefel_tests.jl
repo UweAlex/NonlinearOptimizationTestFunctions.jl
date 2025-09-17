@@ -27,9 +27,9 @@ end
     @test tf.meta[:ub](2) == fill(500.0, 2)
     @test tf.meta[:lb](3) == fill(-500.0, 3)
     @test tf.meta[:ub](3) == fill(500.0, 3)
-    @test tf.meta[:start](3) == fill(1.0, 3)
+    @test tf.meta[:start](3) == fill(0.0, 3)
     @test tf.meta[:min_position](3) ≈ fill(420.9687463209481, 3) atol=1e-6
-    @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
+    @test tf.meta[:min_value](2) ≈ 0.0 atol=1e-6
     @test tf.meta[:properties] == Set(["multimodal", "separable", "bounded", "differentiable", "scalable", "non-convex", "continuous"])
     # Funktionstests
     @test_throws ArgumentError schwefel(Float64[])
@@ -37,7 +37,7 @@ end
     @test isinf(schwefel([Inf, Inf]))
     @test isfinite(schwefel([1e-308, 1e-308]))
     @test schwefel([420.9687, 420.9687]) ≈ 0.0 atol=3e-5
-    @test schwefel([1.0, 1.0]) ≈ 836.282858 atol=1e-6
+    @test schwefel([1.0, 1.0]) ≈ 836.2828325752519  atol=1e-6
     # Gradiententests
     @test schwefel_gradient([420.9687, 420.9687]) ≈ [0.0, 0.0] atol=2e-5
     @test schwefel_gradient([1.0, 1.0]) ≈ [-1.1116221377, -1.1116221377] atol=1e-6

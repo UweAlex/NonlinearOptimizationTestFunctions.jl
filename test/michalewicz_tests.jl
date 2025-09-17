@@ -36,7 +36,7 @@ end
     @test tf.meta[:name] == "michalewicz"
     @test tf.meta[:start](2) == [0.5, 0.5]
     @test tf.meta[:min_position](2) ≈ [2.2029055201726, 1.5707963267949]
-    @test tf.meta[:min_value](2) ≈ -1.8013 atol=1e-6
+    @test tf.meta[:min_value](2) ≈ -1.8013034100985528 atol=1e-6
     @test tf.meta[:lb](2) == [0.0, 0.0]
     @test tf.meta[:ub](2) == [π, π]
     x_dual = [ForwardDiff.Dual(0.5, 1.0), ForwardDiff.Dual(0.5, 0.0)]

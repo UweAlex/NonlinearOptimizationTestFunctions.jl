@@ -8,11 +8,9 @@ export ZAKHAROV_FUNCTION, zakharov, zakharov_gradient
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    zakharov(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the Zakharov function value at point `x`. Scalable to any dimension n >= 1.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
+# Computes the Zakharov function value at point `x`. Scalable to any dimension n >= 1.
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 function zakharov(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     any(isnan.(x)) && return T(NaN)
@@ -20,12 +18,9 @@ function zakharov(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     sum_sq = dot(x, x)
     s = sum(0.5 * i * x[i] for i in 1:n)
     return sum_sq + s^2 + s^4
-end
+end #function
 
-"""
-    zakharov_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Zakharov function. Returns a vector of length n.
-"""
+# Computes the gradient of the Zakharov function. Returns a vector of length n.
 function zakharov_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     any(isnan.(x)) && return fill(T(NaN), n)
@@ -34,9 +29,9 @@ function zakharov_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDi
     grad = zeros(T, n)
     for k in 1:n
         grad[k] = 2 * x[k] + k * s + 2 * k * s^3
-    end
+    end #for
     return grad
-end
+end #function
 
 const ZAKHAROV_FUNCTION = TestFunction(
     zakharov,
@@ -45,7 +40,7 @@ const ZAKHAROV_FUNCTION = TestFunction(
         :name => "zakharov",
         :start => (n::Int) -> ones(n),
         :min_position => (n::Int) -> zeros(n),
-        :min_value => 0.0,
+        :min_value => (n::Int) -> 0.0,
         :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "scalable","bounded","continuous"]),
         :lb => (n::Int) -> fill(-5.0, n),
         :ub => (n::Int) -> fill(10.0, n),

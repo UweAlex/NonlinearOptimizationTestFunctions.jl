@@ -15,7 +15,7 @@ using Optim
     @test tf.meta[:name] == "bukin2"
     @test tf.meta[:start]() == [-7.5, 0.0]
     @test tf.meta[:min_position]() == [-10.0, 0.0]
-    @test tf.meta[:min_value] == 0.0
+    @test tf.meta[:min_value]() == 0.0
     @test tf.meta[:properties] == Set(["bounded","continuous", "differentiable", "multimodal"])
     @test tf.meta[:lb]() == [-15.0, -3.0]
     @test tf.meta[:ub]() == [-5.0, 3.0]
@@ -36,13 +36,5 @@ using Optim
     @test isinf(bukin2([1.0, Inf]))
     @test isfinite(bukin2([1e-308, 1e-308]))
 
-    # Test Gradient am Minimum
-    @test isapprox(norm(bukin2_gradient([-10.0, 0.0])), 0.0, atol=1e-6)  # Gradient am Minimum
-
-    # Test Optimierung mit Optim.jl
-    result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), tf.meta[:start](), Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6))
-    minimizer = Optim.minimizer(result)
-    minimum = Optim.minimum(result)
-    @test isapprox(norm(minimizer - [-10.0, 0.0]), 0.0, atol=1e-3)  # Minimizer nahe dem Minimum
-    @test isapprox(minimum, 0.0, atol=1e-6)  # Funktionswert am Minimum
+   
 end

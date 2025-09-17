@@ -8,24 +8,18 @@ export EASOM_FUNCTION, easom, easom_gradient
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    easom(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the Easom function value at point `x`. Requires exactly 2 dimensions.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
+# Computes the Easom function value at point `x`. Requires exactly 2 dimensions.
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 function easom(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Easom requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     x1, x2 = x
     return -cos(x1) * cos(x2) * exp(-((x1 - pi)^2 + (x2 - pi)^2))
-end
+end #function
 
-"""
-    easom_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Easom function. Returns a vector of length 2.
-"""
-
+# Computes the gradient of the Easom function. Returns a vector of length 2.
 function easom_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Easom requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
@@ -35,8 +29,7 @@ function easom_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.
     g1 = cos(x2) * exp_term * (sin(x1) + 2 * (x1 - pi) * cos(x1))
     g2 = cos(x1) * exp_term * (sin(x2) + 2 * (x2 - pi) * cos(x2))
     return [g1, g2]
-end
-
+end #function
 
 const EASOM_FUNCTION = TestFunction(
     easom,
@@ -46,21 +39,21 @@ const EASOM_FUNCTION = TestFunction(
         :start => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Easom requires exactly 2 dimensions"))
             [0.0, 0.0]
-        end,
+        end, #function
         :min_position => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Easom requires exactly 2 dimensions"))
             [pi, pi]
-        end,
-        :min_value => -1.0,
+        end, #function
+        :min_value => () -> -1.0,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Easom requires exactly 2 dimensions"))
             [-100.0, -100.0]
-        end,
+        end, #function
         :ub => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Easom requires exactly 2 dimensions"))
             [100.0, 100.0]
-        end,
+        end, #function
         :in_molga_smutnicki_2005 => true,
         :description => "Easom function: Multimodal test function with a small global minimum area relative to the search space.",
         :math => "-\\cos(x_1)\\cos(x_2)\\exp(-((x_1-\\pi)^2 + (x_2-\\pi)^2))"

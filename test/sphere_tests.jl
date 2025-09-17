@@ -38,7 +38,7 @@ end
     @test tf.meta[:name] == "sphere"
     @test tf.meta[:start](2) == [0.0, 0.0]
     @test tf.meta[:min_position](2) == [0.0, 0.0]
-    @test tf.meta[:min_value] ≈ 0.0
+    @test tf.meta[:min_value](2) ≈ 0.0
     @test tf.meta[:lb](2) == [-5.12, -5.12]
     @test tf.meta[:ub](2) == [5.12, 5.12]
     @testset "Optimization Tests" begin

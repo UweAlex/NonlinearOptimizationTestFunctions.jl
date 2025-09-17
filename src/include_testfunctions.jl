@@ -78,8 +78,7 @@ include("functions/bohachevsky3.jl")
 include("functions/boxbetts.jl")
 include("functions/chen.jl")
 include("functions/bukin4.jl")
-
-
+include("functions/chichinadze.jl")
 
 
 

@@ -13,16 +13,16 @@ using NonlinearOptimizationTestFunctions: KEARFOTT_FUNCTION, kearfott
 
     @testset "Basic Tests" begin
         @test tf.meta[:name] == "kearfott"
-        @test tf.meta[:in_molga_smutnicki_2005] == false
+        
         @test isfinite(kearfott(tf.meta[:lb]()))
         @test isfinite(kearfott(tf.meta[:ub]()))
         @test isfinite(kearfott(fill(1e-308, n)))
         @test isinf(kearfott(fill(Inf, n)))
-        @test kearfott(tf.meta[:min_position]()) ≈ tf.meta[:min_value] atol=1e-6
+        @test kearfott(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-6
         @test kearfott([0.0, 0.0]) ≈ 4.25 atol=1e-6  # (0² + 0² - 2)² + (0² + 0² - 0.5)² = 4 + 0.25 = 4.25
         @test tf.meta[:start]() == [0.0, 0.0]
         @test tf.meta[:min_position]() ≈ [0.7905694150420949, -0.7905694150420949] atol=1e-6
-        @test tf.meta[:min_value] ≈ 1.125 atol=1e-6
+        @test tf.meta[:min_value]() ≈ 1.125 atol=1e-6
         @test tf.meta[:lb]() == [-3.0, -3.0]
         @test tf.meta[:ub]() == [4.0, 4.0]
         @test tf.meta[:properties] == Set(["multimodal", "continuous", "differentiable", "non-separable", "bounded", "non-convex"])
@@ -41,7 +41,7 @@ using NonlinearOptimizationTestFunctions: KEARFOTT_FUNCTION, kearfott
         )
         minima = [[0.7905694150420949, -0.7905694150420949], [-0.7905694150420949, 0.7905694150420949]]
         @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
         @test any(norm(Optim.minimizer(result) - m) < 1e-3 for m in minima)
     end
 

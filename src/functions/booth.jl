@@ -46,7 +46,7 @@ const BOOTH_FUNCTION = TestFunction(
         :name => "booth",
         :start => () -> [0.0, 0.0],
         :min_position => () -> [1.0, 3.0],
-        :min_value => 0.0,
+        :min_value => () -> 0.0,
         :properties => Set(["unimodal", "convex", "separable", "differentiable", "bounded","continuous"]),
         :lb => () -> [-10.0, -10.0],
         :ub => () -> [10.0, 10.0],
@@ -55,6 +55,7 @@ const BOOTH_FUNCTION = TestFunction(
         :math => "(x_1 + 2x_2 - 7)^2 + (2x_1 + x_2 - 5)^2"
     )
 )
+
 
 
 

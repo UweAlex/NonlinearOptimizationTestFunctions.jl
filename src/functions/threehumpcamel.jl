@@ -48,11 +48,10 @@ const THREEHUMPCAMEL_FUNCTION = TestFunction(
         :name => "threehumpcamel",
         :start => () -> [2.0, 2.0],
         :min_position => () -> [0.0, 0.0],
-        :min_value => 0.0,
+        :min_value => () -> 0.0,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
         :lb => () -> [-5.0, -5.0],
         :ub => () -> [5.0, 5.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Three-Hump Camel function: Multimodal, non-convex, non-separable, differentiable, bounded test function with three local minima and a global minimum at (0.0, 0.0).",
         :math => "2x_1^2 - 1.05x_1^4 + \\frac{x_1^6}{6} + x_1 x_2 + x_2^2"
     )

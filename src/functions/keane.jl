@@ -58,11 +58,10 @@ const KEANE_FUNCTION = TestFunction(
         :name => "keane",
         :start => () -> [0.0, 0.0],
         :min_position => () -> [0.0, 1.39325],
-        :min_value => -0.673668,
+        :min_value => () ->   -0.6736675211458142,
         :properties => Set(["multimodal", "continuous", "differentiable", "non-separable", "bounded", "non-convex"]),
         :lb => () -> [0.0, 0.0],
         :ub => () -> [10.0, 10.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Keane function: Multimodal, continuous, differentiable, non-separable, bounded, non-convex. Two global minima at (0.0, 1.39325) and (1.39325, 0.0), f* = -0.673668. Bounds: [0, 10]^2. Dimensions: n=2.",
         :math => "-\\frac{\\sin^2(x_1 - x_2) \\sin^2(x_1 + x_2)}{\\sqrt{x_1^2 + x_2^2}}"
     )

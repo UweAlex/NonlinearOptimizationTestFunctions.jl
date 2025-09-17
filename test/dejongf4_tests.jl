@@ -17,8 +17,8 @@ using NonlinearOptimizationTestFunctions: DEJONGF4_FUNCTION, dejongf4, dejongf4_
         @test tf.meta[:name] == "dejongf4"
         @test isfinite(dejongf4(tf.meta[:lb](n); noise=0.0))
         @test isfinite(dejongf4(tf.meta[:ub](n); noise=0.0))
-        @test tf.meta[:min_value] ≈ 0.0 atol=1e-3
-        @test dejongf4(tf.meta[:min_position](n); noise=0.0) ≈ tf.meta[:min_value] atol=1e-3 rtol=1e-2
+        @test tf.meta[:min_value](n) ≈ 0.0 atol=1e-3
+        @test dejongf4(tf.meta[:min_position](n); noise=0.0) ≈ tf.meta[:min_value](n) atol=1e-3 rtol=1e-2
         @test 0.0 <= dejongf4(tf.meta[:start](n); noise=0.0) < 1.0
         @test tf.meta[:start](n) == zeros(Float64, n)
         @test tf.meta[:min_position](n) ≈ zeros(Float64, n) atol=1e-3
@@ -30,7 +30,7 @@ using NonlinearOptimizationTestFunctions: DEJONGF4_FUNCTION, dejongf4, dejongf4_
     @testset "Optimization Tests" begin
         res = optimize(x -> dejongf4(x; noise=0.0), tf.meta[:start](n), NelderMead(), Optim.Options(iterations=1000))
         @test Optim.converged(res)
-        @test Optim.minimum(res) ≈ tf.meta[:min_value] atol=1e-2 rtol=1e-2
+        @test Optim.minimum(res) ≈ tf.meta[:min_value](n) atol=1e-2 rtol=1e-2
         @test Optim.minimizer(res) ≈ tf.meta[:min_position](n) atol=1e-2
     end
 

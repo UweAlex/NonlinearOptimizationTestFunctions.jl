@@ -59,7 +59,7 @@ const DIXONPRICE_FUNCTION = TestFunction(
             n >= 1 || throw(ArgumentError("Dixon-Price requires at least 1 dimension"))
             [2^(-(2^i - 2) / 2^i) for i in 1:n]
         end,
-        :min_value => 0.0,
+        :min_value => (n::Int) -> 0.0,
         :properties => Set(["differentiable", "non-convex", "scalable", "unimodal","bounded","continuous"]),
         :lb => (n::Int) -> begin
             n >= 1 || throw(ArgumentError("Dixon-Price requires at least 1 dimension"))

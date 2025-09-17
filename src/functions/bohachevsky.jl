@@ -55,7 +55,10 @@ const BOHACHEVSKY_FUNCTION = TestFunction(
             n >= 2 || throw(ArgumentError("Bohachevsky requires at least 2 dimensions"))
             zeros(n)
         end,
-        :min_value => 0.0,
+        :min_value => (n::Int) -> begin
+            n < 2 && throw(ArgumentError("Bohachevsky requires at least 2 dimensions"))
+            0.0
+        end,
         :properties => Set(["differentiable", "multimodal", "non-convex", "scalable","bounded","continuous"]),
         :lb => (n::Int) -> begin
             n >= 2 || throw(ArgumentError("Bohachevsky requires at least 2 dimensions"))

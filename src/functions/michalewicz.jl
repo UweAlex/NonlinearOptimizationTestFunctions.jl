@@ -74,7 +74,7 @@ const MICHALEWICZ_FUNCTION = TestFunction(
         :min_value => (n::Int=2) -> begin
             n >= 2 || throw(ArgumentError("Michalewicz requires at least 2 dimensions"))
             if n == 2
-                return -1.8013
+                return -1.8013034100985528
             elseif n == 4
                 return -1.0000000057405447  # Optimierten Wert verwenden
             elseif n == 5

@@ -57,7 +57,7 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4
         min_distance = minimum([norm(start_point - gm) for gm in GLOBAL_MINIMA])
         @test min_distance < 1e-3  # Should be very close to one of the global minima
 
-        @test tf.meta[:min_value] ≈ PRECISE_MIN_VALUE atol=1e-10
+        @test tf.meta[:min_value]() ≈ PRECISE_MIN_VALUE atol=1e-10
         @test tf.meta[:lb]() == [-100.0, -100.0]
         @test tf.meta[:ub]() == [100.0, 100.0]
         @test tf.meta[:in_molga_smutnicki_2005] == false
@@ -152,7 +152,7 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4
         # Ensure the claimed minimum position actually gives the minimum value
         claimed_min_pos = tf.meta[:min_position]()
         actual_min_val = schaffern4(claimed_min_pos)
-        @test actual_min_val ≈ tf.meta[:min_value] atol=1e-12
+        @test actual_min_val ≈ tf.meta[:min_value]() atol=1e-12
 
         # Test that no random points give a significantly lower value
         Random.seed!(42)

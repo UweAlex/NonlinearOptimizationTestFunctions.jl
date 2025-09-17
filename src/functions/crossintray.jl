@@ -20,7 +20,7 @@ function crossintray(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dua
     x1, x2 = x
     inner = abs(sin(x1) * sin(x2) * exp(abs(100 - sqrt(x1^2 + x2^2) / pi)))
     return -0.0001 * (inner + 1)^0.1
-end
+end #function
 
 """
     crossintray_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
@@ -46,7 +46,7 @@ function crossintray_gradient(x::AbstractVector{T}) where {T<:Union{Real, Forwar
     grad1 = term1 * (term2 + term4)
     grad2 = term1 * (term3 + term5)
     return [grad1, grad2]
-end
+end #function
 
 const CROSSINTRAY_FUNCTION = TestFunction(
     crossintray,
@@ -55,7 +55,7 @@ const CROSSINTRAY_FUNCTION = TestFunction(
         :name => "crossintray",
         :start => () -> [0.0, 0.0],
         :min_position => () -> [1.349406575769872, 1.349406575769872],
-        :min_value => -2.062611870822739,
+        :min_value => () -> -2.062611870822739,
         :properties => Set(["multimodal", "non-convex", "non-separable", "partially differentiable", "bounded", "continuous"]),
         :lb => () -> [-10.0, -10.0],
         :ub => () -> [10.0, 10.0],

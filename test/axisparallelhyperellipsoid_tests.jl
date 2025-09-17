@@ -37,7 +37,7 @@ end
     @test tf.meta[:name] == "axisparallelhyperellipsoid"
     @test tf.meta[:start](1) == [1.0]
     @test tf.meta[:min_position](1) == [0.0]
-    @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
+    @test tf.meta[:min_value](2) ≈ 0.0 atol=1e-6
     result = optimize(tf.f, tf.gradient!, tf.meta[:start](2), LBFGS(), Optim.Options(f_reltol=1e-6))
     @test Optim.minimum(result) < 1e-5
     @test Optim.minimizer(result) ≈ tf.meta[:min_position](2) atol=1e-3

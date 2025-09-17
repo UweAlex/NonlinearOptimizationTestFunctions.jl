@@ -37,7 +37,7 @@ const BOHACHEVSKY2_FUNCTION = TestFunction(
         :name => "bohachevsky2",
         :start => () -> [0.01, 0.01],
         :min_position => () -> [0.0, 0.0],
-        :min_value => 0.0,
+        :min_value => () -> 0.0,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
         :lb => () -> [-100.0, -100.0],
         :ub => () -> [100.0, 100.0],
@@ -46,3 +46,4 @@ const BOHACHEVSKY2_FUNCTION = TestFunction(
         :math => "f(x) = x_1^2 + 2x_2^2 - 0.3\\cos(3\\pi x_1)\\cos(4\\pi x_2) + 0.3"
     )
 )
+

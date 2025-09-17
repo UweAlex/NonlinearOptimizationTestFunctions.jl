@@ -67,7 +67,7 @@ const LEVYFUNCTION = TestFunction(
             n < 1 && throw(ArgumentError("Levy (standard) requires at least 1 dimension"))
             fill(1.0, n)
         end,
-        :min_value => 0.0,
+        :min_value => () -> 0.0,
         :properties => Set(["differentiable", "non-convex", "scalable", "multimodal", "bounded", "continuous"]),
         :lb => (n::Int) -> begin
             n < 1 && throw(ArgumentError("Levy (standard) requires at least 1 dimension"))

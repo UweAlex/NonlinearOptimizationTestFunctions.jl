@@ -43,7 +43,7 @@ end
     @test tf.meta[:name] == "ackley"
     @test tf.meta[:start](1) == [1.0]
     @test tf.meta[:min_position](1) == [0.0]
-    @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
+    @test isapprox(tf.meta[:min_value](2), 0.0, atol=1e-6)
     @test tf.meta[:lb](1) == [-32.768]
     @test tf.meta[:ub](1) == [32.768]
     @test tf.meta[:lb](2, bounds="alternative") == [-5.0, -5.0]

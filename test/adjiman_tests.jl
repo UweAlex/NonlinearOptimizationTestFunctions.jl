@@ -26,7 +26,7 @@ using NonlinearOptimizationTestFunctions: ADJIMAN_FUNCTION, adjiman
     @test tf.meta[:name] == "adjiman"
     @test tf.meta[:start]() == [0.0, 0.0]  # Zeile 27
     @test tf.meta[:min_position]() ≈ [2.0, 0.10578347] atol=1e-6  # Zeile 28
-    @test tf.meta[:min_value] ≈ -2.021806783359787 atol=1e-6
+    @test isapprox(tf.meta[:min_value](), -2.021806783359787, atol=1e-6)
     @test tf.meta[:lb]() == [-1.0, -1.0]  # Zeile 30
     @test tf.meta[:ub]() == [2.0, 1.0]  # Zeile 31
     @test tf.meta[:in_molga_smutnicki_2005] == false

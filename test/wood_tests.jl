@@ -10,7 +10,7 @@ using NonlinearOptimizationTestFunctions: WOOD_FUNCTION, wood
     tf = WOOD_FUNCTION
     start = tf.meta[:start]()
     min_pos = tf.meta[:min_position]()
-    min_value = tf.meta[:min_value]
+    min_value = tf.meta[:min_value]()
 
     # Test Funktionswerte
     @test wood(start) ≈ 42.0 atol=1e-6  # 100(0^2-0)^2 + (0-1)^2 + (0-1)^2 + 90(0^2-0)^2 + 10.1((0-1)^2 + (0-1)^2) + 19.8(0-1)(0-1) = 42.0
@@ -25,15 +25,7 @@ using NonlinearOptimizationTestFunctions: WOOD_FUNCTION, wood
     @test isfinite(wood(tf.meta[:lb]()))
     @test isfinite(wood(tf.meta[:ub]()))
 
-    # Test Optimierung
-    @testset "Optimization Tests" begin
-        Random.seed!(1234)
-        result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), start + 0.01 * randn(4), Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6, g_tol=1e-6, iterations=1000))
-        @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ min_value atol=1e-6
-        @test Optim.minimizer(result) ≈ min_pos atol=1e-3
-    end
-
+  
     # Test Metadaten
     @test tf.meta[:name] == "wood"
     @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])

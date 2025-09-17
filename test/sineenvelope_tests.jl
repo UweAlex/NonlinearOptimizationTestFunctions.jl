@@ -23,7 +23,7 @@ using NonlinearOptimizationTestFunctions: SINEENVELOPE_FUNCTION, sineenvelope
     @test tf.meta[:name] == "sineenvelope"
     @test tf.meta[:start]() == [1.0, 1.0]
     @test tf.meta[:min_position]() == [0.0, 0.0]
-    @test tf.meta[:min_value] ≈ -1.0 atol=1e-6
+    @test tf.meta[:min_value]() ≈ -1.0 atol=1e-6
     @test tf.meta[:lb]() == [-100.0, -100.0]
     @test tf.meta[:ub]() == [100.0, 100.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
@@ -34,7 +34,7 @@ using NonlinearOptimizationTestFunctions: SINEENVELOPE_FUNCTION, sineenvelope
         Random.seed!(1234)
         start = tf.meta[:min_position]() + 0.01 * randn(2)
         result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), start, Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6, g_tol=1e-6, iterations=1000))
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
         @test Optim.minimizer(result) ≈ tf.meta[:min_position]() atol=1e-3
     end
 end

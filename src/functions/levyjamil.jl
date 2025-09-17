@@ -33,7 +33,7 @@ function levyjamil(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}
     term2 = n > 1 ? sum((x[i] - 1)^2 * (1 + sin(3 * π * x[i+1])^2) for i in 1:n-1) : zero(T)
     term3 = (x[n] - 1)^2 * (1 + sin(2 * π * x[n])^2)
     term1 + term2 + term3
-end
+end #function
 
 """
     levyjamil_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
@@ -64,7 +64,7 @@ function levyjamil_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardD
         grad[n] += 6 * π * (x[n-1] - 1)^2 * sin(3 * π * x[n]) * cos(3 * π * x[n])
     end
     grad
-end
+end #function
 
 const LEVYJAMIL_FUNCTION = TestFunction(
     levyjamil,
@@ -79,7 +79,7 @@ const LEVYJAMIL_FUNCTION = TestFunction(
             n < 1 && throw(ArgumentError("Levy (Jamil) requires at least 1 dimension"))
             fill(1.0, n)
         end,
-        :min_value => 0.0,
+        :min_value => (n::Int) -> 0.0,
         :properties => Set(["differentiable", "non-convex", "scalable", "multimodal", "bounded", "continuous"]),
         :lb => (n::Int) -> begin
             n < 1 && throw(ArgumentError("Levy (Jamil) requires at least 1 dimension"))

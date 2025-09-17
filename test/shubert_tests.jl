@@ -19,7 +19,7 @@ using NonlinearOptimizationTestFunctions: SHUBERT_FUNCTION, shubert, shubert_gra
     @test tf.meta[:name] == "shubert"
     @test tf.meta[:start](n) == [0.0, 0.0]
     @test tf.meta[:min_position](n) ≈ [-1.4251286, -0.800321] atol=1e-6
-    @test tf.meta[:min_value] ≈ -186.730908831 atol=1e-5
+    @test tf.meta[:min_value]() ≈ -186.730908831 atol=1e-5
     @test tf.meta[:lb](n) == [-10.0, -10.0]
     @test tf.meta[:ub](n) == [10.0, 10.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true

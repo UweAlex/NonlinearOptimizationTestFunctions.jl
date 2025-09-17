@@ -20,7 +20,7 @@ using Optim
     start = tf.meta[:start]()
     @test booth(start) ≈ 74.0 atol=1e-6  # Calculated: (0 + 0 - 7)^2 + (0 + 0 - 5)^2 = 49 + 25 = 74
     min_pos = tf.meta[:min_position]()
-    @test booth(min_pos) ≈ tf.meta[:min_value] atol=1e-6
+    @test booth(min_pos) ≈ tf.meta[:min_value]() atol=1e-6
 
     # Gradient at minimum
     grad = booth_gradient(min_pos)
@@ -47,7 +47,7 @@ using Optim
         start = [0.0, 0.0]
         result = optimize(tf.f, tf.gradient!, lb, ub, start, Fminbox(LBFGS()), Optim.Options(g_abstol=1e-8))
         @test Optim.converged(result)
-        @test ≈(Optim.minimum(result), tf.meta[:min_value], atol=1e-4)
+        @test ≈(Optim.minimum(result), tf.meta[:min_value](), atol=1e-4)
         min_x = Optim.minimizer(result)
         known_minimum = [1.0, 3.0]
         @test norm(min_x - known_minimum) < 0.1

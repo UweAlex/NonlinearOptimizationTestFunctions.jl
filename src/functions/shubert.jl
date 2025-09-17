@@ -7,6 +7,11 @@ export SHUBERT_FUNCTION, shubert, shubert_gradient
 
 using LinearAlgebra
 
+# Computes the Shubert function value at point `x`. Requires exactly 2 dimensions.
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
+#
+# Throws `ArgumentError` if the input vector is not 2-dimensional.
 function shubert(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
@@ -15,8 +20,11 @@ function shubert(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     sum1 = sum(i * cos((i + 1) * x1 + i) for i in 1:5)
     sum2 = sum(i * cos((i + 1) * x2 + i) for i in 1:5)
     return sum1 * sum2 # Standarddefinition ohne negatives Vorzeichen
-end
+end #function
 
+# Computes the gradient of the Shubert function. Returns a vector of length 2.
+#
+# Throws `ArgumentError` if the input vector is not 2-dimensional.
 function shubert_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
@@ -27,7 +35,7 @@ function shubert_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDif
     dsum1 = sum(-i * (i + 1) * sin((i + 1) * x1 + i) for i in 1:5)
     dsum2 = sum(-i * (i + 1) * sin((i + 1) * x2 + i) for i in 1:5)
     return [dsum1 * sum2, sum1 * dsum2] # Gradient angepasst
-end
+end #function
 
 const SHUBERT_FUNCTION = TestFunction(
     shubert,
@@ -37,23 +45,23 @@ const SHUBERT_FUNCTION = TestFunction(
         :start => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
             [0.0, 0.0]
-        end,
+        end, #function
         :min_position => (n::Int=2) -> begin
-    n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
-    [-1.425128428319761, -0.8003211004719731]
-end,
-        :min_value => -186.7309, # Standardwert aus der Literatur
+            n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
+            [-1.425128428319761, -0.8003211004719731]
+        end, #function
+        :min_value => () -> -186.73090883102384,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
             [-10.0, -10.0]
-        end,
+        end, #function
         :ub => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
             [10.0, 10.0]
-        end,
+        end, #function
         :in_molga_smutnicki_2005 => true,
-       :description => "Shubert function: Multimodal, non-convex, non-separable, differentiable, bounded (n=2 only). Has 18 global minima, including [-1.425128428319761, -0.8003211004719731].",
+        :description => "Shubert function: Multimodal, non-convex, non-separable, differentiable, bounded (n=2 only). Has 18 global minima, including [-1.425128428319761, -0.8003211004719731].",
         :math => "\\left(\\sum_{i=1}^5 i \\cos((i+1)x_1 + i)\\right) \\left(\\sum_{i=1}^5 i \\cos((i+1)x_2 + i)\\right)"
     )
 )

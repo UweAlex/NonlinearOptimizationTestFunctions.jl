@@ -48,11 +48,10 @@ const CARROMTABLE_FUNCTION = TestFunction(
         :name => "carromtable",
         :start => () -> [0.0, 0.0],
         :min_position => () -> [9.646157266348881, 9.646134286497169],
-        :min_value => -24.1568155,
+        :min_value => () -> -24.15681551650653,
         :properties => Set(["continuous", "partially differentiable", "non-separable", "multimodal", "non-convex", "bounded"]),
         :lb => () -> [-10.0, -10.0],
         :ub => () -> [10.0, 10.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Carrom Table function: Multimodal, non-convex, non-separable, partially differentiable, fixed dimension. Has four global minima.",
         :math => "-\\frac{\\left(\\cos(x_1)\\cos(x_2) \\exp \\left| 1 - \\frac{\\sqrt{x_1^2 + x_2^2}}{\\pi} \\right| \\right)^2}{30}"
     )

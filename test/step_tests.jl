@@ -18,7 +18,7 @@ using NonlinearOptimizationTestFunctions: STEP_FUNCTION, step
     @test isfinite(step(fill(1e-308, n)))
 
     # Funktionswerte
-    @test step(tf.meta[:min_position](n)) ≈ tf.meta[:min_value] atol=1e-6
+    @test step(tf.meta[:min_position](n)) ≈ tf.meta[:min_value](n) atol=1e-6
     @test step(tf.meta[:start](n)) ≈ 0.0 atol=1e-6  # Startpunkt (0, 0) ergibt f(0, 0) = 0
     @test step([0.4, 0.4]) ≈ 0.0 atol=1e-6  # Innerhalb [-0.5, 0.5]^n ist f(x) = 0
     @test step([1.0, 1.0]) ≈ 2.0 atol=1e-6  # f([1, 1]) = floor(1 + 0.5)^2 + floor(1 + 0.5)^2 = 1^2 + 1^2 = 2
@@ -27,14 +27,14 @@ using NonlinearOptimizationTestFunctions: STEP_FUNCTION, step
     @test tf.meta[:name] == "step"
     @test tf.meta[:start](n) == [0.0, 0.0]
     @test tf.meta[:min_position](n) == [0.0, 0.0]
-    @test tf.meta[:min_value] ≈ 0.0 atol=1e-6
+    @test tf.meta[:min_value](n) ≈ 0.0 atol=1e-6
     @test tf.meta[:lb](n) == [-5.12, -5.12]
     @test tf.meta[:ub](n) == [5.12, 5.12]
-    @test tf.meta[:in_molga_smutnicki_2005] == true
+   
     @test Set(tf.meta[:properties]) == Set(["unimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"])
 
     # Skalierbarkeit: Tests für n=10
-    @test step(tf.meta[:min_position](n_high)) ≈ tf.meta[:min_value] atol=1e-6
+    @test step(tf.meta[:min_position](n_high)) ≈ tf.meta[:min_value](n) atol=1e-6
     @test step(tf.meta[:start](n_high)) ≈ 0.0 atol=1e-6
     @test length(tf.meta[:start](n_high)) == n_high
     @test length(tf.meta[:min_position](n_high)) == n_high
@@ -45,13 +45,13 @@ using NonlinearOptimizationTestFunctions: STEP_FUNCTION, step
     @testset "Optimization Tests" begin
         start = tf.meta[:start](n)
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimum(result) ≈ tf.meta[:min_value](n) atol=1e-5
         @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=1e-3
 
         # Test für höhere Dimension (n=10)
         start_high = tf.meta[:start](n_high)
         result_high = optimize(tf.f, tf.gradient!, start_high, LBFGS(), Optim.Options(f_reltol=1e-6))
-        @test Optim.minimum(result_high) ≈ tf.meta[:min_value] atol=1e-5
+        @test Optim.minimum(result_high) ≈ tf.meta[:min_value](n) atol=1e-5
         @test Optim.minimizer(result_high) ≈ tf.meta[:min_position](n_high) atol=1e-3
     end
 

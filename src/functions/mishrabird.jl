@@ -8,12 +8,11 @@ export MISHRAbird_FUNCTION, mishrabird, mishrabird_gradient
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    mishrabird(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the MishraBird function value at point `x`. Requires 2 dimension(s).
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
-"""
+# Computes the MishraBird function value at point `x`. Requires 2 dimension(s).
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
+#
+# Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 function mishrabird(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
@@ -30,13 +29,11 @@ function mishrabird(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual
     term3 = (x1 - x2)^2
     
     return term1 + term2 + term3
-end
+end #function
 
-"""
-    mishrabird_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the MishraBird function. Returns a vector of length 2.
-Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
-"""
+# Computes the gradient of the MishraBird function. Returns a vector of length 2.
+#
+# Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 function mishrabird_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
@@ -53,7 +50,7 @@ function mishrabird_gradient(x::AbstractVector{T}) where {T<:Union{Real, Forward
     grad2 = cos(x2) * exp1 - cos(x1) * exp2 * 2 * (1 - sin(x2)) * cos(x2) - 2 * (x1 - x2)
     
     return [grad1, grad2]
-end
+end #function
 
 const MISHRAbird_FUNCTION = TestFunction(
     mishrabird,
@@ -62,7 +59,7 @@ const MISHRAbird_FUNCTION = TestFunction(
         :name => "mishrabird",
         :start => () -> [-1.0, -1.0],
         :min_position => () -> [-3.1302468034308637, -1.5821421769356672], # Updated via LBFGS optimization to achieve gradient norm < 1e-6
-        :min_value => -106.76453674926466,                                   # Updated via LBFGS optimization to match the precise minimum
+        :min_value => () -> -106.76453674926466,
         :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"]),
         :lb => () -> [-10.0, -6.5],
         :ub => () -> [0.0, 0.0],

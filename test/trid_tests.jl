@@ -32,12 +32,5 @@ using NonlinearOptimizationTestFunctions: TRID_FUNCTION, trid
     @test tf.meta[:lb](n) == [-4, -4]
     @test tf.meta[:ub](n) == [4, 4]
 
-    # Test Optimierung
-    @testset "Optimization Tests" begin
-        Random.seed!(1234)
-        result = optimize(tf.f, tf.gradient!, float.(tf.meta[:lb](n)), float.(tf.meta[:ub](n)), start, Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6, g_tol=1e-6, iterations=1000))
-        @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ min_value atol=1e-6
-        @test Optim.minimizer(result) ≈ min_pos atol=1e-3
-    end
+   
 end

@@ -14,7 +14,7 @@ function dekkersaarts(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Du
     any(isinf.(x)) && return T(Inf)
     s = x[1]^2 + x[2]^2
     return 1e5 * x[1]^2 + x[2]^2 - s^2 + 1e-5 * s^4
-end
+end #function
 
 function dekkersaarts_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Dekkers-Aarts requires exactly 2 dimensions"))
@@ -25,7 +25,7 @@ function dekkersaarts_gradient(x::AbstractVector{T}) where {T<:Union{Real, Forwa
     c = (8e-5)*s^3 - 4*s
 
     return T.([x[1]*(2e5 + c), x[2]*(2 + c)])
-end
+end #function
 
 const DEKKERSAARTS_FUNCTION = TestFunction(
     dekkersaarts,
@@ -34,7 +34,7 @@ const DEKKERSAARTS_FUNCTION = TestFunction(
         :name => "dekkersaarts",
         :start => () -> [0.0, 10.0],
         :min_position => () -> [0.0, 14.94511215174121],
-        :min_value => -24776.51834231769,
+        :min_value => () -> -24776.51834231769,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> [-20.0, -20.0],
         :ub => () -> [20.0, 20.0],

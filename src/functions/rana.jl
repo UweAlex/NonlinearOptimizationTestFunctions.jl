@@ -8,11 +8,9 @@ export RANA_FUNCTION, rana, rana_gradient
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    rana(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the Rana function value at point `x`. Requires exactly 2 dimensions.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
+# Computes the Rana function value at point `x`. Requires exactly 2 dimensions.
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 function rana(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
@@ -23,12 +21,9 @@ function rana(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     term1 = sqrt(abs(a))
     term2 = sqrt(abs(b))
     return x1 * sin(term1) * cos(term2) + (x2 + 1) * cos(term1) * sin(term2)
-end
+end #function
 
-"""
-    rana_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Rana function. Returns a vector of length 2.
-"""
+# Computes the gradient of the Rana function. Returns a vector of length 2.
 function rana_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
@@ -57,7 +52,7 @@ function rana_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.D
               (x2 + 1) * (-sA * sB * (sa / (2 * A)) + cA * cB * (sb / (2 * B)))
 
     return [grad_x1, grad_x2]
-end
+end #function
 
 const RANA_FUNCTION = TestFunction(
     rana,
@@ -67,21 +62,21 @@ const RANA_FUNCTION = TestFunction(
         :start => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
             [0.0, 0.0]
-        end,
+        end, #function
         :min_position => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
             [-500.0, -499.0733150925747]  # Vorläufig, muss überprüft werden
-        end,
-        :min_value =>  -498.12463264808594,  # Vorläufig, muss überprüft werden
+        end, #function
+        :min_value => () -> -498.12463264808594,
         :properties => Set(["multimodal", "partially differentiable", "non-separable","bounded","continuous"]),
         :lb => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
             [-500.0, -500.0]
-        end,
+        end, #function
         :ub => (n::Int=2) -> begin
             n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
             [500.0, 500.0]
-        end,
+        end, #function
         :in_molga_smutnicki_2005 => true,
         :description => "Rana function: A multimodal, partially differentiable, non-separable function with multiple local minima, defined only for 2 dimensions.",
         :math => "x_1 \\sin(\\sqrt{|x_2 + x_1 + 1|}) \\cos(\\sqrt{|x_2 - x_1 + 1|}) + (x_2 + 1) \\cos(\\sqrt{|x_2 + x_1 + 1|}) \\sin(\\sqrt{|x_2 - x_1 + 1|})"

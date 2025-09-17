@@ -12,7 +12,7 @@ using NonlinearOptimizationTestFunctions: MATYAS_FUNCTION, matyas
     # Metadata tests for non-scalable function (n=2)
     @test tf.meta[:start]() == [0.0, 0.0]
     @test tf.meta[:min_position]() == [0.0, 0.0]
-    @test tf.meta[:min_value] == 0.0
+    @test tf.meta[:min_value]() == 0.0
     @test tf.meta[:lb]() == [-10.0, -10.0]
     @test tf.meta[:ub]() == [10.0, 10.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
@@ -21,7 +21,7 @@ using NonlinearOptimizationTestFunctions: MATYAS_FUNCTION, matyas
     # Function value tests
     start = tf.meta[:start]()
     min_pos = tf.meta[:min_position]()
-    min_val = tf.meta[:min_value]
+    min_val = tf.meta[:min_value]()
     @test tf.f(start) ≈ 0.0 atol=1e-6  # 0.26*(0^2 + 0^2) - 0.48*0*0 = 0
     @test tf.f(min_pos) ≈ min_val atol=1e-6  # Minimum at (0, 0) is 0
     

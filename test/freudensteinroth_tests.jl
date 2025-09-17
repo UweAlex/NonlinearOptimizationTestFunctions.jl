@@ -18,7 +18,7 @@ using LinearAlgebra
     @test tf.meta[:in_molga_smutnicki_2005] == false
     @test tf.meta[:start]() == [4.99, 3.99]
     @test tf.meta[:min_position]() == [5.0, 4.0]
-    @test tf.meta[:min_value] == 0.0
+    @test tf.meta[:min_value]() == 0.0
     @test tf.meta[:lb]() == [-10.0, -10.0]
     @test tf.meta[:ub]() == [10.0, 10.0]
 
@@ -28,7 +28,7 @@ using LinearAlgebra
 
     # Test function evaluation at minimum
     min_pos = tf.meta[:min_position]()
-    @test isapprox(freudensteinroth(min_pos), tf.meta[:min_value], atol=1e-6)
+    @test isapprox(freudensteinroth(min_pos), tf.meta[:min_value](), atol=1e-6)
 
     # Test edge cases
     @test_throws ArgumentError freudensteinroth(Float64[])  # Empty input

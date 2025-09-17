@@ -20,7 +20,7 @@ using NonlinearOptimizationTestFunctions: DEKKERSAARTS_FUNCTION, dekkersaarts, d
     @test tf.meta[:start]() == [0.0, 10.0]
     @test tf.meta[:lb]() == [-20.0, -20.0]
     @test tf.meta[:ub]() == [20.0, 20.0]
-    @test tf.meta[:min_value] ≈ -24776.51834231769 atol=1e-6
+    @test tf.meta[:min_value]() ≈ -24776.51834231769 atol=1e-6
 
     # Function value tests
     start = tf.meta[:start]()
@@ -57,14 +57,14 @@ using NonlinearOptimizationTestFunctions: DEKKERSAARTS_FUNCTION, dekkersaarts, d
         start = min_pos1 .+ 0.01 * randn(n)
         result = optimize(tf.f, start, NelderMead(), Optim.Options(g_tol=1e-8, iterations=10000))
         @test Optim.converged(result)
-        @test isapprox(Optim.minimum(result), tf.meta[:min_value], atol=1e-4)
+        @test isapprox(Optim.minimum(result), tf.meta[:min_value](), atol=1e-4)
         @test any(norm(Optim.minimizer(result) - m) < 1e-2 for m in minima)
 
         # Optimization from start point
         start2 = [0.0, 10.0]
         result2 = optimize(tf.f, start2, NelderMead(), Optim.Options(g_tol=1e-8, iterations=10000))
         @test Optim.converged(result2)
-        @test isapprox(Optim.minimum(result2), tf.meta[:min_value], atol=1e-4)
+        @test isapprox(Optim.minimum(result2), tf.meta[:min_value](), atol=1e-4)
         @test any(norm(Optim.minimizer(result2) - m) < 1e-2 for m in minima)
     end
 

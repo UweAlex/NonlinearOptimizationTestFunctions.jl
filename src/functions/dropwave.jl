@@ -8,11 +8,9 @@ export DROPWAVE_FUNCTION, dropwave, dropwave_gradient
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    dropwave(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the Drop-Wave function value at point `x`. Requires exactly 2 dimensions.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
+# Computes the Drop-Wave function value at point `x`. Requires exactly 2 dimensions.
+#
+# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 function dropwave(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Drop-Wave requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
@@ -22,12 +20,9 @@ function dropwave(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     numerator = 1 + cos(12 * r)
     denominator = 0.5 * (x1^2 + x2^2) + 2
     return -numerator / denominator
-end
+end #function
 
-"""
-    dropwave_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Drop-Wave function. Returns a vector of length 2.
-"""
+# Computes the gradient of the Drop-Wave function. Returns a vector of length 2.
 function dropwave_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     length(x) == 2 || throw(ArgumentError("Drop-Wave requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
@@ -47,7 +42,7 @@ function dropwave_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDi
     grad[1] = factor * x1
     grad[2] = factor * x2
     return grad
-end
+end #function
 
 const DROPWAVE_FUNCTION = TestFunction(
     dropwave,
@@ -56,7 +51,7 @@ const DROPWAVE_FUNCTION = TestFunction(
         :name => "dropwave",
         :start => () -> [1.0, 1.0],
         :min_position => () -> [0.0, 0.0],
-        :min_value => -1.0,
+        :min_value => () -> -1.0,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> [-5.12, -5.12],
         :ub => () -> [5.12, 5.12],

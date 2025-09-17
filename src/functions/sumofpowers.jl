@@ -17,7 +17,7 @@ function sumofpowers(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dua
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     return sum(abs(x[i])^(i+1) for i in 1:length(x))
-end
+end #function
 
 """
     sumofpowers_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
@@ -28,7 +28,7 @@ function sumofpowers_gradient(x::AbstractVector{T}) where {T<:Union{Real, Forwar
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     return [(i+1) * abs(x[i])^i * sign(x[i]) for i in 1:n]
-end
+end #function
 
 const SUMOFPOWERS_FUNCTION = TestFunction(
     sumofpowers,
@@ -37,8 +37,8 @@ const SUMOFPOWERS_FUNCTION = TestFunction(
         :name => "sumofpowers",
         :start => (n::Int) -> fill(0.5, n),
         :min_position => (n::Int) -> zeros(n),
-        :min_value => 0.0,
-        :properties => Set(["unimodal", "convex", "differentiable", "separable", "scalable","bounded","continuous"]),
+        :min_value => (n::Int) -> 0.0,
+        :properties => Set(["unimodal", "convex", "differentiable", "separable", "scalable", "bounded", "continuous"]),
         :lb => (n::Int) -> fill(-1.0, n),
         :ub => (n::Int) -> fill(1.0, n),
         :in_molga_smutnicki_2005 => true,

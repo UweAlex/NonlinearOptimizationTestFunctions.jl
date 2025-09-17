@@ -15,7 +15,7 @@ using NonlinearOptimizationTestFunctions: QUADRATIC_FUNCTION, quadratic
     @test tf.meta[:start](n) == zeros(n)
     @test tf.meta[:min_position](n) == zeros(n)
     @test tf.meta[:min_value](n) == 0.0
-    @test tf.meta[:in_molga_smutnicki_2005] == false
+   
     @test tf.meta[:properties] == Set(["unimodal", "convex", "non-separable", "differentiable", "scalable", "continuous"])
 
     # Function value tests

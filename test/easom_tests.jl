@@ -18,7 +18,7 @@ using NonlinearOptimizationTestFunctions: EASOM_FUNCTION, easom
     @test tf.meta[:name] == "easom"
     @test tf.meta[:start](n) == [0.0, 0.0]
     @test tf.meta[:min_position](n) ≈ [pi, pi] atol=1e-6
-    @test tf.meta[:min_value] ≈ -1.0 atol=1e-6
+    @test tf.meta[:min_value]() ≈ -1.0 atol=1e-6
     @test tf.meta[:lb](n) == [-100.0, -100.0]
     @test tf.meta[:ub](n) == [100.0, 100.0]
     @test tf.meta[:in_molga_smutnicki_2005] == true
@@ -26,7 +26,7 @@ using NonlinearOptimizationTestFunctions: EASOM_FUNCTION, easom
     @testset "Optimization Tests" begin
         start = [pi + 0.01, pi + 0.01] 
         result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-8, g_tol=1e-8, iterations=1000))
-        @test Optim.minimum(result) ≈ tf.meta[:min_value] atol=5.0e-3 # Erhöht von 1.0e-5
+        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=5.0e-3 # Erhöht von 1.0e-5
         @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=0.03 # Erhöht von 0.001
     end
 end

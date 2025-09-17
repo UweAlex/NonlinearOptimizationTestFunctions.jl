@@ -63,7 +63,7 @@ function dejongf5original(x::AbstractVector{T}) where {T<:Union{Real, ForwardDif
         sum += 1 / term
     end
     return (c + sum)^(-1)
-end
+end #function
 
 """
     dejongf5original_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
@@ -101,7 +101,7 @@ function dejongf5original_gradient(x::AbstractVector{T}) where {T<:Union{Real, F
         grad[2] += 6 * (x[2] - A[j,2])^5 / (term^2)
     end
     return outer_term * grad  # Entferne das negative Vorzeichen
-end
+end #function
 
 const DEJONGF5ORIGINAL_FUNCTION = TestFunction(
     dejongf5original,
@@ -110,7 +110,7 @@ const DEJONGF5ORIGINAL_FUNCTION = TestFunction(
         :name => "dejongf5original",
         :start => () -> [0.0, 0.0],
         :min_position => () -> [-32.0, -32.0],
-        :min_value => 0.998001998667,  # Approximated value at [-32, -32]
+        :min_value => () -> 0.9980038388186492,  # Approximated value at [-32, -32]
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous", "finite_at_inf"]),
         :lb => () -> [-65.536, -65.536],
         :ub => () -> [65.536, 65.536],
@@ -119,5 +119,3 @@ const DEJONGF5ORIGINAL_FUNCTION = TestFunction(
         :math => "f(x) = \\left( 0.002 + \\sum_{j=1}^{25} \\frac{1}{j + (x_1 - a_{1j})^6 + (x_2 - a_{2j})^6} \\right)^{-1}"
     )
 )
-
-export DEJONGF5ORIGINAL_FUNCTION, dejongf5original, dejongf5original_gradient
