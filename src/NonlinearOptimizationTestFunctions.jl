@@ -1,7 +1,9 @@
 # src/NonlinearOptimizationTestFunctions.jl
 # Purpose: Defines the core module for nonlinear optimization test functions.
 # Context: Provides TestFunction structure, metadata validation, function registry, and utility functions.
-# Last modified: 17 September 2025
+# Last modified: 20 September 2025, 12:00 PM CEST
+
+__precompile__(false)  # Disable precompilation to avoid method overwriting issues
 
 module NonlinearOptimizationTestFunctions
 
@@ -17,12 +19,12 @@ const VALID_PROPERTIES = Set([
     "separable", "non-separable", "partially separable", "fully non-separable",
     "differentiable", "partially differentiable", "scalable", "continuous", "bounded", "has_constraints",
     "controversial", "has_noise", "finite_at_inf"
-]) #end const
+])
 
 # Default dimension for scalable functions
 # Purpose: Provides a mutable default dimension for scalable functions when no dimension is specified.
 # Context: Used by metadata access methods (e.g., start(tf)) for scalable functions.
-const DEFAULT_N = Ref(2)  # Use Ref for mutability #end const
+const DEFAULT_N = Ref(2)  # Use Ref for mutability
 
 # TestFunction struct
 # Purpose: Encapsulates a test function, its gradient, in-place gradient, metadata, and call counters.
@@ -32,6 +34,7 @@ struct TestFunction
     grad::Function        # The gradient function grad(x) that computes the analytical gradient
     gradient!::Function   # The in-place gradient function gradient!(G, x) that modifies G with grad(x)
     meta::Dict{Symbol, Any}  # Metadata dictionary containing :name, :start, :min_position, :min_value, :properties, :lb, :ub
+    name::String          # Name of the test function (mirrors meta[:name] for direct access)
     f_count::Ref{Int}     # Counter for function evaluations, stored as Ref for mutability
     grad_count::Ref{Int}  # Counter for gradient evaluations, stored as Ref for mutability
 
@@ -48,11 +51,18 @@ struct TestFunction
         # Validate required metadata keys
         required_keys = [:name, :start, :min_position, :min_value, :properties, :lb, :ub]
         missing_keys = setdiff(required_keys, keys(meta))
-        isempty(missing_keys) || throw(ArgumentError("Missing required meta keys: $missing_keys"))  # Throw error if keys are missing #end if
+        if !isempty(missing_keys)
+            throw(ArgumentError("Missing required meta keys: $missing_keys"))
+        end
 
         # Ensure all properties are valid and lowercase
         meta[:properties] = Set(lowercase.(string.(meta[:properties])))
-        all(p in VALID_PROPERTIES for p in meta[:properties]) || throw(ArgumentError("Invalid properties: $(setdiff(meta[:properties], VALID_PROPERTIES))"))  # Throw error for invalid properties #end if
+        if !all(p in VALID_PROPERTIES for p in meta[:properties])
+            throw(ArgumentError("Invalid properties: $(setdiff(meta[:properties], VALID_PROPERTIES))"))
+        end
+
+        # Extract name from meta and keep it in meta for compatibility
+        name = meta[:name]  # Extract name but do not remove it from meta
 
         # Initialize call counters
         f_count = Ref(0)    # Initialize function call counter to 0
@@ -62,24 +72,24 @@ struct TestFunction
         f_wrapped = x -> begin
             f_count[] += 1  # Increment function call counter
             f(x)            # Call the original function
-        end #begin
+        end
 
         # Wrap grad to count gradient calls
         grad_wrapped = x -> begin
             grad_count[] += 1  # Increment gradient call counter
             grad(x)            # Call the original gradient function
-        end #begin
+        end
 
         # Wrap gradient! to count in-place gradient calls
         gradient_wrapped! = (G, x) -> begin
             grad_count[] += 1      # Increment gradient call counter
             copyto!(G, grad(x))    # Copy gradient to G
-        end #begin
+        end
 
         # Create and return new TestFunction instance
-        new(f_wrapped, grad_wrapped, gradient_wrapped!, meta, f_count, grad_count)
-    end #function
-end #struct
+        new(f_wrapped, grad_wrapped, gradient_wrapped!, meta, name, f_count, grad_count)
+    end
+end
 
 # Helper function: access_metadata
 # Purpose: Internal function to access metadata with automatic or specified dimension handling for scalable functions.
@@ -91,36 +101,40 @@ end #struct
 #   - Result of the metadata function call or value
 # Used in: New methods (start, min_position, etc.) for object-oriented metadata access
 function access_metadata(tf::TestFunction, key::Symbol, n::Union{Int, Nothing}=nothing)
-    is_scalable = "scalable" in tf.meta[:properties]  # Direct check, independent of has_property
+    is_scalable = "scalable" in tf.meta[:properties]  # Direct check
     meta_func = get(tf.meta, key, nothing)
-    isnothing(meta_func) && throw(ArgumentError("Metadata key :$key not found for $(tf.meta[:name])")) #end if
+    if isnothing(meta_func)
+        throw(ArgumentError("Metadata key :$key not found for $(tf.name)"))
+    end
     if is_scalable
         if isa(meta_func, Function)
             dim = isnothing(n) ? DEFAULT_N[] : n  # Use provided n or DEFAULT_N
-            dim < 1 && throw(ArgumentError("Dimension must be at least 1 for $(tf.meta[:name])")) #end if
+            if dim < 1
+                throw(ArgumentError("Dimension must be at least 1 for $(tf.name)"))
+            end
             try
                 return meta_func(dim)  # Call with specified or default dimension
             catch e
-                throw(ArgumentError("Metadata key :$key for $(tf.meta[:name]) failed with n=$dim: $e"))
-            end #try
+                throw(ArgumentError("Metadata key :$key for $(tf.name) failed with n=$dim: $e"))
+            end
         else
-            throw(ArgumentError("Metadata key :$key for $(tf.meta[:name]) must be a function for scalable functions"))
-        end #if
+            throw(ArgumentError("Metadata key :$key for $(tf.name) must be a function for scalable functions"))
+        end
     else
         if !isnothing(n)
-            @warn "Dimension n=$n ignored for non-scalable function $(tf.meta[:name])"  # Warn if n is provided
-        end #if
+            @warn "Dimension n=$n ignored for non-scalable function $(tf.name)"  # Warn if n is provided
+        end
         if isa(meta_func, Function)
             try
                 return meta_func()  # Call without arguments for non-scalable functions
             catch e
-                throw(ArgumentError("Metadata key :$key for $(tf.meta[:name]) failed: $e"))
-            end #try
+                throw(ArgumentError("Metadata key :$key for $(tf.name) failed: $e"))
+            end
         else
             return meta_func  # Return directly if it's a fixed value
-        end #if
-    end #if
-end #function
+        end
+    end
+end
 
 # New methods for object-oriented metadata access
 # Purpose: Provide intuitive, encapsulated access to metadata, supporting optional dimension for scalable functions.
@@ -129,10 +143,26 @@ min_position(tf::TestFunction, n::Union{Int, Nothing}=nothing) = access_metadata
 min_value(tf::TestFunction, n::Union{Int, Nothing}=nothing) = access_metadata(tf, :min_value, n)
 lb(tf::TestFunction, n::Union{Int, Nothing}=nothing) = access_metadata(tf, :lb, n)
 ub(tf::TestFunction, n::Union{Int, Nothing}=nothing) = access_metadata(tf, :ub, n)
-name(tf::TestFunction) = tf.meta[:name]  # Direct access for non-function metadata
+
+# Enable tf.min_position(n), tf.lb(n), tf.ub(n), tf.start(n), and tf.dim() by defining them as methods
+function Base.getproperty(tf::TestFunction, sym::Symbol)
+    if sym === :min_position
+        return (n::Union{Int, Nothing}=nothing) -> access_metadata(tf, :min_position, n)
+    elseif sym === :lb
+        return (n::Union{Int, Nothing}=nothing) -> access_metadata(tf, :lb, n)
+    elseif sym === :ub
+        return (n::Union{Int, Nothing}=nothing) -> access_metadata(tf, :ub, n)
+    elseif sym === :start
+        return (n::Union{Int, Nothing}=nothing) -> access_metadata(tf, :start, n)
+    elseif sym === :dim
+        return () -> dim(tf)  # Enable tf.dim() as method call, returns the dimension
+    else
+        return getfield(tf, sym)
+    end
+end
 
 # New method for accessing properties
-# Purpose: Provides object-oriented access to properties, independent of has_property.
+# Purpose: Provides object-oriented access to properties.
 # Input:
 #   - tf: TestFunction, the test function instance
 #   - prop: String, the property to check (e.g., "bounded")
@@ -140,9 +170,11 @@ name(tf::TestFunction) = tf.meta[:name]  # Direct access for non-function metada
 #   - Boolean, true if the property is in tf.meta[:properties], false otherwise
 function property(tf::TestFunction, prop::AbstractString)
     prop = lowercase(string(prop))
-    prop in VALID_PROPERTIES || throw(ArgumentError("Invalid property: $prop")) #end if
+    if !(prop in VALID_PROPERTIES)
+        throw(ArgumentError("Invalid property: $prop"))
+    end
     return prop in tf.meta[:properties]
-end #function
+end
 
 # Specific property methods for common properties
 # Purpose: Provides intuitive, object-oriented access to common properties.
@@ -161,10 +193,12 @@ finite_at_inf(tf::TestFunction) = property(tf, "finite_at_inf")
 #   - Nothing, modifies DEFAULT_N in place
 # Used in: User code to change the default dimension for scalable functions
 function set_default_n!(n::Int)
-    n < 1 && throw(ArgumentError("Default dimension must be at least 1")) #end if
+    if n < 1
+        throw(ArgumentError("Default dimension must be at least 1"))
+    end
     DEFAULT_N[] = n
     return nothing
-end #function
+end
 
 # Helper function: get_f_count
 # Purpose: Retrieves the number of function evaluations for a TestFunction.
@@ -175,7 +209,7 @@ end #function
 # Used in: User code or tests (e.g., examples/count_calls.jl) to monitor function evaluations
 function get_f_count(tf::TestFunction)
     return tf.f_count[]  # Return the current function call count
-end #function
+end
 
 # Helper function: get_grad_count
 # Purpose: Retrieves the number of gradient evaluations for a TestFunction.
@@ -186,7 +220,7 @@ end #function
 # Used in: User code or tests (e.g., examples/count_calls.jl) to monitor gradient evaluations
 function get_grad_count(tf::TestFunction)
     return tf.grad_count[]  # Return the current gradient call count
-end #function
+end
 
 # Helper function: reset_counts!
 # Purpose: Resets the function and gradient call counters to zero.
@@ -199,27 +233,28 @@ function reset_counts!(tf::TestFunction)
     tf.f_count[] = 0    # Reset function call counter
     tf.grad_count[] = 0 # Reset gradient call counter
     return nothing
-end #function
+end
 
-# Helper function: get_n
-# Purpose: Determines the dimension of a TestFunction (fixed or scalable).
-# Input:
-#   - tf: TestFunction, the test function instance
-# Output:
-#   - Integer, the dimension (length of min_position for non-scalable functions, -1 for scalable)
+# New method: dim(tf)
+# Purpose: Returns the dimension of a TestFunction (-1 for scalable functions).
+# Input: tf: TestFunction, the test function instance
+# Output: Integer, the dimension (length of min_position for non-scalable, -1 for scalable)
 # Used in: examples/get_himmelblau_dimension.jl, examples/list_functions_n_greater_than_2.jl, test/runtests.jl
-function get_n(tf::TestFunction)
-    is_scalable = "scalable" in tf.meta[:properties]  # Direct check, independent of has_property
+function dim(tf::TestFunction)
+    is_scalable = "scalable" in tf.meta[:properties]  # Direct check
     if is_scalable
         return -1  # Scalable functions have no fixed dimension
     else
         try
-            return length(tf.meta[:min_position]())  # Return length of min_position for non-scalable functions
+            return length(min_position(tf))  # Return length of min_position for non-scalable functions
         catch e
-            throw(ArgumentError("Invalid min_position for $(tf.meta[:name]): $e"))
-        end #try
-    end #if
-end #function
+            throw(ArgumentError("Invalid min_position for $(tf.name): $e"))
+        end
+    end
+end
+
+# Deprecated: Keep get_n for backward compatibility
+@deprecate get_n(tf::TestFunction) dim(tf)
 
 # Helper function: has_property (DEPRECATED)
 # Purpose: Checks if a TestFunction has a specific property (DEPRECATED in favor of property(tf, prop)).
@@ -232,9 +267,11 @@ end #function
 @deprecate has_property(tf::TestFunction, prop::String) property(tf, prop)
 function has_property(tf::TestFunction, prop::String)
     lprop = lowercase(prop)  # Convert property to lowercase
-    lprop in VALID_PROPERTIES || throw(ArgumentError("Invalid property: $lprop")) #end if
+    if !(lprop in VALID_PROPERTIES)
+        throw(ArgumentError("Invalid property: $lprop"))
+    end
     return lprop in tf.meta[:properties]  # Check if property exists
-end #function
+end
 
 # Helper function: add_property
 # Purpose: Creates a new TestFunction with an additional property in its metadata.
@@ -246,11 +283,13 @@ end #function
 # Used in: Potentially in user code to modify function properties, not used in provided examples
 function add_property(tf::TestFunction, prop::String)
     lprop = lowercase(prop)  # Convert property to lowercase
-    lprop in VALID_PROPERTIES || throw(ArgumentError("Invalid property: $lprop")) #end if
+    if !(lprop in VALID_PROPERTIES)
+        throw(ArgumentError("Invalid property: $lprop"))
+    end
     new_meta = copy(tf.meta)  # Copy metadata
     new_meta[:properties] = union(tf.meta[:properties], [lprop])  # Add new property
     return TestFunction(tf.f, tf.grad, new_meta)  # Create new TestFunction
-end #function
+end
 
 # Main function: use_testfunction
 # Purpose: Evaluates a test function and its gradient at a given point.
@@ -262,16 +301,22 @@ end #function
 #   - Named tuple (f, grad), where f is the function value and grad is the gradient
 # Used in: User code for evaluating functions, not directly used in provided examples
 function use_testfunction(tf::TestFunction, x::Vector{T}, n::Union{Int, Nothing}=nothing) where {T<:Union{Real, ForwardDiff.Dual}}
-    isempty(x) && throw(ArgumentError("Input vector x must not be empty")) #end if
-    is_scalable = "scalable" in tf.meta[:properties]  # Direct check, independent of has_property
-    dim = is_scalable ? (isnothing(n) ? DEFAULT_N[] : n) : get_n(tf)  # Use provided n, DEFAULT_N, or fixed dimension
-    dim < 1 && throw(ArgumentError("Dimension must be at least 1 for $(tf.meta[:name])")) #end if
+    if isempty(x)
+        throw(ArgumentError("Input vector x must not be empty"))
+    end
+    is_scalable = "scalable" in tf.meta[:properties]  # Direct check
+    dim = is_scalable ? (isnothing(n) ? DEFAULT_N[] : n) : dim(tf)  # Use provided n, DEFAULT_N, or fixed dimension
+    if dim < 1
+        throw(ArgumentError("Dimension must be at least 1 for $(tf.name)"))
+    end
     if !isnothing(n) && !is_scalable
-        @warn "Dimension n=$n ignored for non-scalable function $(tf.meta[:name])"  # Warn if n is provided for non-scalable
-    end #if
-    length(x) == dim || throw(ArgumentError("Input vector must have dimension $dim for $(tf.meta[:name])")) #end if
+        @warn "Dimension n=$n ignored for non-scalable function $(tf.name)"  # Warn if n is provided for non-scalable
+    end
+    if length(x) != dim
+        throw(ArgumentError("Input vector must have dimension $dim for $(tf.name)"))
+    end
     return (f=tf.f(x), grad=tf.grad(x))  # Return function value and gradient
-end #function
+end
 
 # Helper function: filter_testfunctions
 # Purpose: Filters test functions based on a predicate function.
@@ -283,12 +328,12 @@ end #function
 # Used in: test/runtests.jl (Filter and Properties Tests)
 function filter_testfunctions(predicate::Function, test_functions=TEST_FUNCTIONS)
     return [tf for tf in values(test_functions) if predicate(tf)]  # Filter functions by predicate
-end #function
+end
 
 # Global dictionary to store all test functions
 # Purpose: Maps function names to their TestFunction instances.
 # Context: Populated by including function definitions and registering TestFunction instances.
-const TEST_FUNCTIONS = Dict{String, TestFunction}() #end const
+const TEST_FUNCTIONS = Dict{String, TestFunction}()
 
 # Include all test function definitions
 # Purpose: Loads all test function implementations from src/functions/*.jl.
@@ -303,34 +348,34 @@ for name in names(@__MODULE__, all=true)
         if endswith(string(name), "_FUNCTION")  # Check for symbols ending with _FUNCTION
             tf = getfield(@__MODULE__, name)    # Get the TestFunction instance
             if tf isa TestFunction              # Verify it’s a TestFunction
-                TEST_FUNCTIONS[tf.meta[:name]] = tf  # Register in TEST_FUNCTIONS
-            end #if
-        end #if
+                TEST_FUNCTIONS[tf.name] = tf  # Register in TEST_FUNCTIONS using tf.name
+            end
+        end
     catch e
         @warn "Failed to load TestFunction for $name: $e"  # Warn on failure
-    end #try
-end #for
+    end
+end
 
 # Export function and gradient symbols
 # Purpose: Exports function names, gradient names, and TestFunction constants for external use.
 # Context: Ensures functions like ackley, ackley_gradient, and ACKLEY_FUNCTION are accessible.
 for tf in values(TEST_FUNCTIONS)
-    export_name = Symbol(lowercase(tf.meta[:name]))              # e.g., :ackley
-    export_gradient = Symbol(lowercase(tf.meta[:name]) * "_gradient")  # e.g., :ackley_gradient
-    export_constant = Symbol(uppercase(tf.meta[:name]) * "_FUNCTION")  # e.g., :ACKLEY_FUNCTION
+    export_name = Symbol(lowercase(tf.name))              # e.g., :ackley
+    export_gradient = Symbol(lowercase(tf.name) * "_gradient")  # e.g., :ackley_gradient
+    export_constant = Symbol(uppercase(tf.name) * "_FUNCTION")  # e.g., :ACKLEY_FUNCTION
     if isdefined(@__MODULE__, export_name)
         @eval export $export_name  # Export function name
-    end #if
+    end
     if isdefined(@__MODULE__, export_gradient)
         @eval export $export_gradient  # Export gradient name
-    end #if
+    end
     if isdefined(@__MODULE__, export_constant)
         @eval export $export_constant  # Export constant
-    end #if
-end #for
+    end
+end
 
 # Export public interface
 # Purpose: Exports module-level functions and constants for external use.
-export TEST_FUNCTIONS, filter_testfunctions, TestFunction, use_testfunction, has_property, add_property, get_n, get_f_count, get_grad_count, reset_counts!, set_default_n!, start, min_position, min_value, lb, ub, name, property, bounded, scalable, differentiable, multimodal, separable, finite_at_inf
+export TEST_FUNCTIONS, filter_testfunctions, TestFunction, use_testfunction, has_property, add_property, dim, get_f_count, get_grad_count, reset_counts!, set_default_n!, start, min_position, min_value, lb, ub, property, bounded, scalable, differentiable, multimodal, separable, finite_at_inf
 
-end #module
+end

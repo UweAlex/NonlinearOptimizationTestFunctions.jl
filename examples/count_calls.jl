@@ -8,9 +8,12 @@
 # Input: None
 # Output: None (prints results to console)
 # Used in: This file, executed directly or via runallexamples.jl
+
+using NonlinearOptimizationTestFunctions
+using Optim
+
 function run_count_calls_example()
-    using NonlinearOptimizationTestFunctions
-    using Optim
+    
 
     # Select the Rosenbrock test function
     tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION

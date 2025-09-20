@@ -11,11 +11,11 @@ using LinearAlgebra
 
 @testset "Filter and Properties Tests" begin
     println("Starting Filter and Properties Tests")
-    @test length(filter_testfunctions(tf -> has_property(tf, "bounded"))) == 67
-    @test length(filter_testfunctions(tf -> has_property(tf, "continuous"))) == 64
-    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 51
+    @test length(filter_testfunctions(tf -> has_property(tf, "bounded"))) == 68
+    @test length(filter_testfunctions(tf -> has_property(tf, "continuous"))) == 65
+    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 52
     @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 10
-    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 57  
+    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 58  
 	@test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4
     @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 13
     finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))

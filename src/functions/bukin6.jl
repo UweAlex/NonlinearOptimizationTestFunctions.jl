@@ -57,7 +57,6 @@ const BUKIN6_FUNCTION = TestFunction(
         :properties => Set(["partially differentiable", "non-convex", "multimodal", "bounded", "continuous"]),
         :lb => () -> [-15.0, -3.0],
         :ub => () -> [-5.0, 3.0],
-        :in_molga_smutnicki_2005 => true,
         :description => "Bukin function N.6: Multimodal, partially differentiable, non-convex function with global minimum at zero, defined for 2 dimensions.",
         :math => "100 \\sqrt{|x_2 - 0.01 x_1^2|} + 0.01 |x_1 + 10|"
     )

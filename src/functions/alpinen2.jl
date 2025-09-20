@@ -1,7 +1,7 @@
 # src/functions/alpinen2.jl
 # Purpose: Implements the AlpineN2 test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 05 September 2025
+# Last modified: 19 September 2025
 
 export ALPINEN2_FUNCTION, alpinen2, alpinen2_gradient
 
@@ -11,14 +11,12 @@ using ForwardDiff
 """
     alpinen2(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
 Computes the AlpineN2 function value at point `x`. Requires at least 1 dimension.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-Throws `ArgumentError` if the input vector is empty or outside domain [0,10]^n.
+Returns `NaN` for inputs containing `NaN`, `Inf` for inputs containing `Inf`.
+Throws `ArgumentError` if the input vector is empty.
 """
 function alpinen2(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    any(x .< 0) && throw(ArgumentError("Input vector must be in domain [0,10]^n"))
-    any(x .> 10) && throw(ArgumentError("Input vector must be in domain [0,10]^n"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     prod = one(T)
@@ -30,23 +28,22 @@ end
 
 """
     alpinen2_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the AlpineN2 function. Throws `DomainError` if gradient computation
-is undefined or numerically unstable (e.g., NaN, Inf, or excessively large values).
-Throws `ArgumentError` if the input vector is empty or outside domain [0,10]^n.
+Computes the gradient of the AlpineN2 function. Returns a vector of `NaN` for inputs containing `NaN`,
+`Inf` for inputs containing `Inf`. Throws `ArgumentError` if the input vector is empty.
+Throws `DomainError` if gradient computation is undefined or numerically unstable
+(e.g., NaN, Inf, or excessively large values).
 """
 function alpinen2_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    any(x .< 0) && throw(ArgumentError("Input vector must be in domain [0,10]^n"))
-    any(x .> 10) && throw(ArgumentError("Input vector must be in domain [0,10]^n"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     prod = -alpinen2(x)  # Reuse function value
     grad = zeros(T, n)
     for i in 1:n
         xi = x[i]
-        u_i = sqrt(xi) * sin(xi)
-        du_i = sin(xi) / (2 * sqrt(xi)) + sqrt(xi) * cos(xi)
+        u_i = sqrt(max(xi, eps(T))) * sin(xi)
+        du_i = sin(xi) / (2 * sqrt(max(xi, eps(T)))) + sqrt(max(xi, eps(T))) * cos(xi)
         grad_i = - (prod / u_i) * du_i
         if !isfinite(grad_i) || abs(grad_i) > 1e308 || !isfinite(du_i)
             throw(DomainError(x, "Gradient undefined or numerically unstable at x[$i] = $xi"))
@@ -71,7 +68,7 @@ const ALPINEN2_FUNCTION = TestFunction(
         :lb => (n::Int) -> zeros(n),
         :ub => (n::Int) -> fill(10.0, n),
         :in_molga_smutnicki_2005 => false,
-        :description => "AlpineN2 function: Multimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: - (2.8081311800070053)^n at (7.917052698245946, ..., 7.917052698245946). Note: Negated product for minimization.",
+        :description => "AlpineN2 function: Multimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: - (2.8081311800070053)^n at (7.917052698245946, ..., 7.917052698245946). Note: Negated product for minimization. Defined for all inputs, with bounds [0,10]^n enforced by the optimizer.",
         :math => "- \\prod_{i=1}^n \\sqrt{x_i} \\sin(x_i)"
     )
 )

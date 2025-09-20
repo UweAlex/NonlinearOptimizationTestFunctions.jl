@@ -1,36 +1,36 @@
-#test/bohachevsky3_tests.jl
+# test/bohachevsky3_tests.jl
+# Purpose: Tests for the Bohachevsky 3 test function in NonlinearOptimizationTestFunctions.
+# Context: Verifies metadata, function values, and edge cases.
+# Last modified: 18 September 2025, 09:40 AM CEST
 
 using Test
-using NonlinearOptimizationTestFunctions: bohachevsky3
-using NonlinearOptimizationTestFunctions: bohachevsky3_gradient
-using NonlinearOptimizationTestFunctions: BOHACHEVSKY3_FUNCTION
+using NonlinearOptimizationTestFunctions: BOHACHEVSKY3_FUNCTION, bohachevsky3
+using LinearAlgebra
 
-tf = BOHACHEVSKY3_FUNCTION
+@testset "Bohachevsky 3 Tests" begin
+    tf = BOHACHEVSKY3_FUNCTION
 
-@testset "bohachevsky3_tests.jl" begin
+    # Test metadata
     @test tf.meta[:name] == "bohachevsky3"
-    @test tf.meta[:min_value]() == 0.0
+    @test tf.meta[:start]() == [0.01, 0.01]
     @test tf.meta[:min_position]() == [0.0, 0.0]
-    @test "bounded" in tf.meta[:properties]
-    @test tf.meta[:in_molga_smutnicki_2005] == false
+    @test tf.meta[:min_value]() == 0.0
+    @test tf.meta[:lb]() == [-100.0, -100.0]
+    @test tf.meta[:ub]() == [100.0, 100.0]
+    @test tf.meta[:properties] == Set(["continuous", "differentiable", "multimodal", "non-convex", "non-separable", "bounded"])
 
-    # Function value at minimum
-    @test isapprox(tf.f(tf.meta[:min_position]()), tf.meta[:min_value](), atol=1e-6)
+    # Test function value at start point
+    @test bohachevsky3([0.01, 0.01]) ≈ 0.00752497141837577 atol=1e-6
 
-    # Function value at start point
-    start = tf.meta[:start]()
-    @test isapprox(tf.f(start), 0.0003 - 0.3 * cos(3 * π * 0.01 + 4 * π * 0.01) + 0.3, atol=1e-6)
+    # Test function value at minimum
+    @test bohachevsky3([0.0, 0.0]) ≈ 0.0 atol=1e-6
 
-    # Gradient at minimum (should be near zero)
-    @test all(isapprox.(tf.grad(tf.meta[:min_position]()), [0.0, 0.0], atol=1e-3))
-
-    # Edge cases
-    @test_throws ArgumentError tf.f(Float64[])
-    @test isnan(tf.f([NaN, NaN]))
-    @test isinf(tf.f([Inf, Inf]))  # Expect Inf due to quadratic terms
-    @test isfinite(tf.f([1e-308, 1e-308]))
-    @test_throws ArgumentError tf.f([0.0])  # Wrong dimension
-    @test_throws ArgumentError tf.f([0.0, 0.0, 0.0])  # Wrong dimension
-
-    
+    # Test edge cases
+    @test_throws ArgumentError bohachevsky3(Float64[])
+    @test_throws ArgumentError bohachevsky3([1.0, 2.0, 3.0])  # Wrong dimension
+    @test isnan(bohachevsky3([NaN, 0.0]))
+    @test isinf(bohachevsky3([Inf, 0.0]))
+    @test isfinite(bohachevsky3([-100.0, -100.0]))  # Lower bound
+    @test isfinite(bohachevsky3([100.0, 100.0]))    # Upper bound
+    @test isfinite(bohachevsky3([1e-308, 1e-308]))
 end

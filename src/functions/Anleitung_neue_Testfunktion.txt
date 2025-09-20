@@ -1,7 +1,7 @@
 # Anleitung_neue_Testfunktion.txt
 # Purpose: Beschreibung der Schritte zum Hinzufügen einer neuen Testfunktion und ihrer Tests in NonlinearOptimizationTestFunctions.
 # Context: Teil des Projekts NonlinearOptimizationTestFunctions. Stellt sicher, dass neue Funktionen korrekt implementiert und getestet werden, konsistent mit bestehenden Funktionen wie ackley.jl, rosenbrock.jl, branin.jl.
-# Last modified: 16 September 2025, 11:47 AM CEST
+# Last modified: 18 September 2025, 09:08 AM CEST
 
 ## Ziel
 
@@ -14,7 +14,7 @@ WICHTIGER HINWEIS: Der TestFunction-Konstruktor akzeptiert drei positionale Argu
 WICHTIGER HINWEIS ZUR TESTEINBINDUNG: Stelle sicher, dass die Testdatei test/<functionname>_tests.jl korrekt in test/include_testfiles.jl eingebunden ist. Fehlende oder falsch geschriebene Einbindungen führen dazu, dass die Tests nicht ausgeführt werden und in der Testausgabe fehlen. Überprüfe dies durch direkte Ausführung der Testdatei:
     julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/<functionname>_tests.jl")'
 
-WICHTIGER HINWEIS ZU TESTWERTEN: Überprüfe die erwarteten Funktionswerte in den Tests (z. B. am Startpunkt tf.meta[:start]() oder Minimum tf.meta[:min_position]()) durch manuelle Berechnung oder durch Ausführen der Funktion, um sicherzustellen, dass sie mit der Implementierung übereinstimmen. Beispiel: Für die Branin-Funktion wurde der erwartete Wert am Startpunkt [0.0, 0.0] zunächst falsch als 36.90471446624321 angegeben, aber die korrekte Berechnung ergab 55.602112642270262. Für Bohachevsky 2 wurde der Funktionswert am Startpunkt [1.0, 1.0] fälschlicherweise als 2.6 erwartet, aber die korrekte Berechnung ergab 3.6 (1^2 + 2*1^2 - 0.3*cos(3π)*cos(4π) + 0.3). Falsche Testwerte (z. B. für ackley([0.5, 0.5])) können zu Testfehlern führen; berechne alle Testwerte manuell oder durch Ausführen der Funktion, um solche Fehler zu vermeiden.
+WICHTIGER HINWEIS ZU TESTWERTEN: Überprüfe die erwarteten Funktionswerte in den Tests (z. B. am Startpunkt tf.meta[:start]() oder Minimum tf.meta[:min_position]()) durch manuelle Berechnung oder durch Ausführen der Funktion, um sicherzustellen, dass sie mit der Implementierung übereinstimmen. Beispiel: Für die Branin-Funktion wurde der erwartete Wert am Startpunkt [0.0, 0.0] zunächst falsch als 36.90471446624321 angegeben, aber die korrekte Berechnung ergab 55.602112642270262. Für Bohachevsky 2 wurde der Funktionswert am Startpunkt [1.0, 1.0] fälschlicherweise als 2.6 erwartet, aber die korrekte Berechnung ergab 3.6 (1^2 + 2*1^2 - 0.3*cos(3π)*cos(4π) + 0.3). Für Bohachevsky 3 wurde der Funktionswert am Startpunkt [0.01, 0.01] fälschlicherweise als 0.007424971418375725 erwartet, aber die korrekte Berechnung ergab 0.04046804224348866 (0.0001 + 2*0.0001 - 0.3*cos(0.7π) + 0.3). Falsche Testwerte (z. B. für ackley([0.5, 0.5])) können zu Testfehlern führen; berechne alle Testwerte manuell oder durch Ausführen der Funktion, um solche Fehler zu vermeiden.
 
 WICHTIGER HINWEIS ZUR RECHERCHE VON MINIMA: Um die genauesten Positionen der Minima und den minimalen Funktionswert zu ermitteln, recherchiere unbedingt an verschiedenen Stellen im Internet (z. B. wissenschaftliche Publikationen, Optimierungs-Benchmarks wie al-roomi.org, sfu.ca, oder andere zuverlässige Quellen). Literaturangaben (z. B. Molga & Smutnicki, 2005) verwenden häufig gerundete Werte, die in präzisen numerischen Tests (z. B. mit atol=1e-6) fehlschlagen können. Beispiel: Die Six-Hump Camelback-Funktion hat in Molga & Smutnicki (2005) einen gerundeten Minimalwert von -1.0316, aber präzisere Quellen (z. B. al-roomi.org) geben -1.031628453489877 an, mit Minima bei (±0.08984201368301331, ±0.7126564032704135). Siehe etwa:
 - Al-Roomi, A. R. (2015). Unconstrained Single-Objective Benchmark Functions Repository. Dalhousie University. https://www.al-roomi.org/benchmarks/unconstrained
@@ -40,19 +40,19 @@ NEUER HINWEIS ZU POSITIV DEFINITEN MATRIZEN: Bei skalierbaren Funktionen, die Ma
 
 NEUER HINWEIS ZU ERROR HANDLING: Alle Testfunktionen müssen explizit prüfen, ob der Eingabevektor leer ist (length(x) == 0), und in diesem Fall einen ArgumentError auslösen, um den "Edge Cases"-Test in test/runtests.jl zu bestehen, der erwartet, dass tf.f(Float64[]) einen ArgumentError wirft. Beispiel: n == 0 && throw(ArgumentError("Input vector cannot be empty")). Dies gilt für alle Funktionen, unabhängig davon, ob sie skalierbar sind oder spezifische Dimensionsanforderungen haben (z. B. n >= 2 für Rosenbrock).
 
-NEUER HINWEIS ZU NICHT-SKALIERBAREN FUNKTIONEN: Für nicht-skalierbare Funktionen (z. B. Beale, BartelsConn, Bohachevsky 2, mit fester Dimension n=2), definiere Metadatenfunktionen (:start, :min_position, :lb, :ub) ohne Argumente (z. B. :start => () -> [0.01, 0.01]). Tests in test/<functionname>_tests.jl dürfen diese Funktionen nicht mit einem Argument n aufrufen (z. B. tf.meta[:start]() statt tf.meta[:start](n)). Falsche Aufrufe führen zu MethodErrors, wie bei Beale in test/beale_tests.jl beobachtet. Überprüfe die Skalierbarkeit in der Literatur (z. B. [Jamil & Yang (2013): f10] für Beale, [Jamil & Yang (2013): f18] für Bohachevsky 2).
+NEUER HINWEIS ZU NICHT-SKALIERBAREN FUNKTIONEN: Für nicht-skalierbare Funktionen (z. B. Beale, BartelsConn, Bohachevsky 2, Bohachevsky 3, mit fester Dimension n=2), definiere Metadatenfunktionen (:start, :min_position, :lb, :ub) ohne Argumente (z. B. :start => () -> [0.01, 0.01]). Tests in test/<functionname>_tests.jl dürfen diese Funktionen nicht mit einem Argument n aufrufen (z. B. tf.meta[:start]() statt tf.meta[:start](n)). Falsche Aufrufe führen zu MethodErrors, wie bei Beale in test/beale_tests.jl beobachtet. Überprüfe die Skalierbarkeit in der Literatur (z. B. [Jamil & Yang (2013): f10] für Beale, [Jamil & Yang (2013): f18] für Bohachevsky 2, [Jamil & Yang (2013): f19] für Bohachevsky 3).
 
 NEUER HINWEIS ZU NICHT-DIFFERENZIERBAREN FUNKTIONEN: Für Funktionen, die nicht überall differenzierbar sind (z. B. BartelsConn, die partially differentiable ist), definiere einen Subgradienten und teste dessen Nicht-Differenzierbarkeit mit @test_throws DomainError <functionname>_gradient(x) an relevanten Punkten (z. B. am Minimum). Beispiel: Für BartelsConn wird in test/bartelsconn_tests.jl die Nicht-Differenzierbarkeit mit @test_throws DomainError bartelsconn_gradient([0.0, 0.0]) getestet.
 
-NEUER HINWEIS ZU PRÄZISEN SCHRANKEN: Stelle sicher, dass die Schranken (:lb, :ub) in src/functions/<functionname>.jl mit den in der Literatur angegebenen Werten übereinstimmen (z. B. [Jamil & Yang (2013)]). Falsche Schranken führen zu Testfehlern, wie bei BartelsConn, wo [-5.0, -5.0] und [5.0, 5.0] statt der korrekten [-500.0, -500.0] und [500.0, 500.0] gemäß [Jamil & Yang (2013): f9] verwendet wurden. Für Bohachevsky 2 sind die Schranken [-100.0, -100.0] und [100.0, 100.0] gemäß [Jamil & Yang (2013): f18]. Überprüfe Schranken durch Recherche an mehreren Quellen (z. B. al-roomi.org, sfu.ca, Molga & Smutnicki, 2005) und passe Tests in test/<functionname>_tests.jl entsprechend an. Wenn Schranken definiert sind, füge die Eigenschaft "bounded" zu :properties hinzu, um die Filtertests in test/runtests.jl korrekt zu halten.
+NEUER HINWEIS ZU PRÄZISEN SCHRANKEN: Stelle sicher, dass die Schranken (:lb, :ub) in src/functions/<functionname>.jl mit den in der Literatur angegebenen Werten übereinstimmen (z. B. [Jamil & Yang (2013)]). Falsche Schranken führen zu Testfehlern, wie bei BartelsConn, wo [-5.0, -5.0] und [5.0, 5.0] statt der korrekten [-500.0, -500.0] und [500.0, 500.0] gemäß [Jamil & Yang (2013): f9] verwendet wurden. Für Bohachevsky 2 und Bohachevsky 3 sind die Schranken [-100.0, -100.0] und [100.0, 100.0] gemäß [Jamil & Yang (2013): f18, f19]. Überprüfe Schranken durch Recherche an mehreren Quellen (z. B. al-roomi.org, sfu.ca, Molga & Smutnicki, 2005) und passe Tests in test/<functionname>_tests.jl entsprechend an. Wenn Schranken definiert sind, füge die Eigenschaft "bounded" zu :properties hinzu, um die Filtertests in test/runtests.jl korrekt zu halten.
 
 NEUER HINWEIS ZU NEUEN EIGENSCHAFTEN UND DIMENSIONALITÄT: 
 Beim Hinzufügen einer neuen Testfunktion ist Vorsicht bei der Einführung neuer Eigenschaften geboten. Neue Eigenschaften dürfen nur eingeführt werden, wenn sie in der Literatur explizit begründet sind (z. B. Jamil & Yang, 2013; Molga & Smutnicki, 2005) und in VALID_PROPERTIES in src/NonlinearOptimizationTestFunctions.jl definiert sind. Ohne diese Definition führt die Verwendung einer neuen Eigenschaft zu einem ArgumentError: Invalid properties beim Precompiling. Beispiel: Die Powell-Funktion (n=4) wurde zunächst mit der Eigenschaft fixed implementiert, was einen Fehler verursachte, da fixed nicht in VALID_PROPERTIES enthalten war.
 
 Funktionssignaturen sollten x::AbstractVector ohne Typparameter akzeptieren, und der Typ muss erst innerhalb der Funktion überprüft werden (eltype(x) <: Union{Real, ForwardDiff.Dual}). Damit bestehen die Funktionen auch den Edge Cases Test mit Vector{Any}(), der sonst zu MethodError führt.
 
-Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=4, Hartmann mit n=3, Shekel mit n=4, Bohachevsky 2 mit n=2) ist nicht notwendig, da die feste Dimension bereits durch das Fehlen der Eigenschaft scalable und die Implementierung implizit abgedeckt wird:
-- Für Funktionen mit fester Dimension (z. B. Powell, Hartmann, Shekel, Bohachevsky 2) definiere Metadatenfunktionen (:start, :min_position, :lb, :ub) ohne Parameter, z. B.:
+Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=4, Hartmann mit n=3, Shekel mit n=4, Bohachevsky 2 mit n=2, Bohachevsky 3 mit n=2) ist nicht notwendig, da die feste Dimension bereits durch das Fehlen der Eigenschaft scalable und die Implementierung implizit abgedeckt wird:
+- Für Funktionen mit fester Dimension (z. B. Powell, Hartmann, Shekel, Bohachevsky 2, Bohachevsky 3) definiere Metadatenfunktionen (:start, :min_position, :lb, :ub) ohne Parameter, z. B.:
     :start => () -> [0.01, 0.01]
   und prüfe in der Funktion die Dimension mit einem ArgumentError, z. B.:
     n != 2 && throw(ArgumentError("Bohachevsky 2 requires exactly 2 dimensions"))
@@ -60,7 +60,7 @@ Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=
     :start => (n::Int) -> fill(1.0, n)
   und füge scalable zu :properties hinzu.
 - Das Fehlen von scalable in :properties impliziert, dass die Funktion nicht skalierbar ist und eine feste Dimension hat, wodurch die Eigenschaft fixed redundant wird.
-- Verwende daher keine Eigenschaft fixed, sondern handle die feste Dimension wie bei bestehenden Funktionen (z. B. Hartmann, Shekel, Wood, Bohachevsky 2) durch parameterlose Metadaten und Dimensionsprüfungen in der Funktion.
+- Verwende daher keine Eigenschaft fixed, sondern handle die feste Dimension wie bei bestehenden Funktionen (z. B. Hartmann, Shekel, Wood, Bohachevsky 2, Bohachevsky 3) durch parameterlose Metadaten und Dimensionsprüfungen in der Funktion.
 - Falls eine neue Eigenschaft dennoch erforderlich ist (z. B. für spezifische Eigenschaften in der Literatur), füge sie zu VALID_PROPERTIES hinzu, z. B.:
     const VALID_PROPERTIES = Set([
         "bounded", "continuous", "controversial", "convex", "deceptive", "differentiable",
@@ -73,7 +73,7 @@ Die Eigenschaft fixed (für Funktionen mit fester Dimension, z. B. Powell mit n=
     - <neue_eigenschaft>: <Beschreibung>.
 
 NEUER HINWEIS ZU :min_value: 
-Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funktion mit der Signatur (n::Int) -> Real sein, um mit der Testsuite in test/minima_tests.jl kompatibel zu sein. Dies gilt sowohl für skalierbare als auch für nicht-skalierbare Funktionen, da die Testsuite in get_and_validate_metadata (Zeile 49) den Aufruf tf.meta[:min_value](n) erwartet. Eine Definition als fester Wert (z. B. :min_value => -5.162126159963982) oder als Funktion ohne Parameter (z. B. :min_value => () -> -5.162126159963982) führt zu einem MethodError: no method matching isfinite(::Nothing), da die Testsuite versucht, die Definition als Funktion mit einem Integer-Argument aufzurufen.
+Die :min_value-Definition im Metadaten-Dictionary (meta) muss abhängig von der Skalierbarkeit der Funktion korrekt definiert werden, um mit der Testsuite in test/minima_tests.jl kompatibel zu sein. Die Testsuite erwartet unterschiedliche Signaturen für skalierbare und nicht-skalierbare Funktionen.
 
 - Für skalierbare Funktionen (z. B. Ackley, Rosenbrock):
   - Definiere :min_value als (n::Int) -> begin n < <N> && throw(ArgumentError("<FunctionName> requires at least <N> dimension(s)")); <minimalwert> end.
@@ -84,63 +84,58 @@ Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funk
           0.0
       end,
 
-- Für nicht-skalierbare Funktionen (z. B. Langermann, CrossInTray, Beale, Bohachevsky 2):
-  - Definiere :min_value als (n::Int) -> begin n != <N> && throw(ArgumentError("<FunctionName> requires exactly <N> dimensions")); <minimalwert> end, wobei <N> die feste Dimension ist (z. B. 2 für Langermann, 2 für CrossInTray).
+- Für nicht-skalierbare Funktionen (z. B. Langermann, CrossInTray, Beale, Bohachevsky 2, Bohachevsky 3):
+  - Definiere :min_value als () -> <minimalwert>, da die Dimension festgelegt ist und kein n-Argument benötigt wird. Die Testsuite ruft tf.meta[:min_value]() ohne Argumente auf, und eine Definition als (n::Int) -> ... führt zu einem MethodError: no method matching isfinite(::Nothing).
   - Der Minimalwert ist konstant, da die Dimension festgelegt ist. Recherchiere den präzisen Minimalwert in der Literatur (z. B. al-roomi.org, sfu.ca, Jamil & Yang, 2013) und überprüfe ihn durch Ausführen der Funktion am Minimum (tf.f(tf.meta[:min_position]())).
+  - Beispiel für Bohachevsky 3:
+      :min_value => () -> 0.0
   - Beispiel für Langermann:
-      :min_value => (n::Int) -> begin
-          n != 2 && throw(ArgumentError("Langermann requires exactly 2 dimensions"))
-          -5.162126159963982
-      end,
+      :min_value => () -> -5.162126159963982
   - Beispiel für CrossInTray:
-      :min_value => (n::Int) -> begin
-          n != 2 && throw(ArgumentError("CrossInTray requires exactly 2 dimensions"))
-          -2.062611870822739
-      end,
+      :min_value => () -> -2.062611870822739
 
 - Prüfung und Validierung:
-  - Überprüfe den Minimalwert durch Ausführen der Funktion am angegebenen Minimum (tf.f(tf.meta[:min_position]())) und vergleiche ihn mit :min_value(n) innerhalb von atol=1e-6. Beispiel:
-      julia> tf = LANGERMANN_FUNCTION
+  - Überprüfe den Minimalwert durch Ausführen der Funktion am angegebenen Minimum (tf.f(tf.meta[:min_position]())) und vergleiche ihn mit tf.meta[:min_value]() (für nicht-skalierbare Funktionen) oder tf.meta[:min_value](n) (für skalierbare Funktionen) innerhalb von atol=1e-6. Beispiel:
+      julia> tf = BOHACHEVSKY3_FUNCTION
       julia> min_pos = tf.meta[:min_position]()
-      julia> min_fx = tf.f(min_pos)  # Sollte -5.162126159963982 ausgeben
-      julia> min_val = tf.meta[:min_value](2)  # Sollte -5.162126159963982 ausgeben
+      julia> min_fx = tf.f(min_pos)  # Sollte 0.0 ausgeben
+      julia> min_val = tf.meta[:min_value]()  # Sollte 0.0 ausgeben
       julia> @assert min_fx ≈ min_val atol=1e-6
   - Recherchiere präzise Werte für :min_value in mehreren Quellen (z. B. al-roomi.org, sfu.ca, Jamil & Yang, 2013, Molga & Smutnicki, 2005), da gerundete Literaturwerte (z. B. -1.0316 für Six-Hump Camelback in Molga & Smutnicki, 2005) zu Testfehlern führen können. Verwende präzise Werte (z. B. -1.031628453489877 für Six-Hump Camelback gemäß al-roomi.org).
 
 - Fehlervermeidung:
-  - Eine falsche :min_value-Definition (z. B. als fester Wert oder Funktion ohne Parameter) führt zu einem MethodError in test/minima_tests.jl, da die Testsuite tf.meta[:min_value](n) aufruft. Beispiel: Der Fehler für Langermann (MethodError: no method matching isfinite(::Nothing)) trat auf, weil :min_value als -5.162126159963982 definiert war.
-  - Stelle sicher, dass die :min_value-Definition konsistent mit :min_position ist, d.h. tf.f(tf.meta[:min_position]()) muss tf.meta[:min_value](n) entsprechen (innerhalb von atol=1e-6).
+  - Eine falsche :min_value-Definition (z. B. als fester Wert wie :min_value => -5.162126159963982 oder als (n::Int) -> ... für nicht-skalierbare Funktionen) führt zu einem MethodError in test/minima_tests.jl, da die Testsuite tf.meta[:min_value]() für nicht-skalierbare Funktionen oder tf.meta[:min_value](n) für skalierbare Funktionen aufruft. Beispiel: Der Fehler für Bohachevsky 3 (MethodError: no method matching isfinite(::Nothing)) trat auf, weil :min_value als (n::Int) -> ... definiert war.
+  - Stelle sicher, dass die :min_value-Definition konsistent mit :min_position ist, d.h. tf.f(tf.meta[:min_position]()) muss tf.meta[:min_value]() (für nicht-skalierbare Funktionen) oder tf.meta[:min_value](n) (für skalierbare Funktionen) entsprechen (innerhalb von atol=1e-6).
   - Falls die Funktion mehrere globale Minima hat (z. B. Branin, Langermann), wähle eines der globalen Minima für :min_position und den entsprechenden Funktionswert für :min_value. Dokumentiere alternative Minima in :description, wie bei Langermann: "Warning: The global minimum is controversial; some sources report a local minimum at approximately [2.002992, 1.006096] with value ≈-1.4."
 
 - Caching-Probleme:
-  - Nach Änderungen an :min_value (z. B. von einem festen Wert zu einer Funktion) lösche den Julia-Cache, um sicherzustellen, dass die aktualisierte Datei geladen wird:
+  - Nach Änderungen an :min_value (z. B. von einer falschen Definition zu einer korrekten Funktion) lösche den Julia-Cache, um sicherzustellen, dass die aktualisierte Datei geladen wird:
       rmdir /s /q %USERPROFILE%\.julia\compiled
     oder projektspezifisch:
       rmdir /s /q C:\Users\uweal\NonlinearOptimizationTestFunctions.jl\.julia\compiled
-  - Ohne Cache-Löschung kann die Testsuite eine ältere Version der Datei verwenden, was zu Fehlern wie MethodError: no method matching isfinite(::Nothing) führt, wie bei Langermann beobachtet.
+  - Ohne Cache-Löschung kann die Testsuite eine ältere Version der Datei verwenden, was zu Fehlern wie MethodError: no method matching isfinite(::Nothing) führt, wie bei Bohachevsky 3 beobachtet.
 
 - Debugging:
   - Falls ein MethodError für :min_value auftritt, füge eine Debug-Ausgabe in test/minima_tests.jl vor Zeile 49 in get_and_validate_metadata hinzu:
       @info "Debug: min_value definition for $fn_name: $(tf.meta[:min_value])"
-    Führe die Tests erneut aus und überprüfe, ob :min_value als Funktion (n::Int) -> ... angezeigt wird. Beispielausgabe für Langermann:
-      Info: Debug: min_value definition for langermann: (n::Int) -> begin ... end
-    Wenn :min_value als fester Wert (z. B. -5.162126159963982) oder () -> ... angezeigt wird, wird die falsche Version geladen.
+    Führe die Tests erneut aus und überprüfe, ob :min_value als Funktion () -> ... (für nicht-skalierbare Funktionen) oder (n::Int) -> ... (für skalierbare Funktionen) angezeigt wird. Beispielausgabe für Bohachevsky 3:
+      Info: Debug: min_value definition for bohachevsky3: () -> 0.0
+    Wenn :min_value als (n::Int) -> ... oder als fester Wert angezeigt wird, wird die falsche Version geladen.
 
 ## Was SOLL gemacht werden
 
 1. Funktion in src/functions/<functionname>.jl definieren:
    - Verwende lowercase-Symbole für Dateinamen und Funktionen (z. B. branin.jl, branin, branin_gradient).
-   - Implementiere die Funktion, den Gradienten und Metadaten gemäß der Struktur bestehender Funktionen (z. B. ackley.jl, rosenbrock.jl, branin.jl, bohachevsky2.jl).
+   - Implementiere die Funktion, den Gradienten und Metadaten gemäß der Struktur bestehenden Funktionen (z. B. ackley.jl, rosenbrock.jl, branin.jl, bohachevsky2.jl, bohachevsky3.jl).
    - Exportiere gezielt: export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient.
    - Definiere <functionname> und <functionname>_gradient als Top-Level-Funktionen im Modul-Namespace, keine Closures oder eingebetteten Funktionen, um Exportprobleme zu vermeiden.
    - Stelle sicher, dass die Funktion Edge Cases (NaN, Inf, 1e-308, leere Eingabe) behandelt und mit ForwardDiff kompatibel ist (Typparameter T<:Union{Real, ForwardDiff.Dual}).
    - Definiere Metadaten (:name, :start, :min_position, :min_value, :properties, :lb, :ub) korrekt.
      - Für skalierbare Funktionen (z. B. Rosenbrock, Ackley) sollten :start, :min_position, :min_value, :lb, :ub als (n::Int) -> ... definiert sein, mit einer Prüfung der minimalen Dimension (z. B. n < 2 für Rosenbrock).
-     - Für nicht-skalierbare Funktionen (z. B. Booth, Giunta, Branin, Beale, BartelsConn, Bohachevsky 2) sollten :start, :min_position, :lb, :ub als () -> ... definiert sein, da die Dimension festgelegt ist (z. B. n=2). Für :min_value ist jedoch (n::Int) -> ... erforderlich, um die Testsuite-Anforderungen zu erfüllen (z. B. für Langermann, CrossInTray).
-     - Stelle sicher, dass :min_value als Funktion (n::Int) -> Real definiert ist, sowohl für skalierbare als auch für nicht-skalierbare Funktionen, um mit der Testsuite kompatibel zu sein. Für skalierbare Funktionen prüfe die minimale Dimension (z. B. n < <N>), für nicht-skalierbare Funktionen prüfe die exakte Dimension (z. B. n != <N>). Recherchiere den präzisen Minimalwert in der Literatur (z. B. al-roomi.org, sfu.ca, Jamil & Yang, 2013) und überprüfe ihn durch Ausführen der Funktion am Minimum (tf.f(tf.meta[:min_position]())).
-     - Überprüfe :min_value durch Ausführen der Funktion am angegebenen Minimum (tf.f(tf.meta[:min_position]())) und vergleiche es mit :min_value(n) innerhalb von atol=1e-6. Dokumentiere alternative Minima für multimodale Funktionen in :description.
-     - Stelle sicher, dass :lb und :ub die korrekten Schranken aus der Literatur liefern (z. B. [-500.0, -500.0] und [500.0, 500.0] für BartelsConn, [-4.5, -4.5] und [4.5, 4.5] für Beale, [-100.0, -100.0] und [100.0, 100.0] für Bohachevsky 2 gemäß [Jamil & Yang (2013)]). Überprüfe Schranken durch Recherche an mehreren Quellen (z. B. al-roomi.org, sfu.ca, Molga & Smutnicki, 2005).
-     - Füge "bounded" zu :properties hinzu, wenn definierte Schranken existieren (z. B. für Bohachevsky 2 mit [-100.0, -100.0] und [100.0, 100.0]).
+     - Für nicht-skalierbare Funktionen (z. B. Booth, Giunta, Branin, Beale, BartelsConn, Bohachevsky 2, Bohachevsky 3) sollten :start, :min_position, :lb, :ub als () -> ... definiert sein, da die Dimension festgelegt ist. Für :min_value definiere () -> <minimalwert> für nicht-skalierbare Funktionen, um die Testsuite-Anforderungen zu erfüllen (z. B. für Bohachevsky 3, Langermann, CrossInTray).
+     - Überprüfe :min_value durch Ausführen der Funktion am angegebenen Minimum (tf.f(tf.meta[:min_position]())) und vergleiche es mit tf.meta[:min_value]() (für nicht-skalierbare Funktionen) oder tf.meta[:min_value](n) (für skalierbare Funktionen) innerhalb von atol=1e-6. Dokumentiere alternative Minima für multimodale Funktionen in :description.
+     - Stelle sicher, dass :lb und :ub die korrekten Schranken aus der Literatur liefern (z. B. [-500.0, -500.0] und [500.0, 500.0] für BartelsConn, [-4.5, -4.5] und [4.5, 4.5] für Beale, [-100.0, -100.0] und [100.0, 100.0] für Bohachevsky 2, Bohachevsky 3 gemäß [Jamil & Yang (2013)]). Überprüfe Schranken durch Recherche an mehreren Quellen (z. B. al-roomi.org, sfu.ca, Molga & Smutnicki, 2005).
+     - Füge "bounded" zu :properties hinzu, wenn definierte Schranken existieren (z. B. für Bohachevsky 2, Bohachevsky 3 mit [-100.0, -100.0] und [100.0, 100.0]).
      - Füge :description und :math (in LaTeX) hinzu, um die Funktion zu dokumentieren.
    - Falls die Funktion Matrizen verwendet (z. B. quadratische Funktion), stelle sicher, dass generierte Matrizen robust positiv definit sind, z. B. durch Verwendung von Diagonal mit positiven Werten oder durch Überprüfung mit eigvals.
    - Falls neue Bibliotheken (z. B. Random) verwendet werden, trage diese in Project.toml ein und führe Pkg.resolve() und Pkg.instantiate() aus.
@@ -157,8 +152,8 @@ Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funk
    - Teste Metadaten (:name, :dimension, :lb, :ub, :min_value, :min_position), Funktionswerte (z. B. am Startpunkt tf.meta[:start]() und Minimum tf.meta[:min_position]()) und Edge Cases (NaN, Inf, 1e-308, leere Eingabe, falsche Dimensionen).
    - Verwende deterministische Werte oder Matrizen in den Tests, um konsistente Ergebnisse zu gewährleisten. Beispiel: Für skalierbare Funktionen wie die quadratische Funktion, verwende explizite positiv definite Matrizen wie Symmetric(Matrix(Diagonal(fill(2.0, n)))).
    - Für nicht überall differenzierbare Funktionen (z. B. BartelsConn), teste die Nicht-Differenzierbarkeit mit @test_throws DomainError <functionname>_gradient(x) an Punkten, wo der Gradient nicht definiert ist (z. B. am Minimum).
-   - Für nicht-skalierbare Funktionen (z. B. Beale, n=2) rufe Metadatenfunktionen ohne Argumente auf (z. B. tf.meta[:start]() statt tf.meta[:start](n)), um MethodErrors zu vermeiden.
-   - Überprüfe Funktionswerte am Startpunkt und Minimum manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca). Falsche Testwerte (z. B. für ackley([0.5, 0.5]) oder bohachevsky2([1.0, 1.0])) können zu Testfehlern führen; berechne alle Testwerte manuell oder durch Ausführen der Funktion.
+   - Für nicht-skalierbare Funktionen (z. B. Beale, Bohachevsky 3, n=2) rufe Metadatenfunktionen ohne Argumente auf (z. B. tf.meta[:min_value]() statt tf.meta[:min_value](n)), um MethodErrors zu vermeiden.
+   - Überprüfe Funktionswerte am Startpunkt und Minimum manuell oder durch Ausführen der Funktion, unterstützt durch präzise Werte aus Internetrecherchen an mehreren Quellen (z. B. al-roomi.org, sfu.ca). Falsche Testwerte (z. B. für ackley([0.5, 0.5]), bohachevsky2([1.0, 1.0]), oder bohachevsky3([0.01, 0.01])) können zu Testfehlern führen; berechne alle Testwerte manuell oder durch Ausführen der Funktion.
    - Für Funktionen mit mehreren Minima, prüfe, ob das angegebene Minimum (tf.meta[:min_position]()) einem der globalen Minima entspricht, und dokumentiere alternative Minima in :description (siehe Branin-Beispiel).
    - Verwende die recherchierten, präzisen Werte für :min_position und :min_value in den Tests, um Testfehler durch gerundete Literaturwerte zu vermeiden.
 
@@ -168,10 +163,10 @@ Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funk
        julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/<functionname>_tests.jl")'
 
 5. Filtertests in test/runtests.jl anpassen:
-   - Aktualisiere die Filtertests im Abschnitt "Filter and Properties Tests", um neue Eigenschaften wie "multimodal", "unimodal", "non-separable" oder "differentiable" zu berücksichtigen. Beispiel: Branin erhöhte "multimodal" von 6 auf 7 und "differentiable" von 8 auf 9. Für Beale wurde "unimodal" und "non-separable" hinzugefügt, für BartelsConn "partially differentiable" und "non-separable". Für Bohachevsky 2 erhöhe "bounded" um 1 auf 61, "multimodal" um 1 auf 45, "differentiable" um 1 auf 52, "non-convex" um 1, "non-separable" um 1.
+   - Aktualisiere die Filtertests im Abschnitt "Filter and Properties Tests", um neue Eigenschaften wie "multimodal", "unimodal", "non-separable" oder "differentiable" zu berücksichtigen. Beispiel: Branin erhöhte "multimodal" von 6 auf 7 und "differentiable" von 8 auf 9. Für Beale wurde "unimodal" und "non-separable" hinzugefügt, für BartelsConn "partially differentiable" und "non-separable". Für Bohachevsky 2 und Bohachevsky 3 erhöhe "bounded" um 1 auf 61, "multimodal" um 1 auf 45, "differentiable" um 1 auf 52, "non-convex" um 1, "non-separable" um 1.
 
 6. Dokumentation in Readme.md aktualisieren:
-   - Füge die neue Funktion im Abschnitt "Test Functions" hinzu, mit Angaben zu Eigenschaften, Minimum, Schranken und Dimensionen, basierend auf den präzisen, recherchierten Werten (siehe Branin-Beispiel). Beispiel für die quadratische Funktion: - Quadratic: Unimodal, convex, non-separable, differentiable, scalable. Minimum: c - 0.25 * b^T A^-1 b at -0.5 * A^-1 b, where A is a positive definite matrix, b is a vector, and c is a scalar (default: A random, b=0, c=0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. Beispiel für Beale: - Beale: Unimodal, non-convex, non-separable, differentiable, bounded, continuous. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2. Note: Included in [Molga & Smutnicki (2005)]. Beispiel für Bohachevsky 2: - Bohachevsky 2 [Jamil & Yang (2013): f18]: Multimodal, non-convex, non-separable, differentiable, bounded, continuous. Minimum: 0.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2.
+   - Füge die neue Funktion im Abschnitt "Test Functions" hinzu, mit Angaben zu Eigenschaften, Minimum, Schranken und Dimensionen, basierend auf den präzisen, recherchierten Werten (siehe Branin-Beispiel). Beispiel für die quadratische Funktion: - Quadratic: Unimodal, convex, non-separable, differentiable, scalable. Minimum: c - 0.25 * b^T A^-1 b at -0.5 * A^-1 b, where A is a positive definite matrix, b is a vector, and c is a scalar (default: A random, b=0, c=0). Bounds: [-Inf, Inf]^n. Dimensions: Any n >= 1. Beispiel für Beale: - Beale: Unimodal, non-convex, non-separable, differentiable, bounded, continuous. Minimum: 0.0 at (3.0, 0.5). Bounds: [-4.5, 4.5]^2. Dimensions: n=2. Note: Included in [Molga & Smutnicki (2005)]. Beispiel für Bohachevsky 2: - Bohachevsky 2 [Jamil & Yang (2013): f18]: Multimodal, non-convex, non-separable, differentiable, bounded, continuous. Minimum: 0.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2. Beispiel für Bohachevsky 3: - Bohachevsky 3 [Jamil & Yang (2013): f19]: Multimodal, non-convex, non-separable, differentiable, bounded, continuous. Minimum: 0.0 at (0.0, 0.0). Bounds: [-100, 100]^2. Dimensions: n=2.
 
 7. Tests ausführen und überprüfen:
    - Führe die Tests aus:
@@ -197,7 +192,7 @@ Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funk
    - Implementiere keine Optimierungstests in test/<functionname>_tests.jl, da diese ausschließlich in test/minima_tests.jl durchgeführt werden, um die Kompatibilität mit Optim.jl zu überprüfen und Konsistenz zu gewährleisten.
 
 6. Keine falschen Testwerte etwa aus dem Zwischenbericht oder Readme.md übernehmen:
-   - Übernimm keine erwarteten Funktionswerte (z. B. am Startpunkt oder Minimum) ohne manuelle Überprüfung durch Berechnung oder Ausführen der Funktion, unterstützt durch Recherche an verschiedenen Stellen im Internet. Beispiel: Der falsche Testwert 36.90471446624321 für die Branin-Funktion am Startpunkt [0.0, 0.0] führte zu einem Testfehler. Für Bohachevsky 2 führte ein falscher Testwert von 2.6 statt 3.6 am Startpunkt [1.0, 1.0] zu einem Testfehler.
+   - Übernimm keine erwarteten Funktionswerte (z. B. am Startpunkt oder Minimum) ohne manuelle Überprüfung durch Berechnung oder Ausführen der Funktion, unterstützt durch Recherche an verschiedenen Stellen im Internet. Beispiel: Der falsche Testwert 36.90471446624321 für die Branin-Funktion am Startpunkt [0.0, 0.0] führte zu einem Testfehler. Für Bohachevsky 2 führte ein falscher Testwert von 2.6 statt 3.6 am Startpunkt [1.0, 1.0] zu einem Testfehler. Für Bohachevsky 3 führte ein falscher Testwert von 0.007424971418375725 statt 0.04046804224348866 am Startpunkt [0.01, 0.01] zu einem Testfehler.
 
 7. Keine Änderung der Namenskonventionen:
    - Verwende keine Großbuchstaben oder Unterstriche in Dateinamen oder Funktionsnamen (z. B. Branin.jl oder branin_function statt branin.jl).
@@ -217,25 +212,25 @@ Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funk
 12. Keine Vernachlässigung der Prüfung auf leere Eingabevektoren:
     - Versäume nicht, in <functionname> und <functionname>_gradient zu prüfen, ob der Eingabevektor leer ist (n == 0), und in diesem Fall einen ArgumentError auszulösen, da dies für den "Edge Cases"-Test in test/runtests.jl erforderlich ist.
 
-13. Keine Verwendung von (n::Int) -> ... für Metadaten bei nicht-skalierbaren Funktionen:
-    - Für nicht-skalierbare Funktionen mit fixer Dimension (z. B. n=2 für Booth, Giunta, Branin, Beale, BartelsConn, Bohachevsky 2) definiere :start, :min_position, :lb, :ub als () -> ... statt (n::Int) -> ..., da die Dimension festgelegt ist und kein n-Argument benötigt wird. Dies verhindert MethodErrors in den Tests, da test/runtests.jl für nicht-skalierbare Funktionen tf.meta[:lb]() ohne Argumente aufruft. Für :min_value ist jedoch (n::Int) -> ... erforderlich, um die Testsuite-Anforderungen zu erfüllen.
+13. Keine Verwendung von (n::Int) -> ... für Metadaten bei nicht-skalierbaren Funktionen, außer für skalierbare Funktionen:
+    - Für nicht-skalierbare Funktionen mit fixer Dimension (z. B. n=2 für Booth, Giunta, Branin, Beale, BartelsConn, Bohachevsky 2, Bohachevsky 3) definiere :start, :min_position, :lb, :ub als () -> ... statt (n::Int) -> ..., da die Dimension festgelegt ist und kein n-Argument benötigt wird. Für :min_value definiere () -> <minimalwert> für nicht-skalierbare Funktionen, da die Testsuite tf.meta[:min_value]() ohne Argumente aufruft. Dies verhindert MethodErrors in den Tests, da test/runtests.jl für nicht-skalierbare Funktionen tf.meta[:min_value]() aufruft.
 
 14. Keine Vernachlässigung der Anpassung von Filtertests und Readme:
     - Versäume nicht, die Filtertests in test/runtests.jl und die Dokumentation in Readme.md anzupassen, um die neuen Eigenschaften und Funktionen korrekt widerzuspiegeln, da dies zu Testfehlern oder veralteter Dokumentation führen kann.
 
 15. Keine falsche Definition von :min_value:
-    - Definiere :min_value nicht als fester Wert (z. B. :min_value => -5.162126159963982) oder als Funktion ohne Parameter (z. B. :min_value => () -> -5.162126159963982), da dies zu einem MethodError: no method matching isfinite(::Nothing) in test/minima_tests.jl führt. Die Testsuite erwartet eine Funktion mit der Signatur (n::Int) -> Real, auch für nicht-skalierbare Funktionen. Beispiel: Der Fehler bei Langermann trat auf, weil :min_value als -5.162126159963982 definiert war.
+    - Definiere :min_value nicht als fester Wert (z. B. :min_value => -5.162126159963982) oder als (n::Int) -> ... für nicht-skalierbare Funktionen, da dies zu einem MethodError: no method matching isfinite(::Nothing) in test/minima_tests.jl führt. Die Testsuite erwartet () -> <minimalwert> für nicht-skalierbare Funktionen. Beispiel: Der Fehler bei Bohachevsky 3 trat auf, weil :min_value als (n::Int) -> ... definiert war.
 
 ## Schritte zum Hinzufügen einer neuen Testfunktion
 
 1. Funktion in src/functions/<functionname>.jl definieren:
-   Erstelle src/functions/<functionname>.jl mit lowercase-Symbolen. Verwende gezielte Exports (export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient). Implementiere die Funktion, den Gradienten und Metadaten, konsistent mit bestehenden Funktionen wie ackley.jl, rosenbrock.jl, branin.jl oder bohachevsky2.jl.
+   Erstelle src/functions/<functionname>.jl mit lowercase-Symbolen. Verwende gezielte Exports (export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient). Implementiere die Funktion, den Gradienten und Metadaten, konsistent mit bestehenden Funktionen wie ackley.jl, rosenbrock.jl, branin.jl, bohachevsky2.jl, bohachevsky3.jl.
 
    Vorlage für skalierbare Funktionen (z. B. Rosenbrock, Ackley):
        # src/functions/<functionname>.jl
        # Purpose: Implements the <FunctionName> test function with its gradient for nonlinear optimization.
        # Context: Part of NonlinearOptimizationTestFunctions.
-       # Last modified: 16 September 2025
+       # Last modified: 18 September 2025
 
        export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient
 
@@ -293,11 +288,11 @@ Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funk
            )
        )
 
-   Vorlage für nicht-skalierbare Funktionen (z. B. Booth, Giunta, Branin, Beale, BartelsConn, Bohachevsky 2, Langermann):
+   Vorlage für nicht-skalierbare Funktionen (z. B. Booth, Giunta, Branin, Beale, BartelsConn, Bohachevsky 2, Bohachevsky 3, Langermann):
        # src/functions/<functionname>.jl
        # Purpose: Implements the <FunctionName> test function with its gradient for nonlinear optimization.
        # Context: Part of NonlinearOptimizationTestFunctions.
-       # Last modified: 16 September 2025
+       # Last modified: 18 September 2025
 
        export <FUNCTIONNAME>_FUNCTION, <functionname>, <functionname>_gradient
 
@@ -331,10 +326,7 @@ Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funk
                :name => "<functionname>",
                :start => () -> <startpunkt>,
                :min_position => () -> <minimalpunkt>,
-               :min_value => (n::Int) -> begin
-                   n != <N> && throw(ArgumentError("<FunctionName> requires exactly <N> dimensions"))
-                   <minimalwert>  # z. B. -5.162126159963982 für Langermann, -2.062611870822739 für CrossInTray
-               end,
+               :min_value => () -> <minimalwert>,  # z. B. 0.0 für Bohachevsky 3, -5.162126159963982 für Langermann, -2.062611870822739 für CrossInTray
                :properties => Set(["differentiable", "<weitere Eigenschaften>"]),  # Kein scalable für feste Dimension
                :lb => () -> <untere Schranke>,
                :ub => () -> <obere Schranke>,
@@ -344,13 +336,13 @@ Die :min_value-Definition im Metadaten-Dictionary (meta) muss zwingend eine Funk
        )
 
    - Stelle sicher, dass :min_position das globale Minimum für die Funktion liefert, wo der Funktionswert :min_value ist. Recherchiere an verschiedenen Stellen im Internet (z. B. al-roomi.org, sfu.ca, geatbx.com, indusmic.com), um die präzisesten Werte zu finden, und überprüfe diese durch manuelle Berechnung oder Ausführen der Funktion.
-   - Stelle sicher, dass :min_value als Funktion (n::Int) -> Real definiert ist, um die Testsuite-Anforderungen zu erfüllen. Für skalierbare Funktionen prüfe die minimale Dimension (z. B. n < <N>), für nicht-skalierbare Funktionen prüfe die exakte Dimension (z. B. n != <N>). Recherchiere den präzisen Minimalwert in der Literatur (z. B. al-roomi.org, sfu.ca, Jamil & Yang, 2013) und überprüfe ihn durch Ausführen der Funktion am Minimum (tf.f(tf.meta[:min_position]())).
-   - Überprüfe :min_value durch Ausführen der Funktion am angegebenen Minimum (tf.f(tf.meta[:min_position]())) und vergleiche es mit :min_value(n) innerhalb von atol=1e-6. Dokumentiere alternative Minima für multimodale Funktionen in :description.
+   - Stelle sicher, dass :min_value als () -> <minimalwert> für nicht-skalierbare Funktionen oder (n::Int) -> <minimalwert> für skalierbare Funktionen definiert ist, um die Testsuite-Anforderungen zu erfüllen. Recherchiere den präzisen Minimalwert in der Literatur (z. B. al-roomi.org, sfu.ca, Jamil & Yang, 2013) und überprüfe ihn durch Ausführen der Funktion am Minimum (tf.f(tf.meta[:min_position]())).
+   - Überprüfe :min_value durch Ausführen der Funktion am angegebenen Minimum (tf.f(tf.meta[:min_position]())) und vergleiche es mit tf.meta[:min_value]() (für nicht-skalierbare Funktionen) oder tf.meta[:min_value](n) (für skalierbare Funktionen) innerhalb von atol=1e-6. Dokumentiere alternative Minima für multimodale Funktionen in :description.
    - Stelle sicher, dass :start einen geeigneten Startpunkt liefert, der für Tests geeignet ist (z. B. nicht identisch mit dem Minimum, aber repräsentativ für die Funktion).
-   - Stelle sicher, dass :lb und :ub die korrekten Schranken aus der Literatur liefern (z. B. [-500.0, -500.0] und [500.0, 500.0] für BartelsConn, [-4.5, -4.5] und [4.5, 4.5] für Beale, [-100.0, -100.0] und [100.0, 100.0] für Bohachevsky 2 gemäß [Jamil & Yang (2013)]). Überprüfe Schranken durch Recherche an mehreren Quellen (z. B. al-roomi.org, sfu.ca, Molga & Smutnicki, 2005). Füge "bounded" zu :properties hinzu, wenn Schranken definiert sind.
+   - Stelle sicher, dass :lb und :ub die korrekten Schranken aus der Literatur liefern (z. B. [-500.0, -500.0] und [500.0, 500.0] für BartelsConn, [-4.5, -4.5] und [4.5, 4.5] für Beale, [-100.0, -100.0] und [100.0, 100.0] für Bohachevsky 2, Bohachevsky 3 gemäß [Jamil & Yang (2013)]). Überprüfe Schranken durch Recherche an mehreren Quellen (z. B. al-roomi.org, sfu.ca, Molga & Smutnicki, 2005). Füge "bounded" zu :properties hinzu, wenn Schranken definiert sind.
    - Füge relevante Eigenschaften zu :properties hinzu, z. B. "continuous", "differentiable", "multimodal", "convex", "non-separable", aus VALID_PROPERTIES in src/NonlinearOptimizationTestFunctions.jl. Für Funktionen mit fester Dimension füge kein scalable hinzu, da das Fehlen dieser Eigenschaft die feste Dimension impliziert. Verwende keine Eigenschaft wie fixed.
    - Falls Matrizen verwendet werden, stelle sicher, dass sie positiv definit sind, z. B. durch Verwendung von Diagonal mit positiven Eigenwerten oder durch Überprüfung mit eigvals.
-   - Beispiel: Die Branin-Funktion (src/functions/branin.jl) ist ein gutes Beispiel für eine nicht-skalierbare Funktion (nur n=2) mit mehreren globalen Minima. Für Bohachevsky 2 (src/functions/bohachevsky2.jl): Multimodale Funktion mit Formel f(x) = x1^2 + 2x2^2 - 0.3 cos(3πx1) cos(4πx2) + 0.3, Minimum 0 bei (0,0), Bounds [-100,100]^2.
+   - Beispiel: Die Branin-Funktion (src/functions/branin.jl) ist ein gutes Beispiel für eine nicht-skalierbare Funktion (nur n=2) mit mehreren globalen Minima. Für Bohachevsky 2 (src/functions/bohachevsky2.jl): Multimodale Funktion mit Formel f(x) = x1^2 + 2x2^2 - 0.3 cos(3πx1) cos(4πx2) + 0.3, Minimum 0 bei (0,0), Bounds [-100,100]^2. Für Bohachevsky 3 (src/functions/bohachevsky3.jl): Multimodale Funktion mit Formel f(x) = x1^2 + 2x2^2 - 0.3 cos(3πx1 + 4πx2) + 0.3, Minimum 0 bei (0,0), Bounds [-100,100]^2.
    - Für nicht-differenzierbare Funktionen (z. B. BartelsConn), definiere einen Subgradienten und teste dessen Nicht-Differenzierbarkeit mit @test_throws DomainError in den Tests.
 
 ## Testausführung
