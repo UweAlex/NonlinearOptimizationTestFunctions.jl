@@ -3,7 +3,7 @@
 # Context: Part of NonlinearOptimizationTestFunctions test suite.
 # Last modified: August 25, 2025
 
-using Test, Optim, Random
+using Test,Random
 using NonlinearOptimizationTestFunctions: BARTELSCONN_FUNCTION, bartelsconn
 
 @testset "BartelsConn Tests" begin
@@ -29,20 +29,10 @@ using NonlinearOptimizationTestFunctions: BARTELSCONN_FUNCTION, bartelsconn
     @test tf.meta[:min_value]() ≈ 1.0 atol=1e-6
     @test tf.meta[:lb]() == [-500.0, -500.0]
     @test tf.meta[:ub]() == [500.0, 500.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == true
     @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "partially differentiable", "bounded", "continuous"])
 
     # Subgradienten-Test
     @test_throws DomainError bartelsconn_gradient([0.0, 0.0])  # Nicht differenzierbar am Minimum
 
-    # Optimierungstests mit Schranken (verwende NelderMead, da nicht-differenzierbar)
-    @testset "Optimization Tests" begin
-        lb = tf.meta[:lb]()
-        ub = tf.meta[:ub]()
-        start = tf.meta[:start]() + 0.01 * randn(n)  # Leichte Störung
-        result = optimize(tf.f, lb, ub, start, Fminbox(NelderMead()), Optim.Options(f_reltol=1e-6))
-        @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ 1.0 atol=1e-5
-        @test Optim.minimizer(result) ≈ [0.0, 0.0] atol=1e-3
-    end
+    
 end

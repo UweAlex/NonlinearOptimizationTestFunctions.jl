@@ -80,6 +80,8 @@ include("trid_tests.jl")
 include("wood_tests.jl")
 include("zakharov_tests.jl")
 include("cosinemixture_tests.jl")
+include("ackley4_tests.jl")
+include("biggsexp2_tests.jl")
 
 
 

@@ -52,7 +52,6 @@ const GIUNTA_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "non-convex", "separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> [-1.0, -1.0],
         :ub => () -> [1.0, 1.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Giunta function: Multimodal, non-convex, separable, differentiable, bounded, continuous. Minimum: 0.06447 at [0.46732, 0.46732]. Bounds: [-1, 1]^2. Dimensions: n=2.",
         :math => "0.6 + \\sum_{i=1}^2 \\left[ \\sin\\left(\\frac{16}{15}x_i - 1\\right) + \\sin^2\\left(\\frac{16}{15}x_i - 1\\right) + \\frac{1}{50} \\sin\\left(4 \\left(\\frac{16}{15}x_i - 1\\right)\\right) \\right]"
     )

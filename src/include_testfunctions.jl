@@ -10,12 +10,14 @@
 
 include("functions/ackley.jl")
 include("functions/ackley2.jl")
+include("functions/ackley4.jl")
 include("functions/adjiman.jl")
 include("functions/alpinen1.jl")
 include("functions/alpinen2.jl")
 include("functions/axisparallelhyperellipsoid.jl")
 include("functions/bartelsconn.jl")
 include("functions/beale.jl")
+include("functions/biggsexp2.jl")
 include("functions/bird.jl")
 include("functions/bohachevsky.jl")
 include("functions/bohachevsky2.jl")
@@ -33,6 +35,7 @@ include("functions/carromtable.jl")
 include("functions/chen.jl")
 include("functions/chichinadze.jl")
 include("functions/colville.jl")
+include("functions/cosinemixture.jl")
 include("functions/crossintray.jl")
 include("functions/dejongf4.jl")
 include("functions/dejongf5modified.jl")
@@ -80,10 +83,6 @@ include("functions/threehumpcamel.jl")
 include("functions/trid.jl")
 include("functions/wood.jl")
 include("functions/zakharov.jl")
-include("functions/cosinemixture.jl")
-
-
-
 
 
 
