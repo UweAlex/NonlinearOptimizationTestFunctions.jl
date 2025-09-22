@@ -18,6 +18,9 @@ include("functions/axisparallelhyperellipsoid.jl")
 include("functions/bartelsconn.jl")
 include("functions/beale.jl")
 include("functions/biggsexp2.jl")
+include("functions/biggsexp3.jl")
+include("functions/biggsexp4.jl")
+include("functions/biggsexp5.jl")
 include("functions/bird.jl")
 include("functions/bohachevsky.jl")
 include("functions/bohachevsky2.jl")
@@ -83,11 +86,6 @@ include("functions/threehumpcamel.jl")
 include("functions/trid.jl")
 include("functions/wood.jl")
 include("functions/zakharov.jl")
-
-
-
-
-
 
 
 
