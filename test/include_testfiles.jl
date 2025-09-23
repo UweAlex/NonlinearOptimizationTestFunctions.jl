@@ -21,11 +21,12 @@ include("biggsexp2_tests.jl")
 include("biggsexp3_tests.jl")
 include("biggsexp4_tests.jl")
 include("biggsexp5_tests.jl")
+include("biggsexp6_tests.jl")
 include("bird_tests.jl")
+include("bohachevsky1_tests.jl")
 include("bohachevsky2_tests.jl")
 include("bohachevsky3_tests.jl")
 include("bohachevsky3_tests.jl")
-include("bohachevsky_tests.jl")
 include("booth_tests.jl")
 include("boxbetts_tests.jl")
 include("branin_tests.jl")
@@ -85,21 +86,8 @@ include("threehumpcamel_tests.jl")
 include("trid_tests.jl")
 include("wood_tests.jl")
 include("zakharov_tests.jl")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+include("brad_tests.jl")
+include("braninrcos2_tests.jl")
 
 
 

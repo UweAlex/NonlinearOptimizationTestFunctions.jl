@@ -4,6 +4,12 @@ Basierend auf deinem Feedback habe ich die gestraffte Version weiter verfeinert:
 
 Ergänzung zu Properties: "non-scalable" ist keine zulässige Property (redundant: Fehlen von "scalable" impliziert fixed Dimension). "non-separable" ist zulässig, aber prüfe auf "fully non-separable" bei Bedarf (aus Literatur wie Jamil & Yang). Passe Implementierungen an: Verwende nur VALID_PROPERTIES; bei Verstoß (z. B. ArgumentError) erweitere VALID_PROPERTIES und Readme.
 
+**Wichtiger Hinweis zu Namenskonflikten:** In der Funktionssignatur wird `T` als generischer Typ verwendet (`where {T<:Union{Real, ForwardDiff.Dual}}`). Vermeide daher Konstantennamen wie `T` oder `Y` (die mit dem Typ kollidieren und zu MethodErrors wie `exp(::Vector{Float64})` führen können). Verwende stattdessen beschreibende Namen wie `TIMES` oder `Y_VALUES`. Dies ist in den Templates unten berücksichtigt und in den häufigen Fehlern ergänzt.
+
+**Neuer Hinweis: Performance & Robustheit** – Verwende `@inbounds` in Loops für Speed; prüfe type-stability mit `@code_warntype`. Für ill-conditioned Functions: Teste Cond-Number der Hessian (via ForwardDiff.hessian).
+
+**Neu: Präzise Werte in Tests vermeiden** – Berechne alle Test-Werte (f_start, f_extra, min_value) direkt aus der Implementierung via Julia-REPL/Script, um Rundungsfehler zu eliminieren. Verwende atol=1e-3 für Start/Extra-Points (Papers runden oft); speichere exakte Werte (z.B. 10-12 Digits) für :min_value. Beispiel-Script: Kopiere Funktion in REPL und evaluiere tf.f([start1,start2,...]).
+
 ---
 
 ## Ziel
@@ -16,7 +22,7 @@ Konstruktor-Template: TestFunction(f, grad, meta) (meta als Dict mit :name, :sta
 Einbindung: include("test/<functionname>_tests.jl") in test/include_testfiles.jl. Test: julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/<functionname>_tests.jl")'.
 
 ## Recherche und Validierung
-Recherchiere Minima/Werte/Schranken in Quellen (vermeide Rundungen). Validiere: tf.f(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-6.
+Recherchiere Minima/Werte/Schranken in Quellen (vermeide Rundungen). Validiere: tf.f(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-6. **Neu: Prüfe ill-conditioning (z. B. cond(ForwardDiff.hessian(tf.f, min_pos)) < 1e6); normalisiere bei Bedarf. Berechne :min_value exakt (nicht gerundet aus Paper) via Script für atol=1e-8-Präzision.**
 
 Quellen-Liste (einmalig):
 - Al-Roomi (2015): https://www.al-roomi.org/benchmarks/unconstrained
@@ -32,9 +38,12 @@ Häufige Fehler (konsolidiert):
 - Minima: Six-Hump=-1.031628 bei (±0.0898,±0.7127).
 - Schranken: BartelsConn=[-500,-500]~[500,500]; Bohachevsky2/3=[-100,-100]~[100,100].
 - Multimodal: Alternativen in :description dokumentieren (z. B. Langermann).
+- **Namenskonflikte in Konstanten:** Der generische Typ `T` in der Signatur (`where {T<:...}`) überschreibt lokale `const T = ...`. Dies führt zu MethodErrors (z. B. `exp(::Vector{Float64})` in Edge-Case-Tests). Lösung: Benenne Konstanten um (z. B. `TIMES` statt `T`), prüfe mit `julia --project=. test/runtests.jl` (Edge Cases).
+- **Neu: Ill-conditioning:** Symmetry in Functions (z. B. Sphere) kann Algorithmen täuschen; teste mit random starts.
+- **Neu: Ungenaue Test-Werte:** Papers runden Minima/Start-Werte (z. B. Brad: 0.00821487 statt 0.008214878782); berechne exakt in REPL und passe Tests an (atol=1e-3 für Start/Extra).
 
 ## Erlaubte Eigenschaften (aus Readme.md)
-Nur Properties aus diesem Set verwenden (VALID_PROPERTIES in src/). Neue? Ergänze Set und Readme ("Valid Properties"-Abschnitt). Füge "bounded" bei definierten Schranken hinzu; "scalable" nur bei variabler n (impliziert fixed ohne "fixed" – redundant, vermeiden). "non-scalable" ungültig (nicht in Set); "non-separable" zulässig, aber prüfe "fully non-separable" für starke Kopplung.
+Nur Properties aus diesem Set verwenden (VALID_PROPERTIES in src/). Neue? Ergänze Set und Readme ("Valid Properties"-Abschnitt). Füge "bounded" bei definierten Schranken hinzu; "scalable" nur bei variabler n (impliziert fixed ohne "fixed" – redundant, vermeiden). "non-scalable" ungültig (nicht in Set); "non-separable" zulässig, aber prüfe "fully non-separable" für starke Kopplung. **Neu: Für separable (unabhängige Terme): "separable" (z. B. Bohachevsky1).**
 
 | Property                  | Beschreibung                                                                 | Beispiele (Funktionen)          |
 |---------------------------|-----------------------------------------------------------------------------|---------------------------------|
@@ -56,9 +65,10 @@ Nur Properties aus diesem Set verwenden (VALID_PROPERTIES in src/). Neue? Ergän
 | partially separable      | Teilweise separabel.                                                        | -                               |
 | quasi-convex             | Quasi-konvex.                                                               | -                               |
 | scalable                 | Skalierbar (beliebige n).                                                   | Ackley, Rastrigin               |
-| separable                | Separabel (unabhängige Variablen).                                          | Sphere                          |
+| separable                | Separabel (unabhängige Variablen).                                          | Sphere, Bohachevsky1            |
 | strongly convex          | Stark konvex.                                                               | Quadratic                       |
 | unimodal                 | Unimodal (ein Global Minimum).                                              | Sphere                          |
+| **ill-conditioned**      | **Schlecht konditioniert (hohe Cond-Number).**                              | **Rosenbrock**                  |
 
 ## Implementierung: Code-Templates
 Template für src/functions/<name>.jl (kopiere und passe an; z. B. für nicht-skalierbar, n=3 wie Biggs EXP3):
@@ -72,20 +82,22 @@ Template für src/functions/<name>.jl (kopiere und passe an; z. B. für nicht-sk
 
 export <UPPERCASE>_FUNCTION, <name>, <name>_gradient
 
-# Constants (if needed, e.g. for Biggs EXP3)
-const <CONST_T> = 0.1 * collect(1:10)
-const <CONST_Y> = exp.(-<CONST_T>) .- 5 * exp.(-10 * <CONST_T>)
+# Constants (if needed, e.g. for Biggs EXP3; vermeide 'T' wegen Typ-Konflikt)
+const TIMES = 0.1 * collect(1:10)
+const Y_VALUES = exp.(-TIMES) .- 5 * exp.(-10 * TIMES)
 
 function <name>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
     n != <DIM> && throw(ArgumentError("<Name> requires exactly <DIM> dimensions"))
+    any(isnan.(x)) && return T(NaN)  # Neu: Edge-Case-Handling
+    any(isinf.(x)) && return T(Inf)
     
     # Extract vars: x1, x2, ... = x[1], x[2], ...
-    sum_sq = zero(T)
-    @inbounds for i in 1:<LOOP_SIZE>  # e.g. 10
-        t_i = <CONST_T>[i]
-        y_i = <CONST_Y>[i]
+    sum_sq = zero(T)  # Type-stable
+    @inbounds for i in 1:<LOOP_SIZE>  # Neu: @inbounds für Performance
+        t_i = TIMES[i]
+        y_i = Y_VALUES[i]
         e_i = exp(-t_i * x1) - x3 * exp(-t_i * x2) - y_i  # Adapt formula
         sum_sq += e_i^2
     end
@@ -96,10 +108,12 @@ function <name>_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
     n != <DIM> && throw(ArgumentError("<Name> requires exactly <DIM> dimensions"))
+    any(isnan.(x)) && return fill(T(NaN), <DIM>)  # Neu: Edge-Case
+    any(isinf.(x)) && return fill(T(Inf), <DIM>)
     
     # Extract vars
     grad = zeros(T, <DIM>)
-    @inbounds for i in 1:<LOOP_SIZE>
+    @inbounds for i in 1:<LOOP_SIZE>  # Neu: @inbounds
         # Compute partials: grad[1] += ... (adapt analytically)
     end
     return grad
@@ -114,7 +128,7 @@ const <UPPERCASE>_FUNCTION = TestFunction(
         :math => raw"""f(\mathbf{x}) = <LaTeX-Formel>. """,
         :start => () -> [<start1>, <start2>, <start3>],  # ()-> for non-scalable
         :min_position => () -> [<pos1>, <pos2>, <pos3>],
-        :min_value => () -> <value>,  # ()-> for non-scalable
+        :min_value => () -> <value>,  # ()-> for non-scalable; berechne exakt via Script!
         :properties => ["<prop1>", "<prop2>", ...],  # From table above
         :lb => () -> [<lb1>, <lb2>, <lb3>],
         :ub => () -> [<ub1>, <ub2>, <ub3>],
@@ -122,63 +136,65 @@ const <UPPERCASE>_FUNCTION = TestFunction(
     )
 )
 
-Template für skalierbar (z. B. Ackley, n>=1): Ersetze () -> [...] durch (n::Int) -> (n < 1 && throw(...); fill(<val>, n)); füge "scalable" zu properties.
+Template für skalierbar (z. B. Ackley, n>=1): Ersetze () -> [...] durch (n::Int) -> (n < 1 && throw(...); fill(<val>, n)); füge "scalable" zu properties. **Neu: Für n>2, prüfe separability (z. B. Bohachevsky1: separable, da unabhängige Terme).**
 
 Für Matrizen (skalierbar): 
 A = Diagonal(fill(2.0, n))  # Positiv definit; prüfe all(eigvals(A) .> 0)
 
 Abhängigkeiten: In Project.toml: Random = "..."; dann Pkg.resolve(); Pkg.instantiate().
 
-Top-Level-Check: using NonlinearOptimizationTestFunctions; @test isdefined(NonlinearOptimizationTestFunctions, :<name>).
+Top-Level-Check: using NonlinearOptimizationTestFunctions; @test isdefined(NonlinearOptimizationTestFunctions, :<name>). **Neu: @btime tf.f(rand(<DIM>))  # Benchmark <1μs**
 
 Cache-Clear: Nach Änderungen: rmdir /s /q ~/.julia/compiled.
 
 ## Tests: Template für test/<name>_tests.jl
 # test/<name>_tests.jl
 using Test, NonlinearOptimizationTestFunctions
+@testset "<name>" begin
+    tf = <UPPERCASE>_FUNCTION
 
-tf = <UPPERCASE>_FUNCTION
+    @test tf.meta[:name] == "<name>"
+    @test has_property(tf, "<prop1>")  # For each in :properties
+    @test !has_property(tf, "scalable")  # If non-scalable
+    @test length(tf.meta[:properties]) == <count>
 
-@test tf.meta[:name] == "<name>"
-@test has_property(tf, "<prop1>")  # For each in :properties
-@test !has_property(tf, "scalable")  # If non-scalable
-@test length(tf.meta[:properties]) == <count>
+    @test_throws ArgumentError tf.f(Float64[])
 
-@test_throws ArgumentError tf.f(Float64[])
+    start_point = tf.meta[:start]()  # () for non-scalable
+    @test start_point ≈ [<val1>, ...] atol=1e-6
+    f_start = tf.f(start_point)
+    @test f_start ≈ <computed_start_val> atol=1e-3  # Neu: atol=1e-3 für Start (gerundet in Papers)
 
-start_point = tf.meta[:start]()  # () for non-scalable
-@test start_point ≈ [<val1>, ...] atol=1e-6
-f_start = tf.f(start_point)
-@test f_start ≈ <computed_start_val> atol=1e-6
+    min_pos = tf.meta[:min_position]()
+    @test min_pos ≈ [<pos1>, ...] atol=1e-6
+    f_min = tf.f(min_pos)
+    @test f_min ≈ tf.meta[:min_value]() atol=1e-8  # Neu: Engere atol für exakt berechnete min_value
 
-min_pos = tf.meta[:min_position]()
-@test min_pos ≈ [<pos1>, ...] atol=1e-6
-f_min = tf.f(min_pos)
-@test f_min ≈ tf.meta[:min_value]() atol=1e-6
+    lb, ub = tf.meta[:lb](), tf.meta[:ub]()
+    @test lb ≈ [<lb1>, ...]
+    @test ub ≈ [<ub1>, ...]
 
-lb, ub = tf.meta[:lb](), tf.meta[:ub]()
-@test lb ≈ [<lb1>, ...]
-@test ub ≈ [<ub1>, ...]
+    # Extra point
+    test_pt = [<pt1>, <pt2>, <pt3>]
+    @test tf.f(test_pt) ≈ <computed_val> atol=1e-3  # Neu: atol=1e-3 für Extra (Approximation)
+    # Non-diff (if applicable): @test_throws DomainError <name>_gradient([0.0, 0.0])
+end 
 
-# Extra point
-test_pt = [<pt1>, <pt2>, <pt3>]
-@test tf.f(test_pt) ≈ <computed_val> atol=1e-6
-
-# Non-diff (if applicable): @test_throws DomainError <name>_gradient([0.0, 0.0])
-
-Für skalierbar: tf.meta[:start](2) (n=2 default).
+Für skalierbar: tf.meta[:start](2) (n=2 default). **Neu: Gradient-Tests zentral in gradient_tests.jl (AD/Numerisch/Minima) – keine Duplikate hier! Berechne <computed_start_val> und <computed_val> exakt via REPL-Script vor dem Test-Schreiben.**
 
 ## Schritte-Checkliste
 1. Template kopieren/anpassen (src/functions).
-2. Recherche/Validierung (Minima, Werte, Properties aus Tabelle).
-3. Test-Template (test/<name>_tests.jl), einbinden.
-4. Gesamttests: julia --project=. test/runtests.jl.
+2. Recherche/Validierung (Minima, Werte, Properties aus Tabelle). **Neu: Hessian-Cond prüfen. Berechne :min_value exakt via Script (z.B. REPL: tf.f(min_pos)).**
+3. Test-Template (test/<name>_tests.jl), einbinden. **Neu: Evaluiere f_start und f_extra in REPL und kopiere Werte (10 Digits) – vermeide Schätzungen.**
+4. Gesamttests: julia --project=. test/runtests.jl. **Neu: Benchmark mit @btime.**
 5. Debug: @info "min_value: $(tf.meta[:min_value])" in minima_tests.jl bei MethodError.
 
 Finale Validierung:
 - [ ] Template-Signatur (Dispatch mit Dual).
 - [ ] Properties aus Tabelle (kein "fixed", kein "non-scalable").
-- [ ] :min_value konsistent (skalierbar: (n)->; nicht: ()).
+- [ ] :min_value konsistent (skalierbar: (n)->; nicht: ()). **Neu: Exakt berechnet, nicht gerundet.**
 - [ ] Tests passieren (standalone + runtests.jl).
+- [ ] Keine Namenskonflikte (z. B. prüfe Edge Cases in runtests.jl auf MethodError).
+- **[ ] Neu: AD-Gradient matcht; Performance <1μs für n=2. Test-Werte via Script validiert.**
 
 Diese Version priorisiert Templates für Reproduzierbarkeit und integriert die Properties-Liste für schnelle Referenz. Für Biggs EXP4/5: Passe das Template an (n=4, ähnliche Formel). Testen?

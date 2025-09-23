@@ -21,10 +21,10 @@ include("functions/biggsexp2.jl")
 include("functions/biggsexp3.jl")
 include("functions/biggsexp4.jl")
 include("functions/biggsexp5.jl")
+include("functions/biggsexp6.jl")
 include("functions/bird.jl")
-include("functions/bohachevsky.jl")
+include("functions/bohachevsky1.jl")
 include("functions/bohachevsky2.jl")
-include("functions/bohachevsky3.jl")
 include("functions/bohachevsky3.jl")
 include("functions/booth.jl")
 include("functions/boxbetts.jl")
@@ -86,19 +86,6 @@ include("functions/threehumpcamel.jl")
 include("functions/trid.jl")
 include("functions/wood.jl")
 include("functions/zakharov.jl")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+include("functions/brad.jl")
+include("functions/braninrcos2.jl")
 

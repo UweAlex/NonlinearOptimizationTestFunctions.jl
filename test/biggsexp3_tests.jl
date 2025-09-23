@@ -4,7 +4,7 @@
 # Last modified: September 22, 2025.
 
 using Test, NonlinearOptimizationTestFunctions
-@testset "BIGGSEXP3 Tests" begin
+@testset "Biggs EXP3 Tests---------------------------------------------------------------------------------" begin
 
 tf = BIGGSEXP3_FUNCTION
 

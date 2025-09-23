@@ -1,12 +1,11 @@
 # src/functions/bohachevsky3.jl
 # Purpose: Implements the Bohachevsky 3 test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 18 September 2025, 09:21 AM CEST
+# Context: Part of NonlinearOptimizationTestFunctions. Non-scalable (n=2), from Bohachevsky et al. (1986).
+# Global minimum: f(x*)=0 at x*=[0, 0].
+# Bounds: -100 ≤ x_i ≤ 100.
+# Last modified: 23 September 2025.
 
 export BOHACHEVSKY3_FUNCTION, bohachevsky3, bohachevsky3_gradient
-
-using LinearAlgebra
-using ForwardDiff
 
 function bohachevsky3(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
@@ -36,13 +35,13 @@ const BOHACHEVSKY3_FUNCTION = TestFunction(
     bohachevsky3_gradient,
     Dict(
         :name => "bohachevsky3",
+        :description => "Bohachevsky 3 function from Bohachevsky et al. (1986), f19 in Jamil & Yang (2013): Multimodal, differentiable, non-separable test function with a global minimum at (0, 0).",
+        :math => raw"""f(\mathbf{x}) = x_1^2 + 2x_2^2 - 0.3 \cos(3\pi x_1 + 4\pi x_2) + 0.3.""",
         :start => () -> [0.01, 0.01],
         :min_position => () -> [0.0, 0.0],
         :min_value => () -> 0.0,
-        :properties => Set(["continuous", "differentiable", "multimodal", "non-convex", "non-separable", "bounded"]),
+        :properties => ["continuous", "differentiable", "multimodal", "non-convex", "non-separable", "bounded"],
         :lb => () -> [-100.0, -100.0],
         :ub => () -> [100.0, 100.0],
-        :description => "Bohachevsky 3 function from Jamil & Yang (2013), f19: Multimodal, differentiable, non-separable test function with a global minimum at (0, 0).",
-        :math => raw"$x_1^2 + 2x_2^2 - 0.3 \cos(3\pi x_1 + 4\pi x_2) + 0.3$"
     )
 )
