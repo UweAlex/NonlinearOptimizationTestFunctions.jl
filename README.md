@@ -481,6 +481,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **BoxBetts** [Jamil & Yang (2013): f21]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (1, 10, 1). Bounds: [0.9, 1.2] × [9, 11.2] × [0.9, 1.2]. Dimensions: \( n = 3 \).
 - **Brad** [Jamil & Yang (2013): f8]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0.00821487 at (0.0824, 1.133, 2.3437). Bounds: [-0.25, 0.25] x [0.01, 2.5] x [0.01, 2.5]. Dimensions: n=3.
 - **Branin** [Molga & Smutnicki (2005): 2.12]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0.397887 at (-π, 12.275). Bounds: [(-5, 0), (10, 15)]. Dimensions: \( n = 2 \).
+- **Branin RCOS 2** [Jamil & Yang (2013): f23]: Multimodal, non-convex, non-separable, differentiable. Minimum: 5.559037 at (-3.2, 12.53). Bounds: [-5, 15]^2. Dimensions: n=2.
 - **Brown** [Jamil & Yang (2013): f25]: Bounded, continuous, differentiable, unimodal, non-separable, scalable. Global minimum: 0 at (0, ..., 0). Bounds: [(-1, -1), (4, 4)]. Dimensions: Any \( n \geq 2 \).
 - **Brent** [Jamil & Yang (2013): f24]: Bounded, continuous, differentiable, unimodal, non-convex, non-separable. Global minimum: 0 at (0, 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
 - **Bukin2** [Jamil & Yang (2013): f26]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (-10, 0). Bounds: [(-15, -5), (-3, 3)]. Dimensions: \( n = 2 \).
@@ -490,6 +491,8 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **Colville** [Jamil & Yang (2013): f36]: Bounded, continuous, differentiable, unimodal, non-convex, non-separable. Global minimum: 0 at (1, 1, 1, 1). Bounds: [(-10, -10, -10, -10), (10, 10, 10, 10)]. Dimensions: \( n = 4 \).
 - **Chen** [Jamil & Yang (2013): f31], **Chen V** [Naser et al. (2024)], [al-roomi.org]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -2000 at (0.388888888888889, 0.722222222222222). Bounds: [(-500, -500), (500, 500)]. Dimensions: \( n = 2 \).
 - **Chichinadze** [Jamil & Yang (2013): f33]: Multimodal, non-convex, non-separable, differentiable. Minimum: -43.3159 at (5.90133, 0.5). Bounds: [-30,30]^2. Dimensions: n=2.
+- **Chung Reynolds** [Jamil & Yang (2013): f34]: Unimodal, convex, partially-separable, differentiable, scalable. Minimum: 0 at (0, ..., 0). Bounds: [-100, 100]^n. Dimensions: any n.
+- **Cola** [Jamil & Yang (2013): f35]: Multimodal, non-convex, non-separable, differentiable. Minimum: 11.7464. Bounds: [0, 4] x [-4, 4]^16. Dimensions: n=17.
 - **CosineMixture** [Jamil & Yang (2013): f38]: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -0.1*n at multiple. Bounds: [-1,1]^n. Dimensions: Any n >=1.
 - **CrossInTray** [Jamil & Yang (2013): f39]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -2.06261187 at (1.34940658, 1.34940658). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
 - **DeJongF4** [Molga & Smutnicki (2005)]: Bounded, continuous, convex, has_noise, partially differentiable, scalable, separable, unimodal. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-1.28, -1.28), (1.28, 1.28)]. Dimensions: Any \( n \geq 1 \).
@@ -542,10 +545,7 @@ The package includes a variety of test functions for nonlinear optimization, eac
 The following test functions are planned for implementation, based on standard benchmarks. They will be added with analytical gradients, metadata, and validation, consistent with the existing collection.
 
 
-- **Branin RCOS 2** [Jamil & Yang (2013): f23]: Multimodal, non-convex, non-separable, differentiable. Minimum: 5.559037 at (-3.2, 12.53). Bounds: [-5, 15]^2. Dimensions: n=2.
-- **Chung Reynolds** [Jamil & Yang (2013): f34]: Unimodal, convex, partially-separable, differentiable, scalable. Minimum: 0 at (0, ..., 0). Bounds: [-100, 100]^n. Dimensions: any n.
 - **Cigar**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-10,10]^n. Dimensions: Any n >=2.
-- **Cola** [Jamil & Yang (2013): f35]: Multimodal, non-convex, non-separable, differentiable. Minimum: 11.7464. Bounds: [0, 4] x [-4, 4]^16. Dimensions: n=17.
 - **Corana** [Jamil & Yang (2013): f37]: Multimodal, non-convex, separable, differentiable. Minimum: 0 at (0,0,0,0). Bounds: [-1000,1000]^4. Dimensions: n=4.
 - **Csendes** [Jamil & Yang (2013): f40]: Unimodal, non-convex, separable, non-differentiable at 0, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-1,1]^n. Dimensions: Any n >=1.
 - **Cube** [Jamil & Yang (2013): f41]: Unimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1,1,1). Bounds: [-10,10]^3. Dimensions: n=3.

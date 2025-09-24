@@ -1,52 +1,58 @@
 # src/functions/chichinadze.jl
-# Purpose: Defines the Chichinadze test function, its analytical gradient, and metadata.
-# Context: Part of NonlinearOptimizationTestFunctions, used for testing optimization algorithms.
-# Last modified: September 13, 2025
+# Purpose: Implementation of the Chichinadze test function.
+# Context: Non-scalable (n=2), separable, multimodal. Source: Jamil & Yang (2013), validated via al-roomi.org.
+# Global minimum: f(x*)=-42.944387018991 at x*≈[6.18986658696568, 0.5].
+# Bounds: -30 ≤ x_i ≤ 30.
+# Last modified: September 24, 2025.
 
-# Main function: chichinadze
-# Purpose: Computes the Chichinadze function value at a given point x.
-# Input:
-#   - x: Vector{T}, input vector of length 2 where T <: Union{Real, ForwardDiff.Dual}
-# Output:
-#   - Real, the function value
-# Used in: TestFunction.f for optimization and testing
-function chichinadze(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 2 || throw(ArgumentError("Input vector must have length 2"))  # Validate dimension
-    x1, x2 = x
-    return x1^2 - 12*x1 + 11 + 10*cos(pi*x1/2) + 8*sin(5*pi*x1/2) - sqrt(0.2)*exp(-0.5*(x2 - 0.5)^2)
-end #function
+export CHICHINADZE_FUNCTION, chichinadze, chichinadze_gradient
 
-# Helper function: chichinadze_gradient
-# Purpose: Computes the analytical gradient of the Chichinadze function at a given point x.
-# Input:
-#   - x: Vector{T}, input vector of length 2 where T <: Union{Real, ForwardDiff.Dual}
-# Output:
-#   - Vector{Real}, the gradient vector
-# Used in: TestFunction.grad for optimization and gradient accuracy tests
-function chichinadze_gradient(x::Vector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 2 || throw(ArgumentError("Input vector must have length 2"))  # Validate dimension
-    x1, x2 = x
-    grad = zeros(T, 2)
-    grad[1] = 2*x1 - 12 - 5*pi*sin(pi*x1/2) + 20*pi*cos(5*pi*x1/2)  # Partial derivative w.r.t. x1
-    grad[2] = sqrt(0.2) * (x2 - 0.5) * exp(-0.5*(x2 - 0.5)^2)        # Partial derivative w.r.t. x2
-    return grad
-end #function
+using LinearAlgebra: norm  # Nicht benötigt, aber für potenzielle Erweiterungen
 
-# TestFunction definition
-# Purpose: Defines the Chichinadze TestFunction with function, gradient, and metadata.
-# Context: Registered in TEST_FUNCTIONS for use in optimization and testing.
-const CHICHINADZE_FUNCTION = let
-    meta = Dict{Symbol, Any}(
+function chichinadze(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != 2 && throw(ArgumentError("Chichinadze requires exactly 2 dimensions"))
+    any(isnan.(x)) && return T(NaN)
+    any(isinf.(x)) && return T(Inf)
+    
+    x1, x2 = x[1], x[2]
+    π_val = T(π)
+    term1 = x1^2 - 12 * x1 + 11
+    term2 = 10 * cos(π_val * x1 / 2)
+    term3 = 8 * sin(5 * π_val * x1 / 2)
+    term4 = - (T(1)/5)^0.5 * exp(-T(0.5) * (x2 - T(0.5))^2)
+    return term1 + term2 + term3 + term4
+end
+
+function chichinadze_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != 2 && throw(ArgumentError("Chichinadze requires exactly 2 dimensions"))
+    any(isnan.(x)) && return fill(T(NaN), 2)
+    any(isinf.(x)) && return fill(T(Inf), 2)
+    
+    x1, x2 = x[1], x[2]
+    π_val = T(π)
+    g1 = 2 * x1 - 12 - 5 * π_val * sin(π_val * x1 / 2) + 20 * π_val * cos(5 * π_val * x1 / 2)
+    c = (T(1)/5)^0.5
+    d = x2 - T(0.5)
+    g2 = c * d * exp(-T(0.5) * d^2)
+    return [g1, g2]
+end
+
+const CHICHINADZE_FUNCTION = TestFunction(
+    chichinadze,
+    chichinadze_gradient,
+    Dict(
         :name => "chichinadze",
-        :start => () -> [0.0, 0.0],                     # Starting point
-        :min_position => () -> [6.189866586965680, 0.5],         # Global minimum position
-        :min_value => () -> -42.94438701899099,        # Global minimum value (corrected)
-        :properties => ["multimodal", "non-convex", "non-separable", "differentiable", "bounded"],  # Properties
-        :lb => () -> [-30.0, -30.0],                   # Lower bounds
-        :ub => () -> [30.0, 30.0]                      # Upper bounds
+        :description => "Chichinadze function (continuous, differentiable, separable, non-scalable, multimodal). Source: Jamil & Yang (2013). Global minimum at approximately [6.18987, 0.5].",
+        :math => raw"""f(\mathbf{x}) = x_1^2 - 12 x_1 + 11 + 10 \cos\left(\frac{\pi x_1}{2}\right) + 8 \sin\left(\frac{5 \pi x_1}{2}\right) - \sqrt{\frac{1}{5}} \exp\left(-0.5 (x_2 - 0.5)^2 \right) """,
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [6.18986658696568, 0.5],
+        :min_value => () -> -42.944387018991,
+        :properties => ["bounded", "continuous", "differentiable", "separable", "multimodal"],
+        :lb => () -> [-30.0, -30.0],
+        :ub => () -> [30.0, 30.0],
     )
-    TestFunction(chichinadze, chichinadze_gradient, meta)
-end #let
-
-# Export function and gradient for external use
-export chichinadze, chichinadze_gradient, CHICHINADZE_FUNCTION
+)

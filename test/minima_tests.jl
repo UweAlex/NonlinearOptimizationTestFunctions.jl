@@ -127,7 +127,10 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
     
     if dist > pos_tolerance || fx_diff > fx_tolerance
         println("Warning: Nelder-Mead did not converge within tolerances for $fn_name")
-        @info "Nelder-Mead Nicht-Konvergenz Details für $fn_name" Erwartete_Minimum_Position=min_pos Erwarteter_Minimalwert=min_fx Gefundene_Position=refined_pos Gefundener_Funktionswert=refined_fx
+        @info "Nelder-Mead Nicht-Konvergenz Details für $fn_name" Erwartete_Minimum_Position=min_pos Erwarteter_Minimalwert=min_fx Gefundene_Position=refined_pos 
+		print("refined_pos: ");println(refined_pos)
+		Gefundener_Funktionswert=refined_fx
+		print("refined_fx: ");println(refined_fx)
         println("  Deviation: distance=$dist, fx_diff=$fx_diff")
         @test false
         return false
