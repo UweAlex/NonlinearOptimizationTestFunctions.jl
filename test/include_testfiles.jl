@@ -91,9 +91,9 @@ include("wood_tests.jl")
 include("zakharov_tests.jl")
 include("chungreynolds_tests.jl")
 include("cola_tests.jl")
-
-
-
+include("corana_tests.jl")
+include("csendes_tests.jl")
+include("cube_tests.jl")
 
 
 

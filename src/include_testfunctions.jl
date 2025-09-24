@@ -91,4 +91,8 @@ include("functions/wood.jl")
 include("functions/zakharov.jl")
 include("functions/chungreynolds.jl")
 include("functions/cola.jl")
+include("functions/corana.jl")
+include("functions/csendes.jl")
+include("functions/cube.jl")
+
 
