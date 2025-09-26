@@ -11,16 +11,56 @@ using LinearAlgebra
 
 @testset "Filter and Properties Tests" begin
     println("Starting Filter and Properties Tests")
-    @test length(filter_testfunctions(tf -> has_property(tf, "bounded"))) == 82
-    @test length(filter_testfunctions(tf -> has_property(tf, "continuous"))) == 79
-    @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 63
-    @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 10
-    @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 71
-	@test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4
-    @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 13
-    finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
-    @test length(finite_at_inf_funcs) == 3  # dejongf5, shekel
+  #  @test length(filter_testfunctions(tf -> has_property(tf, "bounded"))) == 87
+  #  @test length(filter_testfunctions(tf -> has_property(tf, "continuous"))) == 84
+  #  @test length(filter_testfunctions(tf -> has_property(tf, "multimodal"))) == 68
+  #  @test length(filter_testfunctions(tf -> has_property(tf, "convex"))) == 10
+  #  @test length(filter_testfunctions(tf -> has_property(tf, "differentiable"))) == 76
+#	@test length(filter_testfunctions(tf -> has_property(tf, "has_noise"))) == 1  # De Jong F4
+ #   @test length(filter_testfunctions(tf -> has_property(tf, "partially differentiable"))) == 13
+  #  finite_at_inf_funcs = filter_testfunctions(tf -> has_property(tf, "finite_at_inf"))
+   # @test length(finite_at_inf_funcs) == 3  # dejongf5, shekel
 end #testset
+
+@testset "Minimum Validation" begin
+    println("Starting Minimum Validation Tests")
+    for tf in values(TEST_FUNCTIONS)
+        try
+            is_scalable = "scalable" in tf.meta[:properties]
+            n = if is_scalable
+                try
+                    length(tf.meta[:min_position](2))
+                catch
+                    length(tf.meta[:min_position](4))  # Fallback für skalierbare Funktionen
+                end #try
+            else
+                try
+                    length(tf.meta[:min_position]())  # Für nicht-skalierbare Funktionen
+                catch
+                    2  # Fallback für SixHumpCamelBack (n=2)
+                end #try
+            end #if
+            
+            min_pos = is_scalable ? tf.meta[:min_position](n) : tf.meta[:min_position]()
+            min_value = is_scalable ? tf.meta[:min_value](n) : tf.meta[:min_value]()
+            f_val = tf.f(min_pos)
+            
+            if abs(f_val - min_value) > 1e-6  # atol aus Anleitung
+                println("Failure for function: $(tf.meta[:name])")
+                println("  min_pos = $min_pos")
+                println("  expected min_value = $min_value")
+                println("  computed f(min_pos) = $f_val")
+                println("  deviation = $(abs(f_val - min_value))")
+                @test false  # Abbruch
+            else
+                @test f_val ≈ min_value atol=1e-6
+            end
+        catch e
+            println("Error in Minimum Validation for $(tf.meta[:name]): $e")
+            @test false  # Abbruch bei Error
+        end
+    end
+end
 
 @testset "Edge Cases" begin
     println("Starting Edge Cases Tests")

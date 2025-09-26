@@ -105,7 +105,7 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
         end #if
         tf.f(x)
     end #function
-    iterations = "multimodal" in tf.meta[:properties] ? 10000 : 5000
+    iterations = 100000
     res_f = optimize(bounded_func, min_pos, NelderMead(), Optim.Options(iterations=iterations, f_reltol=1e-9))
     refined_pos = Optim.minimizer(res_f)
     refined_fx = tf.f(refined_pos)
@@ -131,6 +131,8 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
 		print("refined_pos: ");println(refined_pos)
 		Gefundener_Funktionswert=refined_fx
 		print("refined_fx: ");println(refined_fx)
+		print("Funktionswert am vorgeblichen minimum:");println(tf.f(min_pos));
+	
         println("  Deviation: distance=$dist, fx_diff=$fx_diff")
         @test false
         return false

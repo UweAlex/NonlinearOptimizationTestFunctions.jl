@@ -459,53 +459,65 @@ The package includes a variety of test functions for nonlinear optimization, eac
 
 ## Test Functions
 
-- **Ackley 4** [Jamil & Yang (2013): f4]: Multimodal, non-convex, non-separable, differentiable. Minimum: -3.917275 at {-1.479, -0.740} and {1.479, -0.740}. Bounds: [-35, 35]^n. Dimensions: n=2.
-- **Ackley** [Molga & Smutnicki (2005): 2.9]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable, scalable. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-5, -5), (5, 5)]. Dimensions: Any \( n \geq 1 \).
-- **Ackley2** [Jamil & Yang (2013): f2]: Bounded, continuous, differentiable, unimodal, non-convex, non-separable. Global minimum: -200 at (0, 0). Bounds: [(-32, -32), (32, 32)]. Dimensions: \( n = 2 \).
-- **Adjiman** [Jamil & Yang (2013): f5]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -2.02180678 at (2, 0.10578347). Bounds: [(-1, -1), (2, 1)]. Dimensions: \( n = 2 \).
-- **Alpine1** [Jamil & Yang (2013): f6]: Bounded, continuous, multimodal, non-convex, separable, partially differentiable, scalable. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: Any \( n \geq 1 \).
-- **Alpine2** [Jamil & Yang (2013): f7]: Bounded, continuous, differentiable, multimodal, non-convex, separable, scalable. Global minimum: \(-2.8081311800070053^n\) at (7.917052698245946, ..., 7.917052698245946). Bounds: [(0, 0), (10, 10)]. Dimensions: Any \( n \geq 1 \).
-- **AxisParallelHyperEllipsoid** [Molga & Smutnicki (2005): 2.2]: Continuous, convex, differentiable, scalable, separable. Global minimum: 0 at (0, 0, ..., 0). Bounds: \((-\infty, -\infty), (\infty, \infty)\). Dimensions: Any \( n \geq 1 \).
-- **BartelsConn** [Jamil & Yang (2013): f9]: Bounded, continuous, multimodal, non-convex, non-separable, partially differentiable. Global minimum: 1 at (0, 0). Bounds: [(-500, -500), (500, 500)]. Dimensions: \( n = 2 \).
-- **Beale** [Jamil & Yang (2013): f10]: Bounded, continuous, differentiable, non-convex, non-separable, unimodal. Global minimum: 0 at (3, 0.5). Bounds: [(-4.5, -4.5), (4.5, 4.5)]. Dimensions: \( n = 2 \).
-- **Biggs EXP2** [Jamil & Yang (2013): f11]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10). Bounds: [0, 20]^2. Dimensions: n=2.
-- **Biggs EXP3** [Jamil & Yang (2013): f12]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 5). Bounds: [0, 20]^3. Dimensions: n=3.
-- **Biggs EXP4** [Jamil & Yang (2013): f13]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1, 5). Bounds: [0, 20]^4. Dimensions: n=4.
-- **Biggs EXP5** [Jamil & Yang (2013): f14]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1, 5, 4). Bounds: [0, 20]^5. Dimensions: n=5.
-- **Biggs EXP6** [Jamil & Yang (2013): f15]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1, 5, 4, 3). Bounds: [-20, 20]^6. Dimensions: n=6.
-- **Bird** [Jamil & Yang (2013): f16]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -106.76453672 at (4.70105582, 3.15294602). Bounds: [(-6.28318531, -6.28318531), (6.28318531, 6.28318531)]. Dimensions: \( n = 2 \).
-- **Bohachevsky1** [Jamil & Yang (2013): f17]: Bounded, continuous, differentiable, multimodal, non-convex, separable, non-scalable. Global minimum: 0 at (0, 0). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
-- **Bohachevsky2** [Jamil & Yang (2013): f18]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable, non-scalable. Global minimum: 0 at (0, 0). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
-- **Bohachevsky3** [Jamil & Yang (2013): f19]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable, non-scalable. Global minimum: 0 at (0, 0). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
-- **Booth** [Jamil & Yang (2013): f20]: Bounded, continuous, convex, differentiable, separable, unimodal. Global minimum: 0 at (1, 3). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
-- **BoxBetts** [Jamil & Yang (2013): f21]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (1, 10, 1). Bounds: [0.9, 1.2] × [9, 11.2] × [0.9, 1.2]. Dimensions: \( n = 3 \).
-- **Brad** [Jamil & Yang (2013): f8]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0.00821487 at (0.0824, 1.133, 2.3437). Bounds: [-0.25, 0.25] x [0.01, 2.5] x [0.01, 2.5]. Dimensions: n=3.
+- **ackley4** [Jamil & Yang (2013): f4]: Multimodal, non-convex, non-separable, differentiable. Minimum: -3.917275 at {-1.479, -0.740} and {1.479, -0.740}. Bounds: [-35, 35]^n. Dimensions: n=2.
+- **ackley** [Molga & Smutnicki (2005): 2.9]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable, scalable. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-5, -5), (5, 5)]. Dimensions: Any \( n \geq 1 \).
+- **ackley2** [Jamil & Yang (2013): f2]: Bounded, continuous, differentiable, unimodal, non-convex, non-separable. Global minimum: -200 at (0, 0). Bounds: [(-32, -32), (32, 32)]. Dimensions: \( n = 2 \).
+- **adjiman** [Jamil & Yang (2013): f5]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -2.02180678 at (2, 0.10578347). Bounds: [(-1, -1), (2, 1)]. Dimensions: \( n = 2 \).
+- **alpinen1** [Jamil & Yang (2013): f6]: Bounded, continuous, multimodal, non-convex, separable, partially differentiable, scalable. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: Any \( n \geq 1 \).
+- **alpinen2** [Jamil & Yang (2013): f7]: Bounded, continuous, differentiable, multimodal, non-convex, separable, scalable. Global minimum: \(-2.8081311800070053^n\) at (7.917052698245946, ..., 7.917052698245946). Bounds: [(0, 0), (10, 10)]. Dimensions: Any \( n \geq 1 \).
+- **axisParallelHyperEllipsoid** [Molga & Smutnicki (2005): 2.2]: Continuous, convex, differentiable, scalable, separable. Global minimum: 0 at (0, 0, ..., 0). Bounds: \((-\infty, -\infty), (\infty, \infty)\). Dimensions: Any \( n \geq 1 \).
+- **bartelsconn** [Jamil & Yang (2013): f9]: Bounded, continuous, multimodal, non-convex, non-separable, partially differentiable. Global minimum: 1 at (0, 0). Bounds: [(-500, -500), (500, 500)]. Dimensions: \( n = 2 \).
+- **beale** [Jamil & Yang (2013): f10]: Bounded, continuous, differentiable, non-convex, non-separable, unimodal. Global minimum: 0 at (3, 0.5). Bounds: [(-4.5, -4.5), (4.5, 4.5)]. Dimensions: \( n = 2 \).
+- **biggsexp2** [Jamil & Yang (2013): f11]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10). Bounds: [0, 20]^2. Dimensions: n=2.
+- **biggsexp3** [Jamil & Yang (2013): f12]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 5). Bounds: [0, 20]^3. Dimensions: n=3.
+- **biggsexp4** [Jamil & Yang (2013): f13]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1, 5). Bounds: [0, 20]^4. Dimensions: n=4.
+- **biggsexp5** [Jamil & Yang (2013): f14]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1, 5, 4). Bounds: [0, 20]^5. Dimensions: n=5.
+- **biggsexp6** [Jamil & Yang (2013): f15]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 10, 1, 5, 4, 3). Bounds: [-20, 20]^6. Dimensions: n=6.
+- **bird** [Jamil & Yang (2013): f16]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -106.76453672 at (4.70105582, 3.15294602). Bounds: [(-6.28318531, -6.28318531), (6.28318531, 6.28318531)]. Dimensions: \( n = 2 \).
+- **bohachevsky1** [Jamil & Yang (2013): f17]: Bounded, continuous, differentiable, multimodal, non-convex, separable, non-scalable. Global minimum: 0 at (0, 0). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
+- **bohachevsky2** [Jamil & Yang (2013): f18]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable, non-scalable. Global minimum: 0 at (0, 0). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
+- **bohachevsky3** [Jamil & Yang (2013): f19]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable, non-scalable. Global minimum: 0 at (0, 0). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
+- **booth** [Jamil & Yang (2013): f20]: Bounded, continuous, convex, differentiable, separable, unimodal. Global minimum: 0 at (1, 3). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
+- **boxbetts** [Jamil & Yang (2013): f21]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (1, 10, 1). Bounds: [0.9, 1.2] × [9, 11.2] × [0.9, 1.2]. Dimensions: \( n = 3 \).
+- **brad** [Jamil & Yang (2013): f8]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0.00821487 at (0.0824, 1.133, 2.3437). Bounds: [-0.25, 0.25] x [0.01, 2.5] x [0.01, 2.5]. Dimensions: n=3.
 - **Branin RCOS 2** [Jamil & Yang (2013): f23]: Multimodal, non-convex, non-separable, differentiable. Minimum: 5.559037 at (-3.2, 12.53). Bounds: [-5, 15]^2. Dimensions: n=2.
-- **Branin** [Molga & Smutnicki (2005): 2.12]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0.397887 at (-π, 12.275). Bounds: [(-5, 0), (10, 15)]. Dimensions: \( n = 2 \).
-- **Brent** [Jamil & Yang (2013): f24]: Bounded, continuous, differentiable, unimodal, non-convex, non-separable. Global minimum: 0 at (0, 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
-- **Brown** [Jamil & Yang (2013): f25]: Bounded, continuous, differentiable, unimodal, non-separable, scalable. Global minimum: 0 at (0, ..., 0). Bounds: [(-1, -1), (4, 4)]. Dimensions: Any \( n \geq 2 \).
-- **Bukin2** [Jamil & Yang (2013): f26]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (-10, 0). Bounds: [(-15, -5), (-3, 3)]. Dimensions: \( n = 2 \).
-- **Bukin4** [Jamil & Yang (2013): f27], [Naser et al. (2024): 4.39]: Bounded, continuous, differentiable, multimodal, non-convex, separable, partially differentiable. Global minimum: 0 at (-10, 0). Bounds: [(-15, -5), (-3, 3)]. Dimensions: \( n = 2 \).
-- **Bukin6** [Jamil & Yang (2013): f28]: Bounded, continuous, differentiable, multimodal, non-convex, partially differentiable. Global minimum: 0 at (-10, 1). Bounds: [(-15, -3), (-5, 3)]. Dimensions: \( n = 2 \).
-- **CarromTable** [Jamil & Yang (2013): f146]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -24.1568155165 at (±9.646157266348881, ±9.646134286497169). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
-- **Chen** [Jamil & Yang (2013): f31], **Chen V** [Naser et al. (2024)], [al-roomi.org]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -2000 at (0.388888888888889, 0.722222222222222). Bounds: [(-500, -500), (500, 500)]. Dimensions: \( n = 2 \).
-- **Chichinadze** [Jamil & Yang (2013): f33]: Multimodal, non-convex, non-separable, differentiable. Minimum: -43.3159 at (5.90133, 0.5). Bounds: [-30,30]^2. Dimensions: n=2.
-- **Chung Reynolds** [Jamil & Yang (2013): f34]: Unimodal, convex, partially-separable, differentiable, scalable. Minimum: 0 at (0, ..., 0). Bounds: [-100, 100]^n. Dimensions: any n.
-- **Cola** [Jamil & Yang (2013): f35]: Multimodal, non-convex, non-separable, differentiable. Minimum: 11.7464. Bounds: [0, 4] x [-4, 4]^16. Dimensions: n=17.
-- **Colville** [Jamil & Yang (2013): f36]: Bounded, continuous, differentiable, unimodal, non-convex, non-separable. Global minimum: 0 at (1, 1, 1, 1). Bounds: [(-10, -10, -10, -10), (10, 10, 10, 10)]. Dimensions: \( n = 4 \).
-- **Corana** [Jamil & Yang (2013): f37]: Multimodal, non-convex, separable, differentiable. Minimum: 0 at (0,0,0,0). Bounds: [-1000,1000]^4. Dimensions: n=4.
-- **CosineMixture** [Jamil & Yang (2013): f38]: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -0.1*n at multiple. Bounds: [-1,1]^n. Dimensions: Any n >=1.
-- **CrossInTray** [Jamil & Yang (2013): f39]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -2.06261187 at (1.34940658, 1.34940658). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
-- **Csendes** [Jamil & Yang (2013): f40]: Unimodal, non-convex, separable, non-differentiable at 0, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-1,1]^n. Dimensions: Any n >=1.
-- **Cube** [Jamil & Yang (2013): f41]: Unimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1,1,1). Bounds: [-10,10]^3. Dimensions: n=3.
-- **DeJongF4** [Molga & Smutnicki (2005)]: Bounded, continuous, convex, has_noise, partially differentiable, scalable, separable, unimodal. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-1.28, -1.28), (1.28, 1.28)]. Dimensions: Any \( n \geq 1 \).
-- **DeJongF5Modified**: Bounded, continuous, differentiable, finite_at_inf, multimodal, non-convex, non-separable. Global minimum: -0.99800384 at (-31.97833, -31.97833). Bounds: [(-65.536, -65.536), (65.536, 65.536)]. Dimensions: \( n = 2 \).
-- **DeJongF5Original** [Molga & Smutnicki (2005): 2.16]: Bounded, continuous, differentiable, finite_at_inf, multimodal, non-convex, non-separable. Global minimum: -500.01800977 at (-32, -32). Bounds: [(-65.536, -65.536), (65.536, 65.536)]. Dimensions: \( n = 2 \).
-- **DekkersAarts** [Jamil & Yang (2013): f90]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -24776.51834232 at (0, 14.94511215). Bounds: [(-20, -20), (20, 20)]. Dimensions: \( n = 2 \).
-- **DixonPrice** [Molga & Smutnicki (2005)]: Bounded, continuous, differentiable, non-convex, scalable, unimodal. Global minimum: 0 at (1, \( \frac{1}{\sqrt{2}} \approx 0.70710678 \), ...). Bounds: [(-10, -10), (10, 10)]. Dimensions: Any \( n \geq 1 \).
-- **DropWave** [Molga & Smutnicki (2005): 2.17]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -1 at (0, 0). Bounds: [(-5.12, -5.12), (5.12, 5.12)]. Dimensions: \( n = 2 \).
-- **Easom** [Molga & Smutnicki (2005): 2.13]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -1 at (\(\pi, \pi\)). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
-- **Eggholder** [Jamil & Yang (2013)]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -959.64066272 at (512, 404.2318058). Bounds: [(-512, -512), (512, 512)]. Dimensions: \( n = 2 \).
+- **branin** [Molga & Smutnicki (2005): 2.12]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0.397887 at (-π, 12.275). Bounds: [(-5, 0), (10, 15)]. Dimensions: \( n = 2 \).
+- **braninrcos2** [Unknown Source]: bounded, continuous, differentiable, multimodal, non-separable. Minimum: Unknown at (-3.172, 12.586). Bounds: [(-5, -5), (15, 15)]. Dimensions: 2.
+- **brent** [Jamil & Yang (2013): f24]: Bounded, continuous, differentiable, unimodal, non-convex, non-separable. Global minimum: 0 at (0, 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
+- **brown** [Jamil & Yang (2013): f25]: Bounded, continuous, differentiable, unimodal, non-separable, scalable. Global minimum: 0 at (0, ..., 0). Bounds: [(-1, -1), (4, 4)]. Dimensions: Any \( n \geq 2 \).
+- **bukin2** [Jamil & Yang (2013): f26]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (-10, 0). Bounds: [(-15, -5), (-3, 3)]. Dimensions: \( n = 2 \).
+- **bukin4** [Jamil & Yang (2013): f27], [Naser et al. (2024): 4.39]: Bounded, continuous, differentiable, multimodal, non-convex, separable, partially differentiable. Global minimum: 0 at (-10, 0). Bounds: [(-15, -5), (-3, 3)]. Dimensions: \( n = 2 \).
+- **bukin6** [Jamil & Yang (2013): f28]: Bounded, continuous, differentiable, multimodal, non-convex, partially differentiable. Global minimum: 0 at (-10, 1). Bounds: [(-15, -3), (-5, 3)]. Dimensions: \( n = 2 \).
+- **carromtable** [Jamil & Yang (2013): f146]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -24.1568155165 at (±9.646157266348881, ±9.646134286497169). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
+- **chen** [Jamil & Yang (2013): f31] : bounded, continuous, differentiable, multimodal, non-convex, non-separable. Minimum: Unknown at (0.38888889, 0.72222222). Bounds: [(-500, -500), (500, 500)]. Dimensions: 2.
+- **chenv** [Naser et al. (2024)], [al-roomi.org]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -2000 at (0.388888888888889, 0.722222222222222). Bounds: [(-500, -500), (500, 500)]. Dimensions: \( n = 2 \).
+- **chichinadze** [Jamil & Yang (2013): f33]: Multimodal, non-convex, non-separable, differentiable. Minimum: -43.3159 at (5.90133, 0.5). Bounds: [-30,30]^2. Dimensions: n=2.
+- **chungreynolds** [Jamil & Yang (2013): f34]: Unimodal, convex, partially-separable, differentiable, scalable. Minimum: 0 at (0, ..., 0). Bounds: [-100, 100]^n. Dimensions: any n.
+- **cola** [Jamil & Yang (2013): f35]: Multimodal, non-convex, non-separable, differentiable. Minimum: 11.7464. Bounds: [0, 4] x [-4, 4]^16. Dimensions: n=17.
+- **colville** [Jamil & Yang (2013): f36]: Bounded, continuous, differentiable, unimodal, non-convex, non-separable. Global minimum: 0 at (1, 1, 1, 1). Bounds: [(-10, -10, -10, -10), (10, 10, 10, 10)]. Dimensions: \( n = 4 \).
+- **corana** [Jamil & Yang (2013): f37]: Multimodal, non-convex, separable, differentiable. Minimum: 0 at (0,0,0,0). Bounds: [-1000,1000]^4. Dimensions: n=4.
+- **cosinemixture** [Jamil & Yang (2013): f38]: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -0.1*n at multiple. Bounds: [-1,1]^n. Dimensions: Any n >=1.
+- **crossintray** [Jamil & Yang (2013): f39]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -2.06261187 at (1.34940658, 1.34940658). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
+- **csendes** [Jamil & Yang (2013): f40]: Unimodal, non-convex, separable, non-differentiable at 0, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-1,1]^n. Dimensions: Any n >=1.
+- **cube** [Jamil & Yang (2013): f41]: Unimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1,1,1). Bounds: [-10,10]^3. Dimensions: n=3.
+- **damavandi** [Jamil & Yang (2013): f42]: Multimodal, non-convex, non-separable, non-differentiable. Minimum: 0 at (2,2). Bounds: [0,14]^2. Dimensions: n=2.
+- **deb1** [Jamil & Yang (2013): f43]: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -1. Bounds: [-1, 1]^n. Dimensions: any n.
+- **deb3** [[Jamil & Yang (2013): f43]:  bounded, continuous, differentiable, multimodal, scalable, separable. Minimum: -1 at (0.07969939, 0.07969939). Bounds: [(-1, -1), (1, 1)]. Dimensions: -1.
+- **dejongf4** [Molga & Smutnicki (2005)]: Bounded, continuous, convex, has_noise, partially differentiable, scalable, separable, unimodal. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-1.28, -1.28), (1.28, 1.28)]. Dimensions: Any \( n \geq 1 \).
+- **dejongf5modified**: Bounded, continuous, differentiable, finite_at_inf, multimodal, non-convex, non-separable. Global minimum: -0.99800384 at (-31.97833, -31.97833). Bounds: [(-65.536, -65.536), (65.536, 65.536)]. Dimensions: \( n = 2 \).
+- **dejongf5original** [Molga & Smutnicki (2005): 2.16]: Bounded, continuous, differentiable, finite_at_inf, multimodal, non-convex, non-separable. Global minimum: -500.01800977 at (-32, -32). Bounds: [(-65.536, -65.536), (65.536, 65.536)]. Dimensions: \( n = 2 \).
+- **dekkersaarts** [Jamil & Yang (2013): f90]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -24776.51834232 at (0, 14.94511215). Bounds: [(-20, -20), (20, 20)]. Dimensions: \( n = 2 \).
+- **devilliersglasser1** [Jamil & Yang (2013):f46]: bounded, continuous, differentiable, multimodal, non-separable. Minimum: Unknown at (60.137, 1.371, 3.112, 1.761). Bounds: [(0, 0, 0, 0), (500, 500, 500, 500)]. Dimensions: 4.
+- **devilliersglasser2** [Jamil & Yang (2013):f47]: bounded, continuous, differentiable, multimodal, non-separable. Minimum: Unknown at (53.81, 1.27, 3.012, 2.13, 0.507). Bounds: [(0, 0, 0, 0, 0), (500, 500, 500, 500, 500)]. Dimensions: 5.
+- **dixonprice** [Molga & Smutnicki (2005)]: Bounded, continuous, differentiable, non-convex, scalable, unimodal. Global minimum: 0 at (1, \( \frac{1}{\sqrt{2}} \approx 0.70710678 \), ...). Bounds: [(-10, -10), (10, 10)]. Dimensions: Any \( n \geq 1 \).
+- **dolan** [Unknown Source]: bounded, continuous, controversial, differentiable, multimodal, non-separable. Minimum: Unknown at (98.96425831, 100, 100, 99.22432367, -0.24998753). Bounds: [(-100, -100, -100, -100, -100), (100, 100, 100, 100, 100)]. Dimensions: 5.
+- **dropwave** [Molga & Smutnicki (2005): 2.17]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -1 at (0, 0). Bounds: [(-5.12, -5.12), (5.12, 5.12)]. Dimensions: \( n = 2 \).
+- **easom** [Molga & Smutnicki (2005): 2.13]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -1 at (\(\pi, \pi\)). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
+- **eggcrate** [Jamil & Yang (2013): f52]: Multimodal, non-convex, separable, differentiable. Minimum: 0 at (0, 0). Bounds: [-5, 5]^2. Dimensions: n=2.
+- **eggholder** [Jamil & Yang (2013)]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 
+- **elattarvidyasagardutta** [Jamil & Yang (2013): f51]: Unimodal, non-convex, non-separable, differentiable. Minimum: 0.470427 at (2.8425, 1.9202). Bounds: [-500, 500]^2. Dimensions: n=2.
+-959.64066272 at (512, 404.2318058). Bounds: [(-512, -512), (512, 512)]. Dimensions: \( n = 2 \).
+- **exponential** [Unknown Source]: bounded, continuous, differentiable, non-separable, scalable, unimodal. Minimum: -1 at (0, 0). Bounds: [(-1, -1), (1, 1)]. Dimensions: -1.
 - **FreudensteinRoth** [Jamil & Yang (2013): f56]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (5, 4). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
 - **Giunta** [Jamil & Yang (2013): f57]: Bounded, continuous, differentiable, multimodal, non-convex, separable. Global minimum: 0.06447042 at (0.46732003, 0.46732003). Bounds: [(-1, -1), (1, 1)]. Dimensions: \( n = 2 \).
 - **GoldsteinPrice** [Molga & Smutnicki (2005): 2.14]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 3 at (0, -1). Bounds: [(-2, -2), (2, 2)]. Dimensions: \( n = 2 \).
@@ -549,13 +561,7 @@ The following test functions are planned for implementation, based on standard b
 
 
 - **Cigar**: Unimodal, convex, non-separable, differentiable, scalable. Minimum: 0 at (0,0,...,0). Bounds: [-10,10]^n. Dimensions: Any n >=2.
--- **Damavandi** [Jamil & Yang (2013): f42]: Multimodal, non-convex, non-separable, non-differentiable. Minimum: 0 at (2,2). Bounds: [0,14]^2. Dimensions: n=2.
-- **Deb 1** [Jamil & Yang (2013): f43]: Multimodal, non-convex, separable, differentiable, scalable. Minimum: -1. Bounds: [-1, 1]^n. Dimensions: any n.
-- **Dolan** [Jamil & Yang (2013): f49]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0. Bounds: [-100, 100]^5. Dimensions: n=5.
 - **EX Function 1** [Jamil & Yang (2013): f55]: Multimodal, non-convex, separable, differentiable. Minimum: -1.28186 at (1.764, 11.150). Bounds: [0, 2] x [10, 12]. Dimensions: n=2.
-- **Egg Crate** [Jamil & Yang (2013): f52]: Multimodal, non-convex, separable, differentiable. Minimum: 0 at (0, 0). Bounds: [-5, 5]^2. Dimensions: n=2.
-- **El-Attar-Vidyasagar-Dutta** [Jamil & Yang (2013): f51]: Unimodal, non-convex, non-separable, differentiable. Minimum: 0.470427 at (2.8425, 1.9202). Bounds: [-500, 500]^2. Dimensions: n=2.
-- **Exponential** [Jamil & Yang (2013): f54]: Multimodal, non-convex, non-separable, differentiable, scalable. Minimum: 1 at (0, ..., 0). Bounds: [-1, 1]^n. Dimensions: any n.
 - **Gulf Research** [Jamil & Yang (2013): f60]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (50, 25, 1.5). Bounds: [0.1, 100] x [0, 25.6] x [0, 5]. Dimensions: n=3.
 - **Hansen** [Jamil & Yang (2013): f61]: Multimodal, non-convex, separable, differentiable. Multiple global minima. Bounds: [-10, 10]^2. Dimensions: n=2.
 - **Helical Valley** [Jamil & Yang (2013): f64]: Multimodal, non-convex, non-separable, differentiable. Minimum: 0 at (1, 0, 0). Bounds: [-10, 10]^3. Dimensions: n=3.

@@ -1,89 +1,36 @@
-# src/functions/rana.jl
-# Purpose: Implements the Rana test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 04 August 2025
+# test/rana_tests.jl
+using Test, NonlinearOptimizationTestFunctions
+@testset "rana" begin
+    tf = RANA_FUNCTION
 
-export RANA_FUNCTION, rana, rana_gradient
+    @test tf.meta[:name] == "rana"
+    @test has_property(tf, "multimodal")
+    @test has_property(tf, "partially differentiable")
+    @test has_property(tf, "non-separable")
+    @test has_property(tf, "bounded")
+    @test has_property(tf, "continuous")
+    @test !has_property(tf, "scalable")
+    @test length(tf.meta[:properties]) == 5
 
-using LinearAlgebra
-using ForwardDiff
+    @test_throws ArgumentError tf.f(Float64[])
 
-"""
-    rana(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the Rana function value at point `x`. Requires exactly 2 dimensions.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
-function rana(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
-    any(isnan.(x)) && return T(NaN)
-    any(isinf.(x)) && return T(Inf)
-    x1, x2 = x
-    a = x2 + x1 + 1
-    b = x2 - x1 + 1
-    term1 = sqrt(abs(a))
-    term2 = sqrt(abs(b))
-    return x1 * sin(term1) * cos(term2) + (x2 + 1) * cos(term1) * sin(term2)
+    start_point = tf.start()
+    @test start_point ≈ [0.0, 0.0] atol=1e-6
+    f_start = tf.f(start_point)
+    @test f_start ≈ 0.454648713413 atol=1e-3
+
+    min_pos = tf.meta[:min_position]()
+    @test min_pos ≈ [-500.0, -499.0733150925747] atol=1e-6
+    f_min = tf.f(min_pos)
+    @test f_min ≈ tf.meta[:min_value]() atol=1e-8
+
+    lb, ub = tf.lb(), tf.ub()
+    @test lb ≈ [-500.0, -500.0]
+    @test ub ≈ [500.0, 500.0]
+
+    # Extra point
+    test_pt = [1.0, 1.0]
+    @test tf.f(test_pt) ≈ 0.263085434978 atol=1e-3
+    # Non-diff (if applicable): NaN for gradient where a=0 or b=0
+    @test all(isnan.(rana_gradient([-0.5, -0.5])))
 end
-
-"""
-    rana_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Rana function. Returns a vector of length 2.
-"""
-function rana_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
-    any(isnan.(x)) && return fill(T(NaN), 2)
-    any(isinf.(x)) && return fill(T(Inf), 2)
-
-    x1, x2 = x
-    a = x2 + x1 + 1
-    b = x2 - x1 + 1
-    if a == 0 || b == 0
-        return fill(T(NaN), 2)
-    end
-
-    A = sqrt(abs(a))
-    B = sqrt(abs(b))
-    sA, cA = sin(A), cos(A)
-    sB, cB = sin(B), cos(B)
-    sa = sign(a)
-    sb = sign(b)
-
-    grad_x1 = cB * sA +
-              x1 * (cA * cB * (sa / (2 * A)) + sA * sB * (sb / (2 * B))) +
-              (x2 + 1) * (-sA * sB * (sa / (2 * A)) - cA * cB * (sb / (2 * B)))
-
-    grad_x2 = cA * sB +
-              x1 * (cA * cB * (sa / (2 * A)) - sA * sB * (sb / (2 * B))) +
-              (x2 + 1) * (-sA * sB * (sa / (2 * A)) + cA * cB * (sb / (2 * B)))
-
-    return [grad_x1, grad_x2]
-end
-
-const RANA_FUNCTION = TestFunction(
-    rana,
-    rana_gradient,
-    Dict(
-        :name => "rana",
-        :start => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end,
-        :min_position => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
-            [-500.0, -499.0733150925747]  # Korrigiert nach Optimierung
-        end,
-        :min_value => -498.12463264808594,  # Korrigiert nach Optimierung
-        :properties => Set(["multimodal", "differentiable", "non-separable"]),
-        :lb => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
-            [-500.0, -500.0]
-        end,
-        :ub => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Rana requires exactly 2 dimensions"))
-            [500.0, 500.0]
-        end,
-        :in_molga_smutnicki_2005 => true,
-        :description => "Rana function: A multimodal, differentiable, non-separable function with multiple local minima, defined only for 2 dimensions.",
-        :math => "x_1 \\sin(\\sqrt{|x_2 + x_1 + 1|}) \\cos(\\sqrt{|x_2 - x_1 + 1|}) + (x_2 + 1) \\cos(\\sqrt{|x_2 + x_1 + 1|}) \\sin(\\sqrt{|x_2 - x_1 + 1|})"
-    )
-)

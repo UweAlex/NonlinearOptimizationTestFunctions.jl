@@ -38,7 +38,6 @@ const DEKKERSAARTS_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> [-20.0, -20.0],
         :ub => () -> [20.0, 20.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Dekkers-Aarts function: Multimodal with two global minima at [0, ±14.94511215174121]. Literature (Ali et al., 2005) reports minima at (0, ±15), f* ≈ -24777, but exact minima are at (0, ±14.94511215174121), f* ≈ -24776.51834231769.",
         :math => "10^5 x_1^2 + x_2^2 - (x_1^2 + x_2^2)^2 + 10^{-5} (x_1^2 + x_2^2)^4"
     )
