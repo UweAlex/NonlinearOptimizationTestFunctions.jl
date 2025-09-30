@@ -535,10 +535,10 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **kearfott** [Jamil & Yang (2013)]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (1.22474487, 0.70710678). Bounds: [(-3, -3), (4, 4)]. Dimensions: \( n = 2 \).
 - **langermann** [Molga & Smutnicki (2005): 2.10]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -5.16212616 at (2.00299212, 1.00609594). Bounds: [(0, 0), (10, 10)]. Dimensions: \( n = 2 \).
 - **leon** [Unknown Source]: bounded, continuous, differentiable, non-separable, unimodal. Minimum: Unknown at (1, 1). Bounds: [(-1.2, -1.2), (1.2, 1.2)]. Dimensions: 2.
-- **Levy** [Molga & Smutnicki (2005)]: Bounded, continuous, differentiable, multimodal, non-convex, scalable. Global minimum: 0 at (1, 1, ..., 1). Bounds: [(-10, -10), (10, 10)]. Dimensions: Any \( n \geq 1 \).
+- **levyjamil** [Jamil & Yang (2013)]: bounded, continuous, differentiable, multimodal, non-convex, scalable. Minimum: 0 at (1, 1). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
 - **Matyas** [Molga & Smutnicki (2005)]: Bounded, continuous, convex, differentiable, non-separable, unimodal. Global minimum: 0 at (0, 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
 - **McCormick** [Molga & Smutnicki (2005)]: Bounded, continuous, differentiable, multimodal, non-convex. Global minimum: -1.91322295 at (-0.54719755, -1.54719755). Bounds: [(-1.5, -3), (4, 4)]. Dimensions: \( n = 2 \).
-- **Michalewicz** [Molga & Smutnicki (2005): 2.11]: Bounded, continuous, differentiable, multimodal, non-separable, scalable. Global minimum: -1.8013 at (2.20290552, 1.57079633). Bounds: [(0, 0), (π, π)]. Dimensions: Any \( n \geq 1 \).
+- **michalewicz** [Molga & Smutnicki (2005): 2.11]: Bounded, continuous, differentiable, multimodal, non-separable, scalable. Global minimum: -1.8013 at (2.20290552, 1.57079633). Bounds: [(0, 0), (π, π)]. Dimensions: Any \( n \geq 1 \).
 - **mishra1** [Jamil & Yang (2013)]: bounded, continuous, differentiable, multimodal, non-separable, scalable. Minimum: 2 at (1, 1). Bounds: [(0, 0), (1, 1)]. Dimensions: -1.
 - **mishra2** [Jamil & Yang (2013)]: bounded, continuous, differentiable, multimodal, non-separable, scalable. Minimum: 2 at (1, 1). Bounds: [(0, 0), (1, 1)]. Dimensions: -1.
 - **mishra3** [Jamil & Yang (2013)]: bounded, continuous, differentiable, multimodal, non-separable. Minimum: Unknown at (-8.46661378, -9.99852131). Bounds: [(-10, -10), (10, 10)]. Dimensions: 2.

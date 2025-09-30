@@ -4,7 +4,6 @@ println("----------------------------------------------------------------------"
 include("print_function_properties.jl")
 println("----------------------------------------------------------------------","\n\n","Optimize_with_nlopt.jl")
 include("Optimize_with_nlopt.jl")
-println("----------------------------------------------------------------------","\n\n","List_all_available_test_functions_and_their_properties.jl")
 include("get_himmelblau_dimension.jl")
 println("----------------------------------------------------------------------","\n\n","Compare_optimization_methods.jl")
 include("Compare_optimization_methods.jl")
@@ -16,3 +15,4 @@ println("----------------------------------------------------------------------"
 include("list_functions_n_greater_than_2.jl")
 println("----------------------------------------------------------------------","\n\n","count_calls.jl")
 include("count_calls.jl")
+println("----------------------------------------------------------------------","\n\n","List_all_available_test_functions_and_their_properties.jl")

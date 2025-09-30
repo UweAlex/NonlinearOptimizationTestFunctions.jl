@@ -1,7 +1,7 @@
 # examples/print_function_properties.jl
 # Purpose: Lists properties of all implemented test functions in NonlinearOptimizationTestFunctions.jl in a Markdown-like format.
 # Context: Inspired by List_all_available_test_functions_and_their_properties.jl, robust against missing metadata and new functions, with trimmed trailing zeros.
-# Last modified: August 22, 2025
+# Last modified: September 30, 2025
 
 using NonlinearOptimizationTestFunctions
 using Printf
@@ -38,18 +38,27 @@ function print_function_properties()
         catch
             length(tf.meta[:min_position]())  # Fallback for fixed dimensions (e.g., shekel, hartmann)
         end
-        dimensions = tf.dim() 
-
-#is_scalable ? (name == "rosenbrock" ? "Any n >= 2" : "Any n >= 1") : "n=$n"
+        
+        # Format dimensions string
+        dimensions_str = is_scalable ? "scalable (n ≥ 1)" : "n = $n"
         
         # Extract metadata
-        # Handle min_value as a function or scalar
-        min_value = try
-            value = isa(meta[:min_value], Function) ? meta[:min_value](is_scalable ? n : ()) : meta[:min_value]
-            format_number(value)
+        # Handle min_value as a function or scalar (fixed call for non-scalable)
+        min_value_raw = try
+            if isa(meta[:min_value], Function)
+                if is_scalable
+                    meta[:min_value](n)
+                else
+                    meta[:min_value]()
+                end
+            else
+                meta[:min_value]
+            end
         catch
-            "Unknown"  # Fallback if min_value cannot be evaluated
+            NaN
         end
+        min_value = isfinite(min_value_raw) ? format_number(min_value_raw) : "Unknown"
+        
         min_position = try
             format_vector(meta[:min_position](n), is_scalable)
         catch
@@ -65,12 +74,12 @@ function print_function_properties()
         catch
             format_vector(meta[:ub](), is_scalable)
         end
-        # Robust handling of missing :in_molga_smutnicki_2005
-        source = get(meta, :in_molga_smutnicki_2005, false) ? "[Molga & Smutnicki (2005)]" : 
-                 haskey(meta, :in_molga_smutnicki_2005) ? "[Jamil & Yang (2013)]" : "[Unknown Source]"
+        
+        # Use :properties_source if available, else :source, else fallback
+        source = get(meta, :properties_source, get(meta, :source, "Unknown Source"))
         
         # Output in Markdown format
-        println("- **$name** $source: $properties. Minimum: $min_value at $min_position. Bounds: [$lb, $ub]. Dimensions: $dimensions.")
+        println("- **$name** [$source:] $properties. Minimum: $min_value at $min_position. Bounds: [$lb, $ub]. Dimensions: $dimensions_str.")
     end
 end
 
