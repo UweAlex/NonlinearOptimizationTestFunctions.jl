@@ -41,6 +41,7 @@ const STEP_FUNCTION = TestFunction(
         end,
         :min_value => (n::Int) -> 0.0,
         :properties => Set(["unimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             n ≥ 1 || throw(ArgumentError("Step function requires at least one dimension"))
             fill(-5.12, n)

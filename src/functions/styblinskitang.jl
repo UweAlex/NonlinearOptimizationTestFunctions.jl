@@ -58,6 +58,7 @@ const STYBLINSKITANG_FUNCTION = TestFunction(
             -39.16616570377141 * n
         end,
         :properties => Set(["differentiable", "non-convex", "scalable", "multimodal", "bounded", "continuous"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             n >= 1 || throw(ArgumentError("Styblinski-Tang requires at least 1 dimension"))
             fill(-5.0, n)

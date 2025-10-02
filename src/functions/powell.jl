@@ -48,7 +48,6 @@ const POWELL_FUNCTION = TestFunction(
         :properties => Set(["unimodal", "non-convex", "non-separable", "differentiable"]),
         :lb => () -> fill(-4.0, 4),
         :ub => () -> fill(5.0, 4),
-        :in_molga_smutnicki_2005 => false,
         :description => "Powell function: Unimodal, non-convex, non-separable, differentiable. Global minimum at x = [0.0, 0.0, 0.0, 0.0] with f(x) = 0.0.",
         :math => "f(x) = (x_1 + 10x_2)^2 + 5(x_3 - x_4)^2 + (x_2 - 2x_3)^4 + 10(x_1 - x_4)^4"
     )

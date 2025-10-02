@@ -62,6 +62,7 @@ const ACKLEY_FUNCTION = TestFunction(
             0.0
         end,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "scalable", "bounded", "continuous"]),
+        :default_n => 2,
         :lb => (n::Int=1; bounds="default") -> bounds == "alternative" ? fill(-5.0, n) : fill(-32.768, n),
         :ub => (n::Int=1; bounds="default") -> bounds == "alternative" ? fill(5.0, n) : fill(32.768, n),
         :in_molga_smutnicki_2005 => true,

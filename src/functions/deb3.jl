@@ -65,6 +65,7 @@ const DEB3_FUNCTION = TestFunction(
         :min_position => (n::Int) -> (n < 1 && throw(ArgumentError("At least 1 dimension")); fill(0.07969939268869583, n)),
         :min_value => (n::Int) -> (n < 1 && throw(ArgumentError("At least 1 dimension")); -1.0),
         :properties => ["bounded", "continuous", "differentiable", "separable", "multimodal", "scalable"],
+        :default_n => 2,
         :lb => (n::Int) -> (n < 1 && throw(ArgumentError("At least 1 dimension")); fill(-1.0, n)),
         :ub => (n::Int) -> (n < 1 && throw(ArgumentError("At least 1 dimension")); fill(1.0, n)),
     )

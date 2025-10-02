@@ -41,6 +41,7 @@ const EXPONENTIAL_FUNCTION = TestFunction(
         :min_position => (n::Int) -> (n < 1 && throw(ArgumentError("Dimension n must be at least 1")); zeros(Float64, n)),
         :min_value => (n::Int) -> -1.0,
         :properties => ["bounded", "continuous", "differentiable", "non-separable", "scalable", "unimodal"],
+        :default_n => 2,
         :properties_source => "Jamil & Yang (2013)",
         :source => "Ramanujan et al. (2007)",
         :lb => (n::Int) -> (n < 1 && throw(ArgumentError("Dimension n must be at least 1")); -ones(Float64, n)),

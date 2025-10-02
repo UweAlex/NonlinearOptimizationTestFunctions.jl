@@ -59,6 +59,7 @@ const BROWN_FUNCTION = TestFunction(
             0.0
         end,
         :properties => Set(["unimodal", "non-separable", "differentiable", "scalable", "continuous", "bounded"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             n < 2 && throw(ArgumentError("Brown requires at least 2 dimensions"))
             fill(-1.0, n)

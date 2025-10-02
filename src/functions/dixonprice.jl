@@ -61,6 +61,7 @@ const DIXONPRICE_FUNCTION = TestFunction(
         end,
         :min_value => (n::Int) -> 0.0,
         :properties => Set(["differentiable", "non-convex", "scalable", "unimodal","bounded","continuous"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             n >= 1 || throw(ArgumentError("Dixon-Price requires at least 1 dimension"))
             fill(-10.0, n)

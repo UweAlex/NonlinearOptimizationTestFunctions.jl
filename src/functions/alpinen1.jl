@@ -59,6 +59,7 @@ const ALPINEN1_FUNCTION = TestFunction(
         end,
         :min_value => (n::Int) -> 0.0,
         :properties => Set(["multimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             n < 1 && throw(ArgumentError("AlpineN1 requires at least 1 dimension"))
             fill(-10.0, n)

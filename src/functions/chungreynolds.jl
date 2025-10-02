@@ -50,6 +50,7 @@ const CHUNGREYNOLDS_FUNCTION = TestFunction(
         :min_position => (n::Int) -> (n < 1 && throw(ArgumentError("Min position requires n >= 1")); zeros(n)),
         :min_value => (n::Int) -> (n < 1 && throw(ArgumentError("Min value requires n >= 1")); 0.0),
         :properties => ["bounded", "continuous", "differentiable", "partially separable", "scalable", "unimodal"],
+        :default_n => 2,
         :lb => (n::Int) -> (n < 1 && throw(ArgumentError("LB requires n >= 1")); fill(-100.0, n)),
         :ub => (n::Int) -> (n < 1 && throw(ArgumentError("UB requires n >= 1")); fill(100.0, n)),
     )

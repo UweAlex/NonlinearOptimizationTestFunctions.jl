@@ -58,6 +58,7 @@ const ROTATEDHYPERELLIPSOID_FUNCTION = TestFunction(
         end, #function
         :min_value => (n::Int) -> 0.0,
         :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "scalable","bounded","continuous"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             fill(-65.536, n)
         end, #function

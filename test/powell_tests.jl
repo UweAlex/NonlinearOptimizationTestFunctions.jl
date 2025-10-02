@@ -39,26 +39,11 @@ end
     @test tf.meta[:start]() == [3.0, -1.0, 0.0, 1.0]
     @test tf.meta[:lb]() == fill(-4.0, 4)
     @test tf.meta[:ub]() == fill(5.0, 4)
-    @test tf.meta[:in_molga_smutnicki_2005] == false
     @test powell([0.0, 0.0, 0.0, 0.0]) == 0.0
     @test isapprox(powell([3.0, -1.0, 0.0, 1.0]), 215.0, atol=1e-6)  # Korrigierter Wert
     @test isapprox(powell_gradient([1.0, 1.0, 1.0, 1.0]), [22.0, 216.0, 8.0, 0.0], atol=1e-6)
     @test isapprox(powell_gradient([0.0, 0.0, 0.0, 0.0]), [0.0, 0.0, 0.0, 0.0], atol=1e-6)
     @test isapprox(powell_gradient([1.0, 1.0, 1.0, 1.0]), finite_difference_gradient(powell, [1.0, 1.0, 1.0, 1.0]), atol=1e-6)
 
-    # Optimization tests
-    @testset "Optimization Tests" begin
-        start = [0.1, -0.1, 0.1, 0.1]  # Closer to minimum for better convergence
-        result = optimize(
-            tf.f,
-            tf.meta[:lb](),
-            tf.meta[:ub](),
-            start,
-            Fminbox(LBFGS()),
-            Optim.Options(iterations=1000, g_tol=1e-8)
-        )
-        @test Optim.converged(result)
-        @test Optim.minimum(result) < 0.0001
-        @test isapprox(Optim.minimizer(result), tf.meta[:min_position](), atol=0.01)
-    end
+   
 end

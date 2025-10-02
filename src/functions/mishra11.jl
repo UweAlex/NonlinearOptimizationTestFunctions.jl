@@ -62,6 +62,7 @@ const MISHRA11_FUNCTION = TestFunction(
         :min_position => (n::Int) -> ones(n),
         :min_value => (n::Int) -> 0.0,  # Fix: Akzeptiert n (konstant, ignoriert es)
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable", "non-convex", "scalable"],
+        :default_n => 2,
         :properties_source => "Jamil & Yang (2013)",
         :source => "Mishra (2006f), via Jamil & Yang (2013): f84",
         :lb => (n::Int) -> zeros(n),

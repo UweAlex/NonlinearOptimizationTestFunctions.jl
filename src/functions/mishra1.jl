@@ -56,6 +56,7 @@ const MISHRA1_FUNCTION = TestFunction(
         :min_position => n -> fill(1.0, n),
         :min_value => n -> 2.0,
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable", "scalable"],
+        :default_n => 2,
         :properties_source => "Jamil & Yang (2013)",
         :source => "Mishra (2006a)",
         :lb => n -> fill(0.0, n),

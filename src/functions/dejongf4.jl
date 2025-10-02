@@ -46,6 +46,7 @@ const DEJONGF4_FUNCTION = TestFunction(
         end, #function
         :min_value => (n::Int) -> 0.0,
         :properties => Set(["unimodal", "convex", "separable", "partially differentiable", "scalable", "continuous", "bounded", "has_noise"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             fill(-1.28, n)
         end, #function

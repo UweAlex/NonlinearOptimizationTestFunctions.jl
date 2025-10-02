@@ -65,6 +65,7 @@ const ALPINEN2_FUNCTION = TestFunction(
         :min_position => (n::Int) -> fill(7.917052698245946, n),
         :min_value => (n::Int) -> - (2.8081311800070053)^n,
         :properties => Set(["multimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"]),
+        :default_n => 2,
         :lb => (n::Int) -> zeros(n),
         :ub => (n::Int) -> fill(10.0, n),
         :in_molga_smutnicki_2005 => false,

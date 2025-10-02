@@ -74,6 +74,7 @@ const CORANA_FUNCTION = TestFunction(
         :min_position => n -> zeros(n),
         :min_value => n -> 0.0,
         :properties => ["bounded", "multimodal", "separable", "scalable"],
+        :default_n => 2,
         :lb => n -> fill(-500.0, n),
         :ub => n -> fill(500.0, n),
     )

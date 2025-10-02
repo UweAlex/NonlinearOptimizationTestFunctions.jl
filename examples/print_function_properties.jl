@@ -1,7 +1,7 @@
 # examples/print_function_properties.jl
 # Purpose: Lists properties of all implemented test functions in NonlinearOptimizationTestFunctions.jl in a Markdown-like format.
 # Context: Inspired by List_all_available_test_functions_and_their_properties.jl, robust against missing metadata and new functions, with trimmed trailing zeros.
-# Last modified: September 30, 2025
+# Last modified: October 02, 2025
 
 using NonlinearOptimizationTestFunctions
 using Printf
@@ -15,7 +15,7 @@ end
 # Helper function to format vectors
 function format_vector(v, is_scalable::Bool)
     if is_scalable && length(v) > 4
-        return "($(format_number(v[1])), ..., $(format_number(v[1])))"
+        return "($(format_number(v[1])), ..., $(format_number(v[end])))"
     else
         return "(" * join([format_number(x) for x in v], ", ") * ")"
     end
@@ -32,11 +32,23 @@ function print_function_properties()
         properties = join(sort(collect(meta[:properties])), ", ")
         is_scalable = occursin("scalable", properties)
         
-        # Dynamically determine dimension
+        # Dynamically determine dimension using :default_n if available for scalable functions
         n = try
-            length(tf.meta[:min_position](2))  # Default: n=2 for scalable functions
+            if haskey(meta, :default_n)
+                meta[:default_n]
+            else
+                length(tf.meta[:min_position](2))  # Default: n=2 for scalable functions
+            end
         catch
-            length(tf.meta[:min_position]())  # Fallback for fixed dimensions (e.g., shekel, hartmann)
+            try
+                if haskey(meta, :default_n)
+                    meta[:default_n]
+                else
+                    length(tf.meta[:min_position]())  # Fallback for fixed dimensions (e.g., shekel, hartmann)
+                end
+            catch
+                2  # Ultimate fallback
+            end
         end
         
         # Format dimensions string

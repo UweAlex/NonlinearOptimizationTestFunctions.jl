@@ -61,6 +61,9 @@ Vermeide generell Konstanten
 - **Neu: Typ-Inkonsistenzen in Gradient-Rückgaben:** Verwende nie SVector (aus StaticArrays) für grad-Rückgabe – es verursacht MethodError oder Inkompatibilitäten in relative_diff (gradient_accuracy_tests.jl), da ForwardDiff.gradient Vector<T> liefert. Stattdessen: Immer zeros(T, n) und Zuweisung (z. B. grad[1] = g1). Kein using StaticArrays in src/ oder test/ – führt zu LoadError, wenn Paket nicht installiert (Projekt ist dep-frei). Prüfe: tf.grad(x) ≈ ForwardDiff.gradient(tf.f, x) atol=1e-8 in REPL.
 - **Neu: Externe Abhängigkeiten vermeiden:** Füge keine Pakete wie StaticArrays hinzu, es sei denn, in Project.toml (z. B. für Random). Bei LoadError: Prüfe using-Anweisungen in test/<name>_tests.jl und src/ – entferne unnötige. Syntax-Check mit julia --project=. -e 'include("test/<name>_tests.jl")' muss ohne Pkg.add-Fehler laufen.
 - **Neu: Fehlende Properties-Quelle:** Vergiss nicht `:properties_source` im meta-Dict; ohne Angabe fallback auf "Unknown" in Ausgaben (z. B. in print_function_properties.jl). Prüfe Konsistenz mit Quellen-Liste.
+- **Neu: Lambda-Syntax-Fehler in Meta-Dict:** Unvollständige `begin...end` in Lambdas (z. B. :start => (n::Int)-> begin if ... end) verursachen ParseError. Lösung: Vollständige Syntax; teste Dict in REPL (eval(Dict(...))). Bei speziellen n: ArgumentError in Lambda werfen, aber Kandidaten in Tests testen.
+- **Neu: MethodError bei nothing in length/Aufruf:** In runtests.jl: Prüfe n !== nothing vor length(n) oder tf.f(min_pos). Fallback: Skip mit @test_broken oder probiere Kandidaten [2,4,10]. Ursache: Fehlgeschlagener length(tf.meta[:min_position](2)).
+- **Neu: Dimension-Mismatch bei skalierbar:** Bei n%k !=0 (z. B. Powell k=4): In get_n Kandidaten testen; dokumentiere in :description.
 
 ## Erlaubte Eigenschaften (aus Readme.md)
 Nur Properties aus diesem Set verwenden (VALID_PROPERTIES in src/). Neue? Ergänze Set und Readme ("Valid Properties"-Abschnitt). Füge "bounded" bei definierten Schranken hinzu; "scalable" nur bei variabler n (impliziert fixed ohne "fixed" – redundant, vermeiden). "non-scalable" ungültig (nicht in Set); "non-separable" zulässig, aber prüfe "fully non-separable" für starke Kopplung. **Neu: Für separable (unabhängige Terme): "separable" (z. B. Bohachevsky1). Bei Zuweisung immer `:properties_source` ergänzen (z. B. "Jamil & Yang (2013)" für "multimodal").**
@@ -240,4 +243,4 @@ Finale Validierung:
 - **[ ] Neu: Keine externen Deps (z. B. kein StaticArrays); Gradient als Vector<T> (zeros). Prüfe LoadError in test/<name>_tests.jl. Properties-Quelle konsistent mit Beschreibung.**
 - **[ ] Neu: Properties-Quelle in Tests validiert; fallback "Unknown" vermeiden.**
 
-Diese Version priorisiert Templates für Reproduzierbarkeit und integriert die Properties-Liste für schnelle Referenz. Für Biggs EXP4/5: Passe das Template an (n=4, ähnliche Formel). Testen? 
+Diese Version priorisiert Templates für Reproduzierbarkeit und integriert die Properties-Liste für schnelle Referenz. Für Biggs EXP4/5: Passe das Template an (n=4, ähnliche Formel). Testen?

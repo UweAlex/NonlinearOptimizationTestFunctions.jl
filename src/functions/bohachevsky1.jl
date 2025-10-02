@@ -45,6 +45,7 @@ const BOHACHEVSKY1_FUNCTION = TestFunction(
         :min_position => (n::Int) -> (n < 2 && throw(ArgumentError("...")); zeros(n)),
         :min_value => (n::Int) -> 0.0,
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-convex", "scalable", "separable"],
+        :default_n => 2,
         :lb => (n::Int) -> (n < 2 && throw(ArgumentError("...")); fill(-100.0, n)),
         :ub => (n::Int) -> (n < 2 && throw(ArgumentError("...")); fill(100.0, n)),
     )

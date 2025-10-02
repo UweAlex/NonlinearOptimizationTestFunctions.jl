@@ -48,6 +48,7 @@ const CSENDES_FUNCTION = TestFunction(
         :min_position => n -> zeros(n),
         :min_value => n -> 0.0,
         :properties => ["bounded", "continuous", "differentiable", "separable", "scalable", "multimodal"],
+        :default_n => 2,
         :lb => n -> fill(-1.0, n),
         :ub => n -> fill(1.0, n),
     )

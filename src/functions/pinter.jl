@@ -103,6 +103,7 @@ const PINTER_FUNCTION = TestFunction(
         :min_position => (n::Int) -> zeros(n),
         :min_value => (n::Int) -> 0.0,
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable", "non-convex", "scalable"],
+        :default_n => 2,
         :properties_source => "Jamil & Yang (2013)",
         :source => "Pintér (1996), via Jamil & Yang (2013): f89",
         :lb => (n::Int) -> -10 * ones(n),

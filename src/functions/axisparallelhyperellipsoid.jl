@@ -57,6 +57,7 @@ const AXISPARALLELHYPERELLIPSOID_FUNCTION = TestFunction(
             0.0
         end,
         :properties => Set(["convex", "differentiable", "separable", "scalable", "continuous", "bounded"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             n < 1 && throw(ArgumentError("Axis Parallel Hyper-Ellipsoid requires at least 1 dimension"))
             fill(-5.12, n)

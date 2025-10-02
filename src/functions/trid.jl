@@ -63,6 +63,7 @@ const TRID_FUNCTION = TestFunction(
             -n * (n + 4) * (n - 1) / 6
         end,
         :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "scalable","bounded","continuous"]),
+        :default_n => 2,
         :lb => (n::Int) -> begin
             n < 2 && throw(ArgumentError("Trid requires at least 2 dimension(s)"))
             fill(-n^2, n)

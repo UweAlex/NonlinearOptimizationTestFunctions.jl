@@ -42,6 +42,7 @@ const ZAKHAROV_FUNCTION = TestFunction(
         :min_position => (n::Int) -> zeros(n),
         :min_value => (n::Int) -> 0.0,
         :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "scalable","bounded","continuous"]),
+        :default_n => 2,
         :lb => (n::Int) -> fill(-5.0, n),
         :ub => (n::Int) -> fill(10.0, n),
         :in_molga_smutnicki_2005 => true,

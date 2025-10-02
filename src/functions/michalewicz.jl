@@ -86,6 +86,7 @@ const MICHALEWICZ_FUNCTION = TestFunction(
             end
         end,
         :properties => Set(["multimodal", "non-separable", "differentiable", "scalable", "bounded", "continuous"]),  # "bounded" nur einmal
+        :default_n => 2,
         :lb => (n::Int=2) -> begin
             n >= 2 || throw(ArgumentError("Michalewicz requires at least 2 dimensions"))
             fill(0.0, n)

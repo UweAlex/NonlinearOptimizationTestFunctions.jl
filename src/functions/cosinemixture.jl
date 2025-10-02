@@ -35,6 +35,7 @@ const COSINEMIXTURE_META = Dict(
     :min_position => (n::Int) -> fill(0.0, n),
     :min_value => (n::Int) -> -0.1 * n,
     :properties => ["continuous", "differentiable", "separable", "scalable", "multimodal", "non-convex", "bounded"],
+        :default_n => 2,
     :lb => (n::Int) -> fill(-1.0, n),
     :ub => (n::Int) -> fill(1.0, n),
     :description => "Cosine Mixture Function: A multimodal, separable benchmark with global minimum -0.1*n at origin.",

@@ -39,6 +39,7 @@ const SUMOFPOWERS_FUNCTION = TestFunction(
         :min_position => (n::Int) -> zeros(n),
         :min_value => (n::Int) -> 0.0,
         :properties => Set(["unimodal", "convex", "differentiable", "separable", "scalable", "bounded", "continuous"]),
+        :default_n => 2,
         :lb => (n::Int) -> fill(-1.0, n),
         :ub => (n::Int) -> fill(1.0, n),
         :in_molga_smutnicki_2005 => true,
