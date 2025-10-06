@@ -66,8 +66,10 @@ const MISHRA4_FUNCTION = TestFunction(
         :description => "The Mishra Function 4. Properties based on Jamil & Yang (2013).",
         :math => raw"""f(\mathbf{x}) = \sqrt{ \left| \sin \sqrt{ |x_1^2 + x_2| } \right| } + 0.01(x_1 + x_2) """,
         :start => () -> [0.0, 0.0],
-        :min_position => () -> [-9.94112, -10.0],
-        :min_value => () ->  -0.193898880442936,
+ 
+ :min_position => () -> [-9.9411488071635805, -9.9999999963656716],
+  :min_value => () -> -0.19941146886776687,
+
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable"],
         :properties_source => "Jamil & Yang (2013)",
         :source => "Mishra (2006f)",

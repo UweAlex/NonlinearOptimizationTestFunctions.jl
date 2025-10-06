@@ -33,8 +33,8 @@ const DEKKERSAARTS_FUNCTION = TestFunction(
     Dict(
         :name => "dekkersaarts",
         :start => () -> [0.0, 10.0],
-        :min_position => () -> [0.0, 14.94511215174121],
-        :min_value => () -> -24776.51834231769,
+        :min_position => () ->  [0.0, 14.945112151891959],
+        :min_value => () ->  -24776.518342317686,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> [-20.0, -20.0],
         :ub => () -> [20.0, 20.0],

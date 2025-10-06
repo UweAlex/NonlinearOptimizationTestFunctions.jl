@@ -66,8 +66,8 @@ const HARTMANF3_FUNCTION = TestFunction(
     Dict(
         :name => "hartmanf3",
         :start => () -> begin  [0.5, 0.5, 0.5]    end,
-     :min_position => () ->   [0.10724717212007552, 0.5558321120707803, 0.8525642213307071],
-        :min_value => () ->  -3.8627483281136077,
+  :min_position => () -> [0.1146143386186895, 0.5556488499736022, 0.8525469535210816],
+  :min_value => () -> -3.862782147820755,
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable","bounded","continuous"]),
         :lb => () -> begin fill(0.0, 3) end,
         :ub => () -> begin   fill(1.0, 3)       end,

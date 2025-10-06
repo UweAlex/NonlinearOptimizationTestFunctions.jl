@@ -70,8 +70,9 @@ const BRAD_FUNCTION = TestFunction(
         :description => "Brad Function (Brad, 1970): A multimodal, non-separable test function for nonlinear optimization.",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{15} \left( y_i - x_1 - \frac{u_i}{v_i x_2 + w_i x_3} \right)^2, \quad u_i = i, \ v_i = 16 - i, \ w_i = \min(u_i, v_i), \ \mathbf{y} = [0.14, 0.18, 0.22, 0.25, 0.29, 0.32, 0.35, 0.39, 0.37, 0.58, 0.73, 0.96, 1.34, 2.10, 4.39]^\top.""",
         :start => () -> [0.0, 1.0, 1.0],
-        :min_position => () -> [0.0824, 1.133, 2.3437],
-        :min_value => () -> 0.008214878782,
+       :min_position => () -> [0.0824105597447766, 1.1330360919212203, 2.3436951787453162],
+  :min_value => () -> 0.008214877306578994,
+
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable"],
         :lb => () -> [-0.25, 0.01, 0.01],
         :ub => () -> [0.25, 2.5, 2.5],

@@ -51,8 +51,9 @@ const JENNRICHSAMPSON_FUNCTION = TestFunction(
         :description => "The Jennrich-Sampson function. Properties based on Jamil & Yang (2013).",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{10} \left(2 + 2i - (e^{i x_1} + e^{i x_2})\right)^2 """,
         :start => () -> [0.0, 0.0],
-        :min_position => () -> [0.25782543413569486, 0.25782501938212876],
-        :min_value => () -> 124.36218235583101,
+         :min_position => () -> [0.2578252136705121, 0.2578252136701835],
+  :min_value => () -> 124.36218235561489,
+
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable"],
         :properties_source => "Jamil & Yang (2013)",
         :source => "Jennrich and Sampson (1968)",

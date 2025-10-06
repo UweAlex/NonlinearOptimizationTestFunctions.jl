@@ -90,8 +90,8 @@ const HARTMAN6_FUNCTION = TestFunction(
         :description => "The Hartman Function 6, a 6D multimodal non-separable function. Properties based on Jamil & Yang (2013).",
         :math => raw"""f(\mathbf{x}) = -\sum_{i=1}^{4} c_i \exp\left( -\sum_{j=1}^{6} a_{ij} (x_j - p_{ij})^2 \right).""",
         :start => () -> zeros(6),
-        :min_position => () -> [0.20169, 0.15001, 0.476874, 0.275332, 0.311652, 0.6573],
-        :min_value => () -> -3.3223680113872067,
+        :min_position => () -> [0.20168951265373836, 0.15001069271431358, 0.4768739727643224, 0.2753324306183083, 0.31165161653706114, 0.657300534163256],
+        :min_value => () -> -3.3223680114155147,
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable"],
         :properties_source => "Jamil & Yang (2013)",
         :source => "Jamil & Yang (2013)",
@@ -99,3 +99,6 @@ const HARTMAN6_FUNCTION = TestFunction(
         :ub => () -> ones(6),
     )
 )
+
+ 
+ 

@@ -109,8 +109,9 @@ const DEJONGF5ORIGINAL_FUNCTION = TestFunction(
     Dict(
         :name => "dejongf5original",
         :start => () -> [0.0, 0.0],
-        :min_position => () -> [-32.0, -32.0],
-        :min_value => () -> 0.9980038388186492,  # Approximated value at [-32, -32]
+    :min_position => () -> [-31.9798734929971893, -31.9798734897128440],
+  :min_value => () -> 0.9980038378086058,
+ # Approximated value at [-32, -32]
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous", "finite_at_inf"]),
         :lb => () -> [-65.536, -65.536],
         :ub => () -> [65.536, 65.536],

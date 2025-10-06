@@ -132,8 +132,8 @@ const COLA_FUNCTION = TestFunction(
         :description => "Cola function (continuous, differentiable, non-separable, non-scalable, multimodal). Source: Adorio & Diliman (2005). 17D positioning problem with fixed points (x1=y1=y2=0). Literature global min f*=11.7464 (MVF-Library); approximate position from Jamil & Yang yields f≈11.828.",
         :math => raw"""f(\mathbf{u}) = \sum_{1 \le j < i \le 10} (r_{i,j} - d_{i,j})^2, \quad r_{i,j} = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2} """,
         :start => () -> zeros(17),
-        :min_position => () ->[0.6577,1.3410,0.0622,−0.9216,−0.8587,0.0399,−3.3508,0.6715,−3.3960,2.3815,−1.3565,1.3510,−3.3405,1.8923,−2.7016,−0.9051,−1.6774],
-        :min_value => () -> 10.533719125376269,  # Literature value 11.828
+     :min_position => () -> [0.6577179521834655, 1.3410086494718647, 0.0621925866606903, -0.9215843284021408, -0.8587539108194528, 0.0398894904746407, -3.3508073710903923, 0.6714854553331792, -3.3960325842653383, 2.3815499197072532, -1.3565015163235619, 1.3510478875312162, -3.3405083834260405, 1.8923144784852317, -2.7015951415440593, -0.9050732332838868, -1.6774292643741160],
+  :min_value => () -> 10.533719093221547,  # Literature value 11.828
         :properties => ["bounded", "continuous", "differentiable", "non-separable", "multimodal"],
         :lb => () -> [0.0; fill(-4.0, 16)],
         :ub => () -> [4.0; fill(4.0, 16)],

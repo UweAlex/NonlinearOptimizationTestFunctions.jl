@@ -1,10 +1,13 @@
 # test/minima_tests.jl
 # Purpose: Simplified test to validate minima metadata for all functions with Nelder-Mead optimization
-# Last modified: September 30, 2025
+# Last modified: October 04, 2025
 
 using Test, Optim
 using NonlinearOptimizationTestFunctions
 using LinearAlgebra
+using Random  # Added for noise handling (seeding if needed)
+using Statistics  # Added for mean and std in noise averaging
+using Printf  # Added for high-precision formatting
 
 # Retrieves and validates basic metadata for a test function with detailed error reporting.
 #
@@ -97,6 +100,7 @@ end #function
 #
 # Purpose:
 # For differentiable functions, checks if the gradient is zero to skip optimization. For all functions, optimizes with Nelder-Mead and validates metadata.
+# Improved for has_noise: Uses range-checks, looser tolerances, and multiple evaluations for stability.
 #
 # Parameters:
 # - `tf`: The test function object containing metadata and methods (`f`, `grad`).
@@ -110,7 +114,9 @@ end #function
 # - `Bool`: True if test passed, False if test failed.
 function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
     is_differentiable = "differentiable" in tf.meta[:properties] && !("partially differentiable" in tf.meta[:properties])
+    has_noise = "has_noise" in tf.meta[:properties]
     
+    # Gradient check (deterministic even for noisy f)
     if is_differentiable
         initial_grad = tf.grad(min_pos)
         initial_norm = norm(initial_grad)
@@ -119,8 +125,90 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
         if lb !== nothing && ub !== nothing
             at_bounds = any(isapprox.(min_pos, lb, atol=1e-8)) || any(isapprox.(min_pos, ub, atol=1e-8))
         end
-        if !isapprox(initial_norm, 0.0, atol=1e-3) && !at_bounds
-            println("Warning: Gradient not zero at alleged minimum for $fn_name: norm=$initial_norm")
+        
+        # Gradient-Check mit Verbesserungsversuch
+        if !isapprox(initial_norm, 0.0, atol=1e-7) && !at_bounds
+            if initial_norm > 1e-4  # Schwellwert für Optimierungsversuch
+                println("Warning: Gradient not zero at alleged minimum for $fn_name: norm=$initial_norm")
+                println("  Gradient: $initial_grad")
+                println("  Attempting gradient norm minimization...")
+                
+                # Minimiere ||grad||^2 mit Bounds-Constraint
+                grad_norm_sq = x -> begin
+                    # Penalty für Bounds-Verletzung
+                    if lb !== nothing && any(x .< lb)
+                        return 1e10
+                    end
+                    if ub !== nothing && any(x .> ub)
+                        return 1e10
+                    end
+                    g = tf.grad(x)
+                    return dot(g, g)
+                end
+                
+                best_pos = min_pos
+                best_grad_norm = initial_norm
+                best_fx = min_fx
+                
+                # Versuche mehrere Starts
+                starts = [min_pos]
+                # Füge leicht verschobene Starts hinzu
+                for offset_scale in [0.01, 0.1]
+                    offset = offset_scale * (rand(length(min_pos)) .- 0.5)
+                    perturbed = min_pos .+ offset
+                    if lb !== nothing && ub !== nothing
+                        perturbed = max.(min.(perturbed, ub .- 1e-8), lb .+ 1e-8)
+                    end
+                    push!(starts, perturbed)
+                end
+                
+                for start in starts
+                    try
+                        res = optimize(grad_norm_sq, start, LBFGS(), 
+                                     Optim.Options(iterations=10000, g_tol=1e-14))
+                        cand_pos = Optim.minimizer(res)
+                        cand_grad = tf.grad(cand_pos)
+                        cand_norm = norm(cand_grad)
+                        cand_fx = tf.f(cand_pos)
+                        
+                        # Akzeptiere nur, wenn Gradient deutlich besser UND f-Wert ähnlich/besser UND innerhalb Bounds
+                        in_bounds = true
+                        if lb !== nothing
+                            in_bounds = in_bounds && all(cand_pos .>= lb .- 1e-10)
+                        end
+                        if ub !== nothing
+                            in_bounds = in_bounds && all(cand_pos .<= ub .+ 1e-10)
+                        end
+                        
+                        if in_bounds && cand_norm < best_grad_norm * 0.5 && cand_fx <= best_fx + 1e-6
+                            best_pos = cand_pos
+                            best_grad_norm = cand_norm
+                            best_fx = cand_fx
+                        end
+                    catch e
+                        # Ignoriere Fehler bei einzelnen Starts
+                    end
+                end
+                
+                if best_grad_norm < initial_norm * 0.5
+                    println("\n" * "="^80)
+                    println("IMPROVED MINIMUM via gradient minimization for $fn_name:")
+                    println("="^80)
+                    pos_str = "[" * join([@sprintf("%.16f", x) for x in best_pos], ", ") * "]"
+                    println("  :min_position => () -> $pos_str,")
+                    println("  :min_value => () -> $(repr(best_fx)),")
+                    println("  Gradient norm: $best_grad_norm (was: $initial_norm)")
+                    println("="^80 * "\n")
+                    
+                    # Update für weitere Tests
+                    min_pos = best_pos
+                    min_fx = best_fx
+                else
+                    println("  No significant improvement found (best grad norm: $best_grad_norm)")
+                end
+            elseif initial_norm > 1e-7
+                println("Info: Small but non-zero gradient at minimum for $fn_name: norm=$initial_norm")
+            end
         end #if
     end #if
     
@@ -133,10 +221,22 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
         end #if
         tf.f(x)
     end #function
+    
     iterations = 100000
     res_f = optimize(bounded_func, min_pos, NelderMead(), Optim.Options(iterations=iterations, f_reltol=1e-9))
     refined_pos = Optim.minimizer(res_f)
-    refined_fx = tf.f(refined_pos)
+    
+    # For noisy functions: Average multiple evaluations at refined_pos for stability
+    if has_noise
+        num_samples = 20  # Increased for better noise averaging (low overall impact)
+        refined_fx_samples = [tf.f(refined_pos) for _ in 1:num_samples]
+        refined_fx = mean(refined_fx_samples)
+        std_samples = std(refined_fx_samples)  # Optional: Log std for quality check
+        println("Info: Averaged $num_samples noisy evaluations for $fn_name: mean=$refined_fx (std=$std_samples, range: $(minimum(refined_fx_samples)) to $(maximum(refined_fx_samples)))")
+    else
+        refined_fx = tf.f(refined_pos)
+    end
+    
     is_converged = try
         Optim.converged(res_f)
     catch
@@ -149,23 +249,70 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
     end #try
     
     dist = norm(refined_pos - min_pos)
-    fx_diff = abs(refined_fx - min_fx)
-    pos_tolerance = 1e-8
-    fx_tolerance = 1e-10
     
-    if dist > pos_tolerance || fx_diff > fx_tolerance
-        println("Warning: Nelder-Mead did not converge within tolerances for $fn_name")
-        @info "Nelder-Mead Nicht-Konvergenz Details für $fn_name" Erwartete_Minimum_Position=min_pos Erwarteter_Minimalwert=min_fx Gefundene_Position=refined_pos 
-        print("refined_pos: ");println(refined_pos)
-        Gefundener_Funktionswert=refined_fx
-        print("refined_fx: ");println(refined_fx)
-        print("Funktionswert am vorgeblichen minimum:");println(tf.f(min_pos));
-    
-        println("  Deviation: distance=$dist, fx_diff=$fx_diff")
-        @test false
-        return false
+    # Adaptive tolerances based on noise
+    if has_noise
+        pos_tolerance = 0.1  # Looser for position due to noise-induced shifts
+        fx_tolerance = 1.0   # For [0,1) noise; check range instead of exact diff
+        # Range-check for noisy fx
+        f_at_min = tf.f(min_pos)
+        if !(f_at_min >= min_fx && f_at_min < min_fx + fx_tolerance)
+            println("Warning: Noisy value at expected min out of range for $fn_name: $f_at_min (expected [$min_fx, $min_fx + $fx_tolerance))")
+            @test false
+            return false
+        end
+        if !(refined_fx >= min_fx && refined_fx < min_fx + fx_tolerance)
+            println("Warning: Refined noisy value out of range for $fn_name: $refined_fx")
+            @test false
+            return false
+        end
+        # For noisy, convergence is expected to be loose; skip strict converged check
+        if dist > pos_tolerance
+            println("Info: Expected loose convergence for noisy $fn_name (dist=$dist > $pos_tolerance)")
+        end
+        if !is_converged
+            println("Info: Expected non-convergence warning for noisy $fn_name; treating as passed with tolerances.")
+        end
+        return true  # Pass if within range, despite potential non-convergence
+    else
+        fx_diff = abs(refined_fx - min_fx)
+        pos_tolerance = 1e-8
+        fx_tolerance = 1e-10
+        if dist > pos_tolerance || fx_diff > fx_tolerance
+            println("\n" * "="^80)
+            println("WARNING: Nelder-Mead did not converge within tolerances for $fn_name")
+            println("="^80)
+            println("Expected metadata:")
+            println("  :min_position => () -> $min_pos,")
+            println("  :min_value => () -> $min_fx,")
+            println("\nOptimization results:")
+            println("  Refined position: $refined_pos")
+            println("  Refined value: $refined_fx")
+            println("\nValidation:")
+            println("  Function value at expected minimum: $(tf.f(min_pos))")
+            println("  Position deviation (norm): $dist (tolerance: $pos_tolerance)")
+            println("  Value deviation (abs): $fx_diff (tolerance: $fx_tolerance)")
+            
+            if dist > pos_tolerance && fx_diff > fx_tolerance
+                println("\n" * "!"^80)
+                println("SUGGESTED FIX for $fn_name:")
+                println("!"^80)
+                # Format with high precision
+                pos_str = "[" * join([@sprintf("%.16f", x) for x in refined_pos], ", ") * "]"
+                println("  :min_position => () -> $pos_str,")
+                println("  :min_value => () -> $(repr(refined_fx)),")
+                println("!"^80 * "\n")
+            elseif dist > pos_tolerance
+                println("\nNote: Position improved but value matches. Consider updating :min_position")
+            else
+                println("\nNote: Position matches but value differs. Consider updating :min_value")
+            end
+            
+            @test false
+            return false
+        end #if
+        return true
     end #if
-    return true
 end #function
 
 # Summarizes the results of the minimum tests.

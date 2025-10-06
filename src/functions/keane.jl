@@ -57,8 +57,8 @@ const KEANE_FUNCTION = TestFunction(
     Dict(
         :name => "keane",
         :start => () -> [0.0, 0.0],
-        :min_position => () -> [0.0, 1.39325],
-        :min_value => () ->   -0.6736675211458142,
+        :min_position => () -> [0.0, 1.3932490753257145],
+        :min_value => () ->   -0.6736675211468548,
         :properties => Set(["multimodal", "continuous", "differentiable", "non-separable", "bounded", "non-convex"]),
         :lb => () -> [0.0, 0.0],
         :ub => () -> [10.0, 10.0],

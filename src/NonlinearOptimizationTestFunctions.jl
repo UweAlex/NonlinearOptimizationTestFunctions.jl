@@ -13,12 +13,12 @@ using ForwardDiff   # Used for automatic differentiation compatibility
 # Define valid properties for test functions
 # Purpose: Specifies the allowed properties that can be assigned to test functions in meta[:properties].
 # Context: Ensures metadata consistency and validation during TestFunction construction.
-const VALID_PROPERTIES = Set([
-    "unimodal", "multimodal", "highly multimodal", "deceptive",
-    "convex", "non-convex", "quasi-convex", "strongly convex",
-    "separable", "non-separable", "partially separable", "fully non-separable",
-    "differentiable", "partially differentiable", "scalable", "continuous", "bounded", "has_constraints",
-    "controversial", "has_noise", "finite_at_inf"
+
+const VALID_PROPERTIES = Set{String}([
+    "bounded", "continuous", "controversial", "convex", "deceptive", "differentiable", "finite_at_inf",
+    "fully non-separable", "has_constraints", "has_noise", "highly multimodal", "multimodal",
+    "non-convex", "non-separable", "partially differentiable", "partially separable", "quasi-convex",
+    "scalable", "separable", "strongly convex", "unimodal", "ill-conditioned"
 ])
 
 # Default dimension for scalable functions

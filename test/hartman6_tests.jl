@@ -21,7 +21,7 @@ using Test, NonlinearOptimizationTestFunctions
     @test f_start ≈ -0.00509 atol=1e-3
 
     min_pos = tf.meta[:min_position]()
-    @test min_pos ≈ [0.20169, 0.15001, 0.476874, 0.275332, 0.311652, 0.6573] atol=1e-6
+    @test min_pos ≈  [0.20168951265373836, 0.15001069271431358, 0.4768739727643224, 0.2753324306183083, 0.31165161653706114, 0.657300534163256]  atol=1e-6
     f_min = tf.f(min_pos)
     @test f_min ≈ tf.meta[:min_value]() atol=1e-8
 

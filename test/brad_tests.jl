@@ -20,7 +20,7 @@ f_start = tf.f(start_point)
 @test f_start ≈ 12.916 atol=1e-3  # Korrigierter Wert bei [0,1,1]
 
 min_pos = tf.meta[:min_position]()
-@test min_pos ≈ [0.0824, 1.133, 2.3437] atol=1e-6
+@test min_pos ≈  [0.0824105597447766, 1.1330360919212203, 2.343695178745316] atol=1e-6
 f_min = tf.f(min_pos)
 @test f_min ≈ tf.meta[:min_value]() atol=1e-6
 

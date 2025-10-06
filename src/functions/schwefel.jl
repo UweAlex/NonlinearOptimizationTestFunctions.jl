@@ -43,10 +43,10 @@ const SCHWEFEL_FUNCTION = TestFunction(
             n >= 1 || throw(ArgumentError("Schwefel requires at least 1 dimension"))
             fill(0.0, n)
         end,
-        :min_position => (n::Int) -> begin
-            n >= 1 || throw(ArgumentError("Schwefel requires at least 1 dimension"))
-            fill(420.968746, n)
-        end,
+       :min_position => (n::Int) -> begin
+    n < 1 && throw(ArgumentError("Dimension must be at least 1"))
+    fill(420.968746359982, n)  # war: 420.968746
+end,
         :min_value => (n::Int) -> 0.0,
         :properties => Set(["differentiable", "multimodal", "non-convex", "separable", "scalable", "continuous", "bounded"]),
         :default_n => 2,

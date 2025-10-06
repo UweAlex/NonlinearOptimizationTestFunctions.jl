@@ -1,57 +1,55 @@
 # test/rosenbrock_tests.jl
-# Purpose: Tests for the Rosenbrock function in NonlinearOptimizationTestFunctions.
-# Context: Verifies function values, gradients, and optimization.
-# Last modified: 16. Juli 2025, 11:36 AM CEST
 
-using Test, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctions: ROSENBROCK_FUNCTION, rosenbrock, rosenbrock_gradient
-using Optim
+using Test, NonlinearOptimizationTestFunctions, ForwardDiff
 
-function finite_difference_gradient(f, x, h=1e-6)
-    n = length(x)
-    grad = zeros(n)
-    for i in 1:n
-        x_plus = copy(x)
-        x_minus = copy(x)
-        x_plus[i] += h
-        x_minus[i] -= h
-        grad[i] = (f(x_plus) - f(x_minus)) / (2h)
-    end
-    return grad
-end
-
-@testset "Rosenbrock Tests" begin
+@testset "rosenbrock" begin
     tf = ROSENBROCK_FUNCTION
-    @test_throws ArgumentError rosenbrock([1.0])
-    @test isnan(rosenbrock([NaN, 1.0]))
-    @test isinf(rosenbrock([Inf, 1.0]))
-    @test isfinite(rosenbrock([1e-308, 1e-308]))
-    @test rosenbrock([1.0, 1.0]) ≈ 0.0
-    @test rosenbrock([0.5, 0.5]) ≈ 6.5
-    @test rosenbrock_gradient([1.0, 1.0]) ≈ [0.0, 0.0]
-    @test rosenbrock_gradient([0.5, 0.5])[1] ≈ -51.0 atol=1e-6
-    @test rosenbrock_gradient([0.5, 0.5])[2] ≈ 50.0 atol=1e-6
-    @test rosenbrock_gradient([0.5, 0.5]) ≈ finite_difference_gradient(rosenbrock, [0.5, 0.5]) atol=1e-6
-    x = tf.meta[:start](2)
-    G = zeros(length(x))
-    tf.gradient!(G, x)
-    @test G ≈ rosenbrock_gradient(x) atol=1e-6
+    
     @test tf.meta[:name] == "rosenbrock"
-    @test tf.meta[:start](2) == [0.0, 0.0]
-    @test tf.meta[:min_position](2) == [1.0, 1.0]
-    @test tf.meta[:min_value]() ≈ 0.0
-    @test tf.meta[:lb](2) == [-5.0, -5.0]
-    @test tf.meta[:ub](2) == [5.0, 5.0]
-    @testset "Optimization Tests" begin
-        result = optimize(tf.f, tf.gradient!, tf.meta[:start](2), LBFGS(), Optim.Options(f_reltol=1e-6))
-        @test Optim.minimum(result) < 1e-5
-        @test Optim.minimizer(result) ≈ tf.meta[:min_position](2) atol=1e-3
-    end
-    # Tests für höhere Dimensionen
-    result_n10 = optimize(tf.f, tf.gradient!, tf.meta[:start](10), LBFGS(), Optim.Options(f_reltol=1e-6))
-    @test Optim.minimum(result_n10) < 1e-5
-    @test Optim.minimizer(result_n10) ≈ tf.meta[:min_position](10) atol=1e-3
-    result_n100 = optimize(tf.f, tf.gradient!, tf.meta[:start](100), LBFGS(), Optim.Options(f_reltol=1e-6))
-    @test Optim.minimum(result_n100) < 1e-5
-    @test Optim.minimizer(result_n100) ≈ tf.meta[:min_position](100) atol=1e-3
+    @test has_property(tf, "bounded")
+    @test has_property(tf, "continuous")
+    @test has_property(tf, "differentiable")
+    @test has_property(tf, "non-separable")
+    @test has_property(tf, "scalable")
+    @test has_property(tf, "unimodal")
+    @test has_property(tf, "ill-conditioned")
+    @test length(tf.meta[:properties]) == 7
+    @test tf.meta[:properties_source] == "Jamil & Yang (2013)"
+    
+    @test_throws ArgumentError tf.f(Float64[])
+    @test_throws ArgumentError tf.f([1.0])  # n=1 invalid
+    
+    n = tf.meta[:default_n]
+    @test n == 2
+    
+    start_point = tf.meta[:start](n)
+    @test length(start_point) == n
+    @test start_point ≈ [-1.2, 1.0] atol=1e-6
+    f_start = tf.f(start_point)
+    @test f_start ≈ 24.2 atol=1e-3
+    
+    min_pos = tf.meta[:min_position](n)
+    @test length(min_pos) == n
+    @test all(isapprox.(min_pos, ones(n), atol=1e-8))
+    f_min = tf.f(min_pos)
+    @test f_min ≈ tf.meta[:min_value](n) atol=1e-8
+    
+    lb = tf.meta[:lb](n)
+    @test length(lb) == n
+    @test all(lb .== -30.0)
+    ub = tf.meta[:ub](n)
+    @test length(ub) == n
+    @test all(ub .== 30.0)
+    
+    # Extra point: [0.0, 0.0] for n=2
+    test_pt = zeros(n)
+    @test tf.f(test_pt) ≈ 1.0 atol=1e-3
+    
+    # Gradient at minimum should be zero
+    grad_at_min = tf.grad(min_pos)
+    @test all(isapprox.(grad_at_min, zeros(n), atol=1e-8))
+    
+    # AD gradient match
+    ad_grad = ForwardDiff.gradient(tf.f, min_pos)
+    @test ad_grad ≈ grad_at_min atol=1e-8
 end

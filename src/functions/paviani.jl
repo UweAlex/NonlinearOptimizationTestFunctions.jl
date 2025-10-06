@@ -70,8 +70,8 @@ const PAVIANI_FUNCTION = TestFunction(
         :description => "Paviani Function: 10D multimodal function involving logs and product. Properties based on Jamil & Yang (2013).",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{10} \left[ \left(\ln (x_i - 2)\right)^2 + \left(\ln (10 - x_i)\right)^2 \right] - \left( \prod_{i=1}^{10} x_i \right)^{0.2}. """,
         :start => () -> fill(5.0, 10),
-        :min_position => () -> fill(9.350266, 10),
-        :min_value => () -> -45.778469707445375,
+      :min_position => () -> fill(9.350265833069052, 10),  # war: 9.350266
+:min_value => () -> -45.77846970744629,  # Präziser
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable", "non-convex"],
         :properties_source => "Jamil & Yang (2013)",
         :source => "Himmelblau (1972), via Jamil & Yang (2013): f88",
