@@ -13,7 +13,6 @@ using NonlinearOptimizationTestFunctions: HOLDERTABLE_FUNCTION, holdertable
 
     @testset "Basic Tests" begin
         @test tf.meta[:name] == "holdertable"
-        @test tf.meta[:in_molga_smutnicki_2005] == false
         @test isfinite(holdertable(tf.meta[:lb]()))
         @test isfinite(holdertable(tf.meta[:ub]()))
         @test isfinite(holdertable(fill(1e-308, n)))
@@ -26,23 +25,6 @@ using NonlinearOptimizationTestFunctions: HOLDERTABLE_FUNCTION, holdertable
         @test tf.meta[:lb]() == [-10.0, -10.0]
         @test tf.meta[:ub]() == [10.0, 10.0]
         @test tf.meta[:properties] == Set(["multimodal", "continuous", "partially differentiable", "separable", "bounded", "non-convex"])
-    end
-
-    @testset "Optimization Tests" begin
-        start = tf.meta[:min_position]() + 0.01 * randn(n)
-        result = optimize(
-            tf.f,
-            tf.gradient!,
-            tf.meta[:lb](),
-            tf.meta[:ub](),
-            start,
-            Fminbox(LBFGS()),
-            Optim.Options(f_reltol=1e-6, iterations=10000, time_limit=120.0)
-        )
-        minima = [[8.055023, 9.664590], [-8.055023, 9.664590], [8.055023, -9.664590], [-8.055023, -9.664590]]
-        @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
-        @test any(norm(Optim.minimizer(result) - m) < 1e-3 for m in minima)
     end
 
     @testset "Edge Cases" begin

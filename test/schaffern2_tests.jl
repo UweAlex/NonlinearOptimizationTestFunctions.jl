@@ -37,7 +37,6 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN2_FUNCTION, schaffern2
     @test tf.meta[:min_value]() ≈ 0.0 atol=1e-10
     @test tf.meta[:lb]() == [-100.0, -100.0]
     @test tf.meta[:ub]() == [100.0, 100.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == false
     @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
 
     # Test dimension checks for meta functions

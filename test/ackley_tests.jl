@@ -48,7 +48,6 @@ end
     @test tf.meta[:ub](1) == [32.768]
     @test tf.meta[:lb](2, bounds="alternative") == [-5.0, -5.0]
     @test tf.meta[:ub](2, bounds="alternative") == [5.0, 5.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == true
     @testset "Optimization Tests" begin
         # Startpunkt näher am Minimum für zuverlässige Konvergenz
         start_point = [0.1, 0.1]

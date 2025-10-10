@@ -48,7 +48,6 @@ const FREUDENSTEINROTH_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> fill(-10.0, 2),
         :ub => () -> fill(10.0, 2),
-        :in_molga_smutnicki_2005 => false,  # Nicht in Molga2005.txt
         :description => "Freudenstein-Roth function: Multimodal, non-convex, non-separable, differentiable, fixed dimension (n=2).",
         :math => "f(x) = \\left( x_1 - 13 + \\left( (5 - x_2)x_2 - 2 \\right)x_2 \\right)^2 + \\left( x_1 - 29 + \\left( (x_2 + 1)x_2 - 14 \\right)x_2 \\right)^2"
     )

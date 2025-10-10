@@ -88,7 +88,7 @@ function print_function_properties()
         end
         
         # Use :properties_source if available, else :source, else fallback
-        source = get(meta, :properties_source, get(meta, :source, "Unknown Source"))
+        source = get(meta, :source, get(meta, :source, "Unknown Source"))
         
         # Output in Markdown format
         println("- **$name** [$source:] $properties. Minimum: $min_value at $min_position. Bounds: [$lb, $ub]. Dimensions: $dimensions_str.")

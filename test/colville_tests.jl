@@ -20,7 +20,6 @@ using LinearAlgebra
     @test tf.meta[:min_position]() == [1.0, 1.0, 1.0, 1.0]
     @test tf.meta[:lb]() == fill(-10.0, 4)
     @test tf.meta[:ub]() == fill(10.0, 4)
-    @test tf.meta[:in_molga_smutnicki_2005] == false
     
     # Funktionswert-Tests
     @test isapprox(tf.f([1.0, 1.0, 1.0, 1.0]), 0.0, atol=1e-6)

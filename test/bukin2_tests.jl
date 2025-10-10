@@ -19,7 +19,6 @@ using Optim
     @test tf.meta[:properties] == Set(["bounded","continuous", "differentiable", "multimodal"])
     @test tf.meta[:lb]() == [-15.0, -3.0]
     @test tf.meta[:ub]() == [-5.0, 3.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == false
 
     # Test Funktionswerte
     @test isapprox(bukin2([-10.0, 0.0]), 0.0, atol=1e-6)  # Minimum

@@ -60,7 +60,6 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4
         @test tf.meta[:min_value]() ≈ PRECISE_MIN_VALUE atol=1e-10
         @test tf.meta[:lb]() == [-100.0, -100.0]
         @test tf.meta[:ub]() == [100.0, 100.0]
-        @test tf.meta[:in_molga_smutnicki_2005] == false
         @test Set(tf.meta[:properties]) == Set(["partially differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"])
 
         # Test dimension checks for meta functions

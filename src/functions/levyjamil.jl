@@ -90,7 +90,6 @@ const LEVYJAMIL_FUNCTION = TestFunction(
             n < 1 && throw(ArgumentError("Levy (Jamil) requires at least 1 dimension"))
             fill(10.0, n)
         end,
-        :in_molga_smutnicki_2005 => false,
         :description => "Levy function (Jamil & Yang, 2013): Multimodal, differentiable, non-convex, scalable, bounded, continuous. Global minimum at x* = (1, ..., 1), f* = 0. Bounds: [-10, 10]^n. Note: Follows Jamil & Yang (2013), which may contain typos (e.g., missing coefficient, incorrect 3π scaling). The standard Levy function (see levy.jl) uses w_i = 1 + (x_i - 1)/4. The function is also non-separable, but this property is omitted in tests for consistency.",
         :math => "\\sin^2(3\\pi x_1) + \\sum_{i=1}^{n-1} (x_i - 1)^2 [1 + \\sin^2(3\\pi x_{i+1})] + (x_n - 1)^2 [1 + \\sin^2(2\\pi x_n)]"
     )

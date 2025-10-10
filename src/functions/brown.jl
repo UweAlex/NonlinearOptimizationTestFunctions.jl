@@ -68,7 +68,6 @@ const BROWN_FUNCTION = TestFunction(
             n < 2 && throw(ArgumentError("Brown requires at least 2 dimensions"))
             fill(4.0, n)
         end,
-        :in_molga_smutnicki_2005 => false,
         :description => "Brown function: Unimodal, non-separable, differentiable, scalable, continuous, bounded. Highly sensitive to changes in variables due to exponential terms.",
         :math => "\\sum_{i=1}^{n-1} \\left[ (x_i^2)^{(x_{i+1}^2 + 1)} + (x_{i+1}^2)^{(x_i^2 + 1)} \\right]"
     )

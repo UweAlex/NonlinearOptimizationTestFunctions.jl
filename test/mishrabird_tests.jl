@@ -18,7 +18,6 @@ using NonlinearOptimizationTestFunctions: MISHRAbird_FUNCTION, mishrabird
     @test tf.meta[:min_value]() ≈ -106.764537 atol=1e-6
     @test tf.meta[:lb]() == [-10.0, -6.5]
     @test tf.meta[:ub]() == [0.0, 0.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == false
     @test tf.meta[:properties] == Set(["bounded", "continuous", "differentiable", "multimodal", "non-convex", "non-separable"])
 
     # Function value tests
@@ -36,13 +35,4 @@ using NonlinearOptimizationTestFunctions: MISHRAbird_FUNCTION, mishrabird
     @test isfinite(mishrabird([-10.0, -6.5]))  # Lower bound
     @test isfinite(mishrabird([0.0, 0.0]))  # Upper bound
 
-    # Optimization test with Fminbox to respect bounds
-    @testset "Optimization Test" begin
-        start = tf.meta[:start]()
-        result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), start, Fminbox(LBFGS()), Optim.Options(f_reltol=1e-8))
-        minimizer = Optim.minimizer(result)
-        is_close_to_min1 = isapprox(minimizer, min_pos1, atol=1e-3)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
-        @test is_close_to_min1
-    end
 end

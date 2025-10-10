@@ -19,7 +19,7 @@ using Optim
     @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"])
     @test tf.meta[:lb]() == [-100.0, -100.0]
     @test tf.meta[:ub]() == [100.0, 100.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == false
+
 
     # Test Funktionswerte
     @test isapprox(bohachevsky2([0.0, 0.0]), 0.0, atol=1e-6)  # Minimum

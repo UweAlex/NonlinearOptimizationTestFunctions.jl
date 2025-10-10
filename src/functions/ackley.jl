@@ -65,7 +65,6 @@ const ACKLEY_FUNCTION = TestFunction(
         :default_n => 2,
         :lb => (n::Int=1; bounds="default") -> bounds == "alternative" ? fill(-5.0, n) : fill(-32.768, n),
         :ub => (n::Int=1; bounds="default") -> bounds == "alternative" ? fill(5.0, n) : fill(32.768, n),
-        :in_molga_smutnicki_2005 => true,
         :description => "Ackley function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Standard bounds are [-32.768, 32.768]^n as per Molga & Smutnicki (2005). Alternative bounds [-5, 5]^n are available.",
         :math => "f(x) = -20 \\exp\\left(-0.2 \\sqrt{\\frac{1}{n} \\sum_{i=1}^n x_i^2}\\right) - \\exp\\left(\\frac{1}{n} \\sum_{i=1}^n \\cos(2\\pi x_i)\\right) + 20 + e"
     )

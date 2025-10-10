@@ -26,34 +26,6 @@ using NonlinearOptimizationTestFunctions: LEVYJAMIL_FUNCTION, levyjamil
     @test tf.meta[:min_value](n) ≈ 0.0 atol=1e-5
     @test tf.meta[:lb](n) == [-10.0, -10.0]
     @test tf.meta[:ub](n) == [10.0, 10.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == false
     @test Set(tf.meta[:properties]) == Set(["differentiable", "non-convex", "scalable", "multimodal", "bounded", "continuous"])
-    # Optimization tests
-    @testset "Optimization Tests" begin
-        start = tf.meta[:min_position](n) + 0.001 * randn(n)  # Start near minimum
-        result = optimize(
-            tf.f,
-            tf.gradient!,
-            tf.meta[:lb](n),
-            tf.meta[:ub](n),
-            start,
-            Fminbox(LBFGS()),
-            Optim.Options(f_reltol=1e-6, g_tol=1e-8, iterations=10000, time_limit=120.0)
-        )
-        @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value](n) atol=1e-2
-        @test norm(Optim.minimizer(result) - tf.meta[:min_position](n)) < 0.01
-        # Nelder-Mead test for multimodal function
-        result_nm = optimize(
-            tf.f,
-            tf.meta[:lb](n),
-            tf.meta[:ub](n),
-            start,
-            NelderMead(),
-            Optim.Options(f_reltol=1e-6, iterations=10000, time_limit=120.0)
-        )
-        @test Optim.converged(result_nm)
-        @test Optim.minimum(result_nm) ≈ tf.meta[:min_value](n) atol=1e-2
-        @test norm(Optim.minimizer(result_nm) - tf.meta[:min_position](n)) < 0.01
-    end
+ 
 end

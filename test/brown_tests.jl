@@ -23,7 +23,6 @@ using Optim
     @test tf.meta[:lb](n) == fill(-1.0, n)
     @test tf.meta[:ub](n) == fill(4.0, n)
     @test tf.meta[:properties] == Set(["unimodal", "non-separable", "differentiable", "scalable", "continuous", "bounded"])
-    @test tf.meta[:in_molga_smutnicki_2005] == false
 
     # Test Edge Cases
     @test_throws ArgumentError brown(Float64[])

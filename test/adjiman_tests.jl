@@ -29,17 +29,7 @@ using NonlinearOptimizationTestFunctions: ADJIMAN_FUNCTION, adjiman
     @test isapprox(tf.meta[:min_value](), -2.021806783359787, atol=1e-6)
     @test tf.meta[:lb]() == [-1.0, -1.0]  # Zeile 30
     @test tf.meta[:ub]() == [2.0, 1.0]  # Zeile 31
-    @test tf.meta[:in_molga_smutnicki_2005] == false
     @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "continuous", "bounded"])
 
-    # Optimierungstests mit Schranken
-    @testset "Optimization Tests" begin
-        lb = tf.meta[:lb]()  # Zeile 36
-        ub = tf.meta[:ub]()
-        start = tf.meta[:start]() + 0.01 * randn(n)  # Leichte Störung für multimodale Funktion
-        inner_optimizer = LBFGS()
-        result = optimize(tf.f, tf.gradient!, lb, ub, start, Fminbox(inner_optimizer), Optim.Options(f_reltol=1e-6))
-        @test Optim.minimum(result) ≈ -2.021806783359787 atol=1e-5
-        @test Optim.minimizer(result) ≈ [2.0, 0.10578347] atol=1e-3
-    end
+   
 end

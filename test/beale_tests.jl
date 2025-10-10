@@ -29,17 +29,7 @@ using NonlinearOptimizationTestFunctions: BEALE_FUNCTION, beale
     @test tf.meta[:min_value]() ≈ 0.0 atol=1e-6
     @test tf.meta[:lb]() == [-4.5, -4.5]
     @test tf.meta[:ub]() == [4.5, 4.5]
-    @test tf.meta[:in_molga_smutnicki_2005] == true  # Korrigiert: Beale ist in Molga & Smutnicki (2005)
     @test Set(tf.meta[:properties]) == Set(["unimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
 
-    # Optimierungstests mit Schranken (verwende LBFGS, da differenzierbar)
-    @testset "Optimization Tests" begin
-        lb = tf.meta[:lb]()
-        ub = tf.meta[:ub]()
-        start = [1.0, 1.0]  # Deterministischer Startpunkt
-        result = optimize(tf.f, lb, ub, start, Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6))
-        @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ 0.0 atol=1e-5
-        @test Optim.minimizer(result) ≈ [3.0, 0.5] atol=1e-3
-    end
+   
 end

@@ -41,7 +41,6 @@ const BOHACHEVSKY2_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"]),
         :lb => () -> [-100.0, -100.0],
         :ub => () -> [100.0, 100.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Bohachevsky 2 function: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0 at (0, 0). Bounds: [-100, 100]^2.",
         :math => "f(x) = x_1^2 + 2x_2^2 - 0.3\\cos(3\\pi x_1)\\cos(4\\pi x_2) + 0.3"
     )

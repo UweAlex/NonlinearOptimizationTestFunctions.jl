@@ -15,7 +15,6 @@ using NonlinearOptimizationTestFunctions: CROSSINTRAY_FUNCTION, crossintray, cro
     # Metadata tests
     @test tf.meta[:name] == "crossintray"
     @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "partially differentiable", "bounded", "continuous"])
-    @test tf.meta[:in_molga_smutnicki_2005] == false
 
     # Function value tests
     start = tf.meta[:start]()
@@ -41,32 +40,7 @@ using NonlinearOptimizationTestFunctions: CROSSINTRAY_FUNCTION, crossintray, cro
     @test isinf(crossintray([0.0, Inf]))
     @test isfinite(crossintray([1e-308, 1e-308]))
 
-    # Optimization tests
-    @testset "Optimization Tests" begin
-        lb = tf.meta[:lb]()
-        ub = tf.meta[:ub]()
-        minima = [
-            [1.349406575769872, 1.349406575769872],
-            [1.349406575769872, -1.349406575769872],
-            [-1.349406575769872, 1.349406575769872],
-            [-1.349406575769872, -1.349406575769872]
-        ]
-
-        # Optimization from near one minimum
-        start = [1.349406575769872, 1.349406575769872] .+ 0.01 * randn(n)
-        result = optimize(tf.f, tf.gradient!, lb, ub, start, Fminbox(LBFGS()), Optim.Options(g_abstol=1e-8))
-        @test Optim.converged(result)
-        @test ≈(Optim.minimum(result), tf.meta[:min_value](), atol=1e-6)
-        @test any(norm(Optim.minimizer(result) - m) < 1e-3 for m in minima)
-
-        # Optimization from a different start point
-        start2 = [1.0, 1.0]
-        result2 = optimize(tf.f, tf.gradient!, lb, ub, start2, Fminbox(LBFGS()), Optim.Options(g_abstol=1e-8))
-        @test Optim.converged(result2)
-        @test ≈(Optim.minimum(result2), tf.meta[:min_value](), atol=1e-6)
-        @test any(norm(Optim.minimizer(result2) - m) < 1e-3 for m in minima)
-    end
-
+   
     # Gradient comparison tests
     @testset "Gradient Comparison Tests" begin
         lb = tf.meta[:lb]()

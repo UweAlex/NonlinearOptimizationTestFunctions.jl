@@ -57,7 +57,6 @@ const ACKLEY3_META = Dict(
     :properties => Set(["unimodal", "non-separable", "differentiable", "continuous", "bounded"]),
     :lb => () -> [-32.0, -32.0],
     :ub => () -> [32.0, 32.0],
-    :in_molga_smutnicki_2005 => false,
     :description => "Ackley3 function: Continuous, differentiable, non-separable, non-scalable, unimodal.",
     :math => "\\f(x) = -200 e^{-0.02 \\sqrt{x_1^2 + x_2^2}} + 5 e^{\\cos(3x_1) + \\sin(3x_2)}"
 )

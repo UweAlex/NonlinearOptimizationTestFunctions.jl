@@ -68,7 +68,6 @@ const ALPINEN1_FUNCTION = TestFunction(
             n < 1 && throw(ArgumentError("AlpineN1 requires at least 1 dimension"))
             fill(10.0, n)
         end,
-        :in_molga_smutnicki_2005 => false,
         :description => "AlpineN1 function: Multimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: 0 at (0, ..., 0) and other points where xi * sin(xi) + 0.1 * xi = 0.",
         :math => "\\sum_{i=1}^n |x_i \\sin(x_i) + 0.1 x_i|"
     )

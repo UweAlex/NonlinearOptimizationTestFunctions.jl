@@ -54,7 +54,6 @@ const KEARFOTT_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "continuous", "differentiable", "non-separable", "bounded", "non-convex"]),
         :lb => () -> [-3.0, -3.0],
         :ub => () -> [4.0, 4.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Kearfott function: Multimodal, continuous, differentiable, non-separable, bounded, non-convex. Global minima where x₁² + x₂² = 1.25, e.g., at (0.7905694150420949, -0.7905694150420949) and (-0.7905694150420949, 0.7905694150420949), f* = 1.125. Note: Jamil & Yang (2013) incorrectly lists minima at (0.70710678, -0.70710678) and (-0.70710678, 0.70710678) with f* = 0; those yield f = 1.25.",
         :math => "(x_1^2 + x_2^2 - 2)^2 + (x_1^2 + x_2^2 - 0.5)^2"
     )

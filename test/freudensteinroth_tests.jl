@@ -15,7 +15,6 @@ using LinearAlgebra
     # Test metadata
     @test tf.meta[:name] == "freudensteinroth"
     @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
-    @test tf.meta[:in_molga_smutnicki_2005] == false
     @test tf.meta[:start]() == [4.99, 3.99]
     @test tf.meta[:min_position]() == [5.0, 4.0]
     @test tf.meta[:min_value]() == 0.0

@@ -54,7 +54,6 @@ const COLVILLE_FUNCTION = TestFunction(
         :properties => Set(["unimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> fill(-10.0, 4),
         :ub => () -> fill(10.0, 4),
-        :in_molga_smutnicki_2005 => false,
         :description => "Colville function: Unimodal, non-convex, non-separable, differentiable, bounded, continuous. Known for its narrow, curved valleys challenging optimization algorithms.",
         :math => "f(x) = 100(x_1^2 - x_2)^2 + (x_1 - 1)^2 + (x_3 - 1)^2 + 90(x_3^2 - x_4)^2 + 10.1((x_2 - 1)^2 + (x_4 - 1)^2) + 19.8(x_2 - 1)(x_4 - 1)"
     )

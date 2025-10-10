@@ -13,7 +13,6 @@ using NonlinearOptimizationTestFunctions: ALPINEN1_FUNCTION, alpinen1, alpinen1_
     # Test metadata
     @test tf.meta[:name] == "alpinen1"
     @test tf.meta[:properties] == Set(["multimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"])
-    @test tf.meta[:in_molga_smutnicki_2005] == false
 
     # Test function values
     @test alpinen1(tf.meta[:min_position](n)) ≈ 0.0 atol=1e-6

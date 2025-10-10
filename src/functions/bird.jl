@@ -48,7 +48,6 @@ const BIRD_FUNCTION = TestFunction(
         :properties => Set(["bounded", "continuous", "differentiable", "multimodal", "non-convex", "non-separable"]),
         :lb => () -> [-2π, -2π],
         :ub => () -> [2π, 2π],
-        :in_molga_smutnicki_2005 => false,
         :description => "Bird function: Multimodal, non-convex, non-separable, differentiable, fixed.",
         :math => "\\sin(x_1) \\exp\\left((1 - \\cos(x_2))^2\\right) + \\cos(x_2) \\exp\\left((1 - \\sin(x_1))^2\\right) + (x_1 - x_2)^2"
     )

@@ -68,7 +68,6 @@ const ALPINEN2_FUNCTION = TestFunction(
         :default_n => 2,
         :lb => (n::Int) -> zeros(n),
         :ub => (n::Int) -> fill(10.0, n),
-        :in_molga_smutnicki_2005 => false,
         :description => "AlpineN2 function: Multimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: - (2.8081311800070053)^n at (7.917052698245946, ..., 7.917052698245946). Note: Negated product for minimization. Defined for all inputs, with bounds [0,10]^n enforced by the optimizer.",
         :math => "- \\prod_{i=1}^n \\sqrt{x_i} \\sin(x_i)"
     )

@@ -63,7 +63,6 @@ const BRENT_FUNCTION = TestFunction(
         :properties => Set(["continuous", "differentiable", "non-separable", "unimodal", "bounded"]),  # Properties from jamil2013.txt
         :lb => () -> [-10.0, -10.0],  # Lower bounds
         :ub => () -> [10.0, 10.0],  # Upper bounds
-        :in_molga_smutnicki_2005 => false,  # Not in Molga & Smutnicki (2005)
         :description => "The Brent function is a non-scalable, unimodal test function with a parabolic bowl centered at (-10, -10) and a Gaussian bump at the origin.",  # Descriptive text
         :math => "f(x) = (x_1 + 10)^2 + (x_2 + 10)^2 + \\exp(-x_1^2 - x_2^2)"  # LaTeX formula
     )

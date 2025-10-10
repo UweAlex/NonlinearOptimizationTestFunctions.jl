@@ -44,7 +44,6 @@ const BUKIN2_FUNCTION = TestFunction(
         :properties => Set(["bounded","continuous", "differentiable", "multimodal"]),
         :lb => () -> [-15.0, -3.0],
         :ub => () -> [-5.0, 3.0],  # Korrigierte obere Schranke für x2
-        :in_molga_smutnicki_2005 => false,
         :description => "Bukin 2 function: Continuous, differentiable, non-separable, non-scalable, multimodal. Minimum: 0.0 at (-10.0, 0.0). Bounds: x1 in [-15, -5], x2 in [-3, 3]. Note: Formula corrected with ^2 to match minimum per Jamil & Yang (2013) due to original definition inconsistency.",
         :math => "f(x) = 100 (x_2 - 0.01 x_1^2 + 1)^2 + 0.01 (x_1 + 10)^2"
     )

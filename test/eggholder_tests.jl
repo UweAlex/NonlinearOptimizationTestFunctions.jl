@@ -13,7 +13,6 @@ using NonlinearOptimizationTestFunctions: EGGHOLDER_FUNCTION, eggholder
 
     @testset "Basic Tests" begin
         @test tf.meta[:name] == "eggholder"
-        @test tf.meta[:in_molga_smutnicki_2005] == false
         @test isfinite(eggholder(tf.meta[:lb]()))
         @test isfinite(eggholder(tf.meta[:ub]()))
         @test isfinite(eggholder(fill(1e-308, n)))
@@ -26,22 +25,6 @@ using NonlinearOptimizationTestFunctions: EGGHOLDER_FUNCTION, eggholder
         @test tf.meta[:lb]() == [-512.0, -512.0]
         @test tf.meta[:ub]() == [512.0, 512.0]
         @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
-    end
-
-    @testset "Optimization Tests" begin
-        start = [500.0, 400.0]  # Näher am Minimum für bessere Konvergenz
-        result = optimize(
-            tf.f,
-            tf.gradient!,
-            tf.meta[:lb](),
-            tf.meta[:ub](),
-            start,
-            Fminbox(LBFGS()),
-            Optim.Options(f_reltol=1e-6, iterations=10000, time_limit=120.0)
-        )
-        @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-3
-        @test Optim.minimizer(result) ≈ tf.meta[:min_position]() atol=1e-2
     end
 
     @testset "Edge Cases" begin

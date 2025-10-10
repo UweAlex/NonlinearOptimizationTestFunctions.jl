@@ -50,7 +50,6 @@ const ADJIMAN_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> [-1.0, -1.0],
         :ub => () -> [2.0, 1.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Adjiman function: Multimodal, non-convex, non-separable, differentiable, bounded test function with a single global minimum at (2.0, 0.10578347).",
         :math => "\\cos(x_1) \\sin(x_2) - \\frac{x_1}{x_2^2 + 1}"
     )

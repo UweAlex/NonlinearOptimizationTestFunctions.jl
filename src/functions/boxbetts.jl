@@ -52,7 +52,6 @@ const BOXBETTS_FUNCTION = TestFunction(
         :properties => Set(["continuous", "differentiable", "multimodal"]),
         :lb => () -> [0.9, 9.0, 0.9],
         :ub => () -> [1.2, 11.2, 1.2],
-        :in_molga_smutnicki_2005 => false,
         :description => "Box-Betts Quadratic Sum function: Continuous, differentiable, non-separable, nonscalable, multimodal.",
         :math => "\\sum_{i=1}^{10} \\left( e^{-0.1i x_1} - e^{-0.1i x_2} - (e^{-0.1i} - e^{-i}) x_3 \\right)^2",
         :source => "MVF - Multivariate Test Functions Library in C, Ernesto P. Adorio, Revised January 14, 2005"

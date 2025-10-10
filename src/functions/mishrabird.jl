@@ -63,7 +63,6 @@ const MISHRAbird_FUNCTION = TestFunction(
         :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"]),
         :lb => () -> [-10.0, -6.5],
         :ub => () -> [0.0, 0.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Mishra's Bird function is a multimodal, non-separable function with two known global minima. It is often cited with the constraint (x+5)^2+(y+5)^2 < 25, but this implementation is unconstrained.",
         :math => "f(x, y) = \\sin(y) e^{(1 - \\cos(x))^2} + \\cos(x) e^{(1 - \\sin(y))^2} + (x - y)^2"
     )

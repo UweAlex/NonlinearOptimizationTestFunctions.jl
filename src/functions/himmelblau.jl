@@ -51,7 +51,6 @@ const HIMMELBLAU_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"]),
         :lb => () -> [-5.0, -5.0],
         :ub => () -> [5.0, 5.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Himmelblau function: Multimodal, non-convex, non-separable, differentiable, bounded, continuous. Minimum: 0.0 at [3.0, 2.0], [-2.805118, 3.131312], [-3.779310, -3.283186], [3.584428, -1.848126]. Bounds: [-5, 5]^2. Dimensions: n=2.",
         :math => "(x_1^2 + x_2 - 11)^2 + (x_1 + x_2^2 - 7)^2"
     )

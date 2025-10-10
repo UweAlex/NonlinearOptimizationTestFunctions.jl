@@ -60,7 +60,6 @@ const EGGHOLDER_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded", "continuous"]),
         :lb => () -> [-512.0, -512.0],
         :ub => () -> [512.0, 512.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Eggholder function: Multimodal, non-convex, non-separable, differentiable, bounded, continuous test function with a global minimum of -959.6406627208506 at [512.0, 404.2318058008512]. Bounds: [-512, 512]^2. Dimensions: n=2. Used for benchmarking nonlinear optimization algorithms due to its many local minima. See [Jamil & Yang (2013)] for details.",
         :math => "- (x_2 + 47) \\sin\\left(\\sqrt{\\left|x_2 + \\frac{x_1}{2} + 47\\right|}\\right) - x_1 \\sin\\left(\\sqrt{\\left|x_1 - (x_2 + 47)\\right|}\\right)",
         :reference => "[Jamil & Yang (2013)]"

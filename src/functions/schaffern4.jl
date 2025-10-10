@@ -107,7 +107,6 @@ const SCHAFFERN4_FUNCTION = TestFunction(
         :properties => Set(["partially differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"]),
         :lb => () -> [-100.0, -100.0],
         :ub => () -> [100.0, 100.0],
-        :in_molga_smutnicki_2005 => false,
         :description => "Schaffer N.4 function: A multimodal function with global minimum at (0, 1.25313) and other equivalent points.",
         :math => "f(x) = 0.5 + \\frac{\\cos^2(\\sin(|x_1^2 - x_2^2|)) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}"
     )

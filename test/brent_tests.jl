@@ -15,7 +15,7 @@ using ForwardDiff
     # Test metadata
     @test tf.meta[:name] == "brent"  # Verify function name
     @test tf.meta[:properties] == Set(["continuous", "differentiable", "non-separable", "unimodal", "bounded"])  # Verify properties
-    @test tf.meta[:in_molga_smutnicki_2005] == false  # Verify source information
+
 
     # Test function values at key points
     x_start = tf.meta[:start]()  # [0.0, 0.0]

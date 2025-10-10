@@ -59,7 +59,6 @@ const CROSSINTRAY_FUNCTION = TestFunction(
         :properties => Set(["multimodal", "non-convex", "non-separable", "partially differentiable", "bounded", "continuous"]),
         :lb => () -> [-10.0, -10.0],
         :ub => () -> [10.0, 10.0],
-        :in_molga_smutnicki_2005 => false,  # Fixed to false
         :description => "Cross-in-Tray function: A multimodal, non-convex, non-separable test function with four global minima at [1.349406575769872, 1.349406575769872], [-1.349406575769872, 1.349406575769872], [1.349406575769872, -1.349406575769872], [-1.349406575769872, -1.349406575769872].",
         :math => "-0.0001 \\left( \\left| \\sin(x_1) \\sin(x_2) \\exp\\left( \\left| 100 - \\frac{\\sqrt{x_1^2 + x_2^2}}{\\pi} \\right| \\right) \\right| + 1 \\right)^{0.1}"
     )

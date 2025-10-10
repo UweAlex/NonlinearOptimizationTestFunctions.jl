@@ -72,7 +72,6 @@ const TRID_FUNCTION = TestFunction(
             n < 2 && throw(ArgumentError("Trid requires at least 2 dimension(s)"))
             fill(n^2, n)
         end,
-        :in_molga_smutnicki_2005 => false,
         :description => "Trid function: Unimodal, convex, non-separable, differentiable, scalable test function with a single global minimum, suitable for testing optimization algorithms on non-separable problems.",
         :math => "\\sum_{i=1}^n (x_i - 1)^2 - \\sum_{i=2}^n x_i x_{i-1}"
     )
