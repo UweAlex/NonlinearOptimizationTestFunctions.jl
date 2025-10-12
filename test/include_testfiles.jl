@@ -3,7 +3,7 @@
 # Context: Part of the test suite, enables modular test loading for individual test functions.
 # Last modified: 18. Juli 2025
 
-using Test, NonlinearOptimizationTestFunctions, ForwardDiff, Optim, Zygote
+using Test, ForwardDiff, Optim, Zygote
 
 
 
@@ -150,3 +150,14 @@ include("threehumpcamel_tests.jl")
 include("trid_tests.jl")
 include("wood_tests.jl")
 include("zakharov_tests.jl")
+include("schumersteiglitz_tests.jl")
+include("schwefel12_tests.jl")
+include("schwefel24_tests.jl")
+include("schwefel26_tests.jl")
+include("schwefel220_tests.jl")
+include("schwefel221_tests.jl")
+include("schwefel222_tests.jl")
+include("schwefel223_tests.jl")
+include("schwefel225_tests.jl")
+include("schwefel226_tests.jl")
+include("schwefel236_tests.jl")

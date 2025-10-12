@@ -222,13 +222,13 @@ const <UPPERCASE>_FUNCTION = TestFunction(
 ## Tests und Validierung
 Ziel: Zentrale Tests + funktionsspezifisch in test/<name>_tests.jl.
 
-- [RULE_ATOL] SHOULD: atol=1e-3 für Start/Extra, 1e-8 für Gradient/Minima. [NEW] Für has_noise: Kein atol; Range-Check (z.B. 0 <= f <1).
+- [RULE_ATOL] SHOULD: atol=1e-3 für Start/Extra, 1e-8 für Minima. [NEW] Für has_noise: Kein atol; Range-Check (z.B. 0 <= f <1).
 - MUST: Einbinden via include("test/<name>_tests.jl") in include_testfiles.jl.
 - SHOULD: Berechne Test-Werte exakt via REPL (z.B. tf.f(start_point)). [NEW] Für Noise: Multiple Evaluations (z.B. mean([tf.f(min_pos) for _ in 1:10]) ≈ deterministischer Wert).
 - [RULE_TEST_SYNTAX] MUST: Für Vektor-Vergleiche: Verwende all(isapprox.(vec, target, atol=1e-8)) statt all(vec .≈ target, atol=1e-8) – letzteres wirft MethodError, da all() atol ignoriert. Für Skalare: x ≈ y atol=1e-8.
 - [NEW] Meta-Aufruf im Test: Passe Aufruf an Signatur an: Wenn () -> ..., dann tf.meta[:min_value](); wenn (n::Int) -> ..., dann tf.meta[:min_value](n).
 - [NEW] Für skalierbare: Verwende n = tf.meta[:default_n] in Tests für Standard-Validierungen (z.B. min_pos = tf.meta[:min_position](n)).
-- [NEW RULE_NOISE_VALIDATION] MUST: In funktionsspezifischen Tests und runtests.jl: Für "has_noise": @test f_min >= min_value && f_min < min_value + noise_upper (z.B. <1 für [0,1)). Gradient-Test bleibt deterministisch (@test grad_at_min ≈ zeros atol=1e-8).
+- [NEW RULE_NOISE_VALIDATION] MUST: In funktionsspezifischen Tests und runtests.jl: Für "has_noise": @test f_min >= min_value && f_min < min_value + noise_upper (z.B. <1 für [0,1)). 
 
 Template für test/<name>_tests.jl (non-scalable):
 
