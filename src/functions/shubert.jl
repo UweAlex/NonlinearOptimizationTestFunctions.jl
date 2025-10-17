@@ -1,67 +1,77 @@
 # src/functions/shubert.jl
-# Purpose: Implements the Shubert test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: 19. Juli 2025
+# Purpose: Implementation of the Shubert test function.
+# Global minimum: f(x*)=-186.7309088310238 at x*=[-7.08350641, -1.42512843] (one of 18 global minima) [source rounds to -186.7309].
+# Bounds: -10 ≤ x_i ≤ 10.
 
 export SHUBERT_FUNCTION, shubert, shubert_gradient
 
-using LinearAlgebra
-
-# Computes the Shubert function value at point `x`. Requires exactly 2 dimensions.
-#
-# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-#
-# Throws `ArgumentError` if the input vector is not 2-dimensional.
 function shubert(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
+    n = length(x)
+    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shubert" [RULE_NAME_CONSISTENCY]
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
-    x1, x2 = x
-    sum1 = sum(i * cos((i + 1) * x1 + i) for i in 1:5)
-    sum2 = sum(i * cos((i + 1) * x2 + i) for i in 1:5)
-    return sum1 * sum2 # Standarddefinition ohne negatives Vorzeichen
-end #function
+    
+    prod_sum = one(T)
+    @inbounds for i in 1:n
+        sum_cos = zero(T)
+        @inbounds for j in 1:5
+            sum_cos += j * cos((j + 1) * x[i] + j)
+        end
+        prod_sum *= sum_cos
+    end
+    prod_sum
+end
 
-# Computes the gradient of the Shubert function. Returns a vector of length 2.
-#
-# Throws `ArgumentError` if the input vector is not 2-dimensional.
 function shubert_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
-    any(isnan.(x)) && return fill(T(NaN), 2)
-    any(isinf.(x)) && return fill(T(Inf), 2)
-    x1, x2 = x
-    sum1 = sum(i * cos((i + 1) * x1 + i) for i in 1:5)
-    sum2 = sum(i * cos((i + 1) * x2 + i) for i in 1:5)
-    dsum1 = sum(-i * (i + 1) * sin((i + 1) * x1 + i) for i in 1:5)
-    dsum2 = sum(-i * (i + 1) * sin((i + 1) * x2 + i) for i in 1:5)
-    return [dsum1 * sum2, sum1 * dsum2] # Gradient angepasst
-end #function
+    n = length(x)
+    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shubert" [RULE_NAME_CONSISTENCY]
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    any(isnan.(x)) && return fill(T(NaN), n)
+    any(isinf.(x)) && return fill(T(Inf), n)
+    
+    grad = zeros(T, 2)  # [RULE_GRADTYPE]
+    
+    # Compute sums for each dimension
+    sum1 = zero(T)
+    sum2 = zero(T)
+    @inbounds for j in 1:5
+        sum1 += j * cos((j + 1) * x[1] + j)
+        sum2 += j * cos((j + 1) * x[2] + j)
+    end
+    
+    # Derivatives of sums
+    dsum1 = zero(T)
+    dsum2 = zero(T)
+    @inbounds for j in 1:5
+        dsum1 -= j * (j + 1) * sin((j + 1) * x[1] + j)
+        dsum2 -= j * (j + 1) * sin((j + 1) * x[2] + j)
+    end
+    
+    # Gradient: dsum_k * prod_{i≠k} sum_i for each k
+    prod_other1 = sum2
+    prod_other2 = sum1
+    grad[1] = dsum1 * prod_other1  # No redundant T-conversions [RULE_TYPE_CONVERSION_MINIMAL]
+    grad[2] = dsum2 * prod_other2
+    
+    grad
+end
 
 const SHUBERT_FUNCTION = TestFunction(
     shubert,
     shubert_gradient,
     Dict(
-        :name => "shubert",
-        :start => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
-            [0.0, 0.0]
-        end, #function
-        :min_position => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
-            [-1.425128428319761, -0.8003211004719731]
-        end, #function
-        :min_value => () -> -186.73090883102384,
-        :properties => Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"]),
-        :lb => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
-            [-10.0, -10.0]
-        end, #function
-        :ub => (n::Int=2) -> begin
-            n == 2 || throw(ArgumentError("Shubert requires exactly 2 dimensions"))
-            [10.0, 10.0]
-        end, #function
-        :in_molga_smutnicki_2005 => true,
-        :description => "Shubert function: Multimodal, non-convex, non-separable, differentiable, bounded (n=2 only). Has 18 global minima, including [-1.425128428319761, -0.8003211004719731].",
-        :math => "\\left(\\sum_{i=1}^5 i \\cos((i+1)x_1 + i)\\right) \\left(\\sum_{i=1}^5 i \\cos((i+1)x_2 + i)\\right)"
+        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "shubert" [RULE_NAME_CONSISTENCY]
+        :description => "Shubert test function; Properties based on Jamil & Yang (2013, p. 133) [minimum controversial: source -186.7309 (rounded), precise -186.7309088310238; 18 global minima]; originally from Shubert (1972).",
+        :math => raw"""f(\mathbf{x}) = \prod_{i=1}^{2} \left( \sum_{j=1}^{5} j \cos((j+1) x_i + j) \right).""",
+        :start => () -> [0.0, 0.0],
+        :min_position => () ->   [-7.083506407203981, -1.425128428799097],  # Precise one of 18 global minima
+        :min_value => () -> -186.7309088310238,  # Precise computed value [RULE_META_CONSISTENCY]
+        :properties => ["continuous", "differentiable", "separable", "multimodal", "controversial"],
+        :source => "Jamil & Yang (2013, p. 133)",
+        :lb => () -> [-10.0, -10.0],
+        :ub => () -> [10.0, 10.0],
     )
-)
+) 

@@ -1,7 +1,7 @@
 name = "NonlinearOptimizationTestFunctions"
 uuid = "3180b13f-e8d1-40aa-806b-3e6ce7522c6b"
 authors = ["aox"]
-version = "0.5.13"
+version = "0.5.14"
 
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"

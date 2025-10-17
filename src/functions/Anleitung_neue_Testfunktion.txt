@@ -36,6 +36,7 @@ Häufige Fehler (konsolidiert mit Beispielen):
 - [NEW] Statische Fehlermeldungen: Führt zu Namenskonflikten bei Refactoring. Lösung: Immer dynamisch via `basename(@__FILE__)[1:end-3]` in ArgumentError.
 - [NEW] Redundante T()-Konvertierungen: `T(0.5)` in Formeln führt zu leichten Instabilitäten. Lösung: Entferne sie; Julia inferiert automatisch. Beispiel: In Schaffer1: `T(0.5) + numerator / denominator` → `0.5 + numerator / denominator`.
 - [NEW] Inkonsistente Quellen: Properties aus Quelle mit abweichender Formel (z.B. sin^2(cos) vs. cos^2(sin)) – Lösung: Suche exakte Matches oder notiere Adaption in :description per [RULE_SOURCE_FORMULA_CONSISTENCY].
+- [NEW] Namenskonflikte in lokalen Hilfsfunktionen: Lokale `rastrigin`-Funktion überschreibt globale → Lösung: Präfix `_shubert_hybrid_rastrigin_rastrigin_component`. Prüfe mit `grep -r "function rastrigin" src/` vor Commit.
 
 ## Erlaubte Properties (VALID_PROPERTIES)
 MUST: Nur aus dieser Liste verwenden. Erweitere Set und Readme bei Bedarf (PR mit Quelle).
@@ -93,6 +94,23 @@ Ziel: Erstelle <name>.jl mit konsistenter Signatur, ohne externe Deps.
 - [RULE_ERROR_HANDLING] MUST: Prüfe length(x)==0 → ArgumentError. Handle NaN/Inf (return NaN/Inf).
 - SHOULD: Verwende @inbounds für Loops; prüfe @code_warntype für Type-Stability.
 - [RULE_TYPE_CONVERSION_MINIMAL] SHOULD: Vermeide redundante explizite Typ-Konvertierungen wie `T(0.5)` oder `T(1.0)` in Ausdrücken, da Julia die Inferenz korrekt durchführt (T ist Subtyp von Real). Verwende stattdessen `0.5` oder `1.0`. Dies verbessert Type-Stability und vermeidet unnötigen Overhead. Beispiel: `numerator = sin(sq_sum)^2 - T(0.5)` → `numerator = sin(sq_sum)^2 - 0.5`. Prüfe mit `@code_warntype tf.f([1.0, 1.0])` – sollte keine Type-Instabilitäten zeigen.
+- [NEW] [RULE_LOCAL_HELPERS_NAMING] MUST: Alle lokalen Hilfsfunktionen in `src/functions/<name>.jl` (z. B. für Komponenten wie Shubert-Produkt oder Rastrigin-Summe) MÜSSEN mit einem Präfix benannt werden, das den Dateinamen enthält und einen Unterstrich (z. B. `_<name>_component` oder `_<name>_inner`). Dies verhindert Namenskonflikte mit exportierten Funktionen aus anderen Dateien, da `include` den Namespace teilt.  
+  - Beispiel: In `shubert_hybrid_rastrigin.jl` → `_shubert_hybrid_rastrigin_inner` statt `shubert_inner`; `_shubert_hybrid_rastrigin_rastrigin_component` statt `rastrigin`.  
+  - Automatisierbar: Verwende `func_name = basename(@__FILE__)[1:end-3]; eval(:(function _\$func_name_inner(...)))` für dynamische Namen, aber priorisiere statische für Klarheit.  
+  - Häufiger Fehler: Lokale `rastrigin`-Funktion kollidiert mit globaler `rastrigin` aus `rastrigin.jl`, führt zu falschem Dispatch in Tests (z. B. `cos(Inf)`-Fehler).  
+  - CI-Check: Füge zu CI-Skripten hinzu: `grep -r "function [a-zA-Z]" src/functions/ | grep -v "_.*_"` → warnt bei fehlenden Präfixen.
+- [NEW] [RULE_LOCAL_HELPERS_ERROR_HANDLING] MUST: Lokale Hilfsfunktionen MÜSSEN die gleichen Edge-Case-Checks wie die Hauptfunktion implementieren (leeres Array, NaN, Inf), um konsistente Fehlerbehandlung zu gewährleisten. Returniere `T(NaN)` für NaN-Inputs und `T(Inf)` für Inf-Inputs **vor** mathematischen Operationen (z. B. `cos`), um DomainErrors zu vermeiden.  
+  - SHOULD: Für skalierbare Hilfsfunktionen: Prüfe `n < 1` und wirf `ArgumentError`.  
+  - Beispiel: 
+     function _shubert_hybrid_rastrigin_rastrigin_component(x::AbstractVector{T}) where {T}
+         n = length(x)
+         n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+         any(isnan.(x)) && return T(NaN)
+         any(isinf.(x)) && return T(Inf)  # Vor cos(2*pi*x[i])
+         # ... Rest der Funktion
+     end
+  - Häufiger Fehler: Fehlender Inf-Check führt zu `DomainError` in `cos(Inf)`, was Tests wie `@test isinf(f([Inf]))` scheitern lässt.  
+  - Automatisierte Validierung: Erweitere REPL-Checks: `julia --project=. -e 'include("src/functions/<name>.jl"); @test_throws ArgumentError <local_helper>(Float64[]); @test isinf(<local_helper>([Inf]))'`.
 - MAY: Für Matrizen: A = Diagonal(fill(2.0, n)); prüfe eigvals(A) > 0.
 - [RULE_META_CALL] SHOULD: In Meta-Dict: Für skalierbare, aber konstante Werte (z.B. :min_value), (n::Int) -> value verwenden (ignoriere n). Beispiel für Qing: :min_value => (n::Int) -> 0.0. [NEW] Für noisy konstante Minima: Deterministischer Teil als (n::Int) -> value; Noise in :description.
 - [NEW] Für skalierbare Funktionen: Füge :default_n => <int> hinzu (siehe [RULE_DEFAULT_N]). Verwende es konsistent in Templates und Tests. MUST: Passe die Templates an, um [RULE_ERROR_TEXT_DYNAMIC] und [RULE_TYPE_CONVERSION_MINIMAL] einzubauen – siehe aktualisierte Templates unten.
@@ -115,6 +133,7 @@ function <name>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     any(isinf.(x)) && return T(Inf)
     
     # Optimierte lokale Berechnung: Arrays direkt in Schleife generieren, um let-Block zu vermeiden [RULE_NO_CONST_ARRAYS]
+    # [NEW] Beispiel für lokale Hilfsfunktion mit Präfix: function _<name>_local_helper(...) ... end
     sum_sq = zero(T)
     @inbounds for i in 1:<LOOP_SIZE>
         t_i = 0.1 * i  # Dynamisch berechnen statt pre-allocated Array
@@ -135,6 +154,7 @@ function <name>_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff
     
     grad = zeros(T, <DIM>)  # [RULE_GRADTYPE]
     # ... Gradient-Implementierung, z.B. ohne redundante T(1.0) [RULE_TYPE_CONVERSION_MINIMAL] ...
+    # [NEW] Lokale Hilfsfunktion mit Edge-Checks: function _<name>_grad_helper(...) ... end
     @inbounds for i in 1:n
         # ...
     end
@@ -229,6 +249,10 @@ Ziel: Zentrale Tests + funktionsspezifisch in test/<name>_tests.jl.
 - [NEW] Meta-Aufruf im Test: Passe Aufruf an Signatur an: Wenn () -> ..., dann tf.meta[:min_value](); wenn (n::Int) -> ..., dann tf.meta[:min_value](n).
 - [NEW] Für skalierbare: Verwende n = tf.meta[:default_n] in Tests für Standard-Validierungen (z.B. min_pos = tf.meta[:min_position](n)).
 - [NEW RULE_NOISE_VALIDATION] MUST: In funktionsspezifischen Tests und runtests.jl: Für "has_noise": @test f_min >= min_value && f_min < min_value + noise_upper (z.B. <1 für [0,1)). 
+- [NEW] [RULE_PROPERTIES_DYNAMIC_COUNT] SHOULD: In `test/runtests.jl` die Properties-Zählungen dynamisch berechnen und nur als Info ausgeben, statt harte `@test`-Asserts (z.B. `println("Bounded functions: ", length(filter_testfunctions(tf -> has_property(tf, "bounded"))))`). Bei Hinzufügen neuer Funktionen: Aktualisiere manuell oder automatisiere via Skript (`generate_properties_counts.jl`).  
+  - MUST: Nach jedem Commit: Führe `julia --project=. -e 'using NonlinearOptimizationTestFunctions; open("test/properties_counts.jl", "w") do f; println(f, "export BOUNDED_COUNT = ", length(filter_testfunctions(...))) end'` aus.  
+  - Häufiger Fehler: Harte Zahlen (z. B. 127 vs. 128) brechen bei neuen Funktionen (wie `shubert_hybrid_rastrigin` mit "bounded").  
+  - Vorteil: Macht Tests wartbar; CI kann Counts validieren.
 
 Template für test/<name>_tests.jl (non-scalable):
 
@@ -312,10 +336,10 @@ grad = tf.gradient([1.0, 2.0])  # ❌ Fehler!
 
 ## Schritte-Checkliste (mit Regeln)
 1. Recherche: Validiere Properties [RULE_PROPERTIES_SOURCE] – notiere spezifische Stelle (z.B. Seite) in :source. Für scalable: Bestimme :default_n [RULE_DEFAULT_N]. [NEW] Für noisy: Definiere Noise-Range in :description.
-2. Implementiere src/functions/<name>.jl [RULE_SIGNATURE, RULE_NO_CONST_ARRAYS]. Füge :default_n hinzu. [NEW] Für konstante min_value: (n::Int) -> value. Verwende direkte Quelle mit Stelle in :source.
-3. Syntax-Check: julia --project=. -e 'include("src/functions/<name>.jl")' [RULE_SYNTAXCHECK].
-4. Tests: Schreibe test/<name>_tests.jl, einbinden. [NEW] REPL-Validierung: Lade tf, teste tf.meta[:min_value](tf.meta[:default_n]) ≈ tf.f(tf.meta[:min_position](tf.meta[:default_n])) atol=1e-8; für Noise: Range-Check.
+2. Implementiere src/functions/<name>.jl [RULE_SIGNATURE, RULE_NO_CONST_ARRAYS]. Füge :default_n hinzu. [NEW] Für konstante min_value: (n::Int) -> value. Verwende direkte Quelle mit Stelle in :source. [NEW] Lokale Hilfsfunktionen: Benenne mit Präfix `_ <name> _ <zweck>` [RULE_LOCAL_HELPERS_NAMING]; füge Edge-Checks hinzu [RULE_LOCAL_HELPERS_ERROR_HANDLING].
+3. Syntax-Check: julia --project=. -e 'include("src/functions/<name>.jl")' [RULE_SYNTAXCHECK]. [NEW] Überprüfe lokale Hilfsfunktionen: `@test_throws ArgumentError _<name>_helper(Float64[]); @test isinf(_<name>_helper([Inf]))`.
+4. Tests: Schreibe test/<name>_tests.jl, einbinden. [NEW] REPL-Validierung: Lade tf, teste tf.meta[:min_value](tf.meta[:default_n]) ≈ tf.f(tf.meta[:min_position](tf.meta[:default_n])) atol=1e-8; für Noise: Range-Check. [NEW] Dynamische Properties-Counts in runtests.jl [RULE_PROPERTIES_DYNAMIC_COUNT].
 5. Gesamttests: julia --project=. test/runtests.jl. [NEW] Überprüche Noise-Adaptation in Minimum Validation.
-6. Validierung: [ ] Properties aus Tabelle; [ ] Keine globalen const; [ ] Gradient als Vector<T>; [NEW] Keine MethodError in Meta-Aufrufen; [ ] Vektor-Tests mit isapprox.. [NEW] :default_n >=2 und verwendet in Tests; [NEW] Noise-Handling in Tests/runtests.jl; [NEW] :source mit spezifischer Stelle (z.B. "Jamil & Yang (2013, p. 27)").
+6. Validierung: [ ] Properties aus Tabelle; [ ] Keine globalen const; [ ] Gradient als Vector<T>; [NEW] Keine MethodError in Meta-Aufrufen; [ ] Vektor-Tests mit isapprox.. [NEW] :default_n >=2 und verwendet in Tests; [NEW] Noise-Handling in Tests/runtests.jl; [NEW] :source mit spezifischer Stelle (z.B. "Jamil & Yang (2013, p. 27)"); [NEW] Lokale Hilfsfunktionen mit Präfix und Edge-Checks; [NEW] Keine Namenskonflikte (grep -r "function <common_name>" src/).
 
-Finale Validierung: Alle MUST-Regeln erfüllt? Benchmark mit @btime tf.f(rand(tf.meta[:default_n])) <1μs. [NEW] Führe manuell: julia> tf = <UPPER>_FUNCTION; n = tf.meta[:default_n]; min_pos = tf.meta[:min_position](n); für Noise: multiple tf.f(min_pos) in [0,1); sonst @test tf.f(min_pos) ≈ tf.meta[:min_value](n) atol=1e-8 – passe Signatur an, falls Error. Überprüche :source auf direkte Übernahme mit Stelle.
+Finale Validierung: Alle MUST-Regeln erfüllt? Benchmark mit @btime tf.f(rand(tf.meta[:default_n])) <1μs. [NEW] Führe manuell: julia> tf = <UPPER>_FUNCTION; n = tf.meta[:default_n]; min_pos = tf.meta[:min_position](n); für Noise: multiple tf.f(min_pos) in [0,1); sonst @test tf.f(min_pos) ≈ tf.meta[:min_value](n) atol=1e-8 – passe Signatur an, falls Error. Überprüche :source auf direkte Übernahme mit Stelle. [NEW] Prüfe lokale Hilfsfunktionen: Kein Kollision (z.B. grep -r "function rastrigin" src/functions/ | grep -v "_.*_rastrigin"); Edge-Cases: `@test isinf(_<name>_helper([Inf]))`.

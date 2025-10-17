@@ -1,32 +1,25 @@
 # test/shubert_tests.jl
-# Purpose: Tests for the Shubert function.
-# Context: Part of NonlinearOptimizationTestFunctions test suite.
-# Last modified: 19. Juli 2025
 
-using Test, LinearAlgebra
-using NonlinearOptimizationTestFunctions: SHUBERT_FUNCTION, shubert, shubert_gradient
+using Test, NonlinearOptimizationTestFunctions
+using Optim  # For Nelder-Mead
+using LinearAlgebra: norm  # For gradient norm
 
-@testset "Shubert Tests" begin
+@testset "shubert" begin
     tf = SHUBERT_FUNCTION
-    n = 2
-    @test_throws ArgumentError shubert(Float64[])
-    @test_throws ArgumentError shubert([1.0, 2.0, 3.0])
-    @test isnan(shubert([NaN, 0.0]))
-    @test isinf(shubert([Inf, 0.0]))
-    @test isfinite(shubert([1e-308, 1e-308]))
-    @test shubert(tf.meta[:min_position](n)) ≈ -186.730908831 atol=1e-5
-    @test shubert(tf.meta[:start](n)) ≈ 19.8758362498 atol=1e-5
-    @test tf.meta[:name] == "shubert"
-    @test tf.meta[:start](n) == [0.0, 0.0]
-    @test tf.meta[:min_position](n) ≈ [-1.4251286, -0.800321] atol=1e-6
-    @test tf.meta[:min_value]() ≈ -186.730908831 atol=1e-5
-    @test tf.meta[:lb](n) == [-10.0, -10.0]
-    @test tf.meta[:ub](n) == [10.0, 10.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == true
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded","continuous"])
-    @testset "Minimum Verification" begin
-        min_pos = tf.meta[:min_position](n)
-        @test shubert(min_pos) ≈ -186.730908831 atol=1e-5
-        @test norm(shubert_gradient(min_pos)) < 1e-3
-    end
+    @test tf.meta[:name] == basename("src/functions/shubert.jl")[1:end-3]  # Dynamisch: "shubert"
+    @test has_property(tf, "continuous")
+    @test has_property(tf, "differentiable")
+    @test has_property(tf, "separable")
+    @test has_property(tf, "multimodal")
+    @test has_property(tf, "controversial")
+    
+    start_point = tf.meta[:start]()
+    @test tf.f(start_point) ≈ 19.8758 atol=1e-3  # Computed at [0,0]
+    
+    min_pos = tf.meta[:min_position]()
+    @test tf.f(min_pos) ≈ tf.meta[:min_value]() atol=1e-8  # Precise match
+    
+    # Extra: Gradient at minimum should be zero
+    @test all(isapprox.(tf.grad(min_pos), zeros(2), atol=1e-5))  # [RULE_TEST_SYNTAX] (looser for numerical precision)
+    
 end

@@ -54,7 +54,8 @@ const ACKLEY2_META = Dict(
     :lb => () -> [-32.0, -32.0],
     :ub => () -> [32.0, 32.0],
     :description => "Ackley2 function: Continuous, partially differentiable, non-separable, non-scalable, unimodal.",
-    :math => "\\f(x) = -200 e^{-0.02 \\sqrt{x_1^2 + x_2^2}}"
+    :math => "\\f(x) = -200 e^{-0.02 \\sqrt{x_1^2 + x_2^2}}",
+    :source => "Jamil & Yang (2013): f2",
 )
 
 const ACKLEY2_FUNCTION = TestFunction(

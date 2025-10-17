@@ -26,6 +26,7 @@
 - [Tests of the Test Functions](#tests-of-the-test-functions)
 - [Test Functions](#test-functions)
 - [Upcoming Test Functions](#upcoming-test-functions)
+- [Roadmap](ROADMAP.md)
 - [Properties of Test Functions](#properties-of-test-functions)
 - [Valid Properties](#valid-properties)
   - [Modality](#modality)
@@ -37,7 +38,6 @@
 - [License](#license)
 - [Alternative Names for Test Functions](#alternative-names-for-test-functions)
 - [References](#references)
-
 ## Introduction
 
 NonlinearOptimizationTestFunctions is a Julia package designed for testing and benchmarking nonlinear optimization algorithms. It provides a comprehensive collection of standard test functions, each equipped with analytical gradients, metadata, and validation mechanisms. The package supports scalable and non-scalable functions, ensuring compatibility with high-dimensional optimization problems and automatic differentiation tools like ForwardDiff. Key features include:
@@ -156,6 +156,7 @@ Compares Gradient Descent and L-BFGS on the Rosenbrock function, demonstrating h
 # Print results
 println("Gradient Descent on $(tf.name): minimizer = $(Optim.minimizer(result_gd)), minimum = $(Optim.minimum(result_gd))")
 println("L-BFGS on $(tf.name): minimizer = $(Optim.minimizer(result_lbfgs)), minimum = $(Optim.minimum(result_lbfgs))")
+
 #### Computing Hessian with Zygote
 Performs three Newton steps on the Rosenbrock function using analytical gradients and Zygote's Hessian computation, showcasing integration with automatic differentiation.
 
@@ -178,14 +179,46 @@ Displays all available test functions with their start points, minima, and prope
     end #for
 
 #### Optimizing All Functions
-Optimizes all test functions using Optim.jl's L-BFGS algorithm, demonstrating batch processing of test functions.
+Optimizes all test functions using Optim.jl, with bounds for bounded functions; constrained functions planned for Q1 2026 (see ROADMAP.md).
 
-    using NonlinearOptimizationTestFunctions, Optim
-    n = 2
-    for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
-        result = optimize(tf.f, tf.gradient!, start(tf, n), LBFGS(), Optim.Options(f_reltol=1e-6))
-        println("$(name(tf)): $(Optim.minimizer(result)), $(Optim.minimum(result))")
-    end #for
+	using NonlinearOptimizationTestFunctions, Optim
+
+	# Main loop: Iterates over all test functions in the suite, retrieves their dimension and metadata (start point, bounds),
+	# and optimizes them using NelderMead (unbounded) or Fminbox(NelderMead) (bounded). Outputs the minimizer and minimum value.
+	for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
+		# Get dimension from metadata or use default_n for scalable functions
+		local dim = get_n(tf)
+		local n = dim == -1 ? tf.meta[:default_n] : dim
+
+		# Validate default_n for scalable functions
+		if dim == -1 && !haskey(tf.meta, :default_n)
+			error("No :default_n defined for scalable function $(tf.meta[:name])")
+		end
+
+		# Get start point (use n for scalable functions only)
+		local start_point = dim == -1 ? tf.meta[:start](n) : tf.meta[:start]()
+		local lb = haskey(tf.meta, :lb) ? (dim == -1 ? tf.meta[:lb](n) : tf.meta[:lb]()) : nothing
+		local ub = haskey(tf.meta, :ub) ? (dim == -1 ? tf.meta[:ub](n) : tf.meta[:ub]()) : nothing
+
+		# Validate inputs
+		if length(start_point) != n
+			error("Start point dimension ($(length(start_point))) does not match function dimension ($n) for $(tf.meta[:name])")
+		end
+
+		# Perform optimization
+		if has_property(tf, "bounded") && lb !== nothing && ub !== nothing
+			# Bounded optimization using Fminbox(NelderMead)
+			local clamped_start_point = clamp.(start_point, lb, ub)
+			local result = optimize(tf.f, lb, ub, clamped_start_point, Fminbox(NelderMead()), Optim.Options(f_reltol=1e-6))
+		else
+			# Unbounded optimization
+			local result = optimize(tf.f, start_point, NelderMead(), Optim.Options(f_reltol=1e-6))
+		end
+
+		# Print results
+		println("$(tf.meta[:name]): minimizer = $(Optim.minimizer(result)), minimum = $(Optim.minimum(result))")
+		println("--------------------------------------------------")
+	end
 
 #### Optimizing with NLopt
 Optimizes the Rosenbrock function using NLopt.jl's LD_LBFGS algorithm, highlighting compatibility with external optimization libraries.
@@ -601,7 +634,15 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **schwefel24** [Jamil & Yang (2013, p. 30):] continuous, differentiable, multimodal, separable. Minimum: 0 at (1, 1). Bounds: [(0, 0), (10, 10)]. Dimensions: n = 2.
 - **schwefel26** [Jamil & Yang (2013, p. 31):] continuous, differentiable, non-separable, unimodal. Minimum: 0 at (1, 3). Bounds: [(-100, -100), (100, 100)]. Dimensions: n = 2.
 - **Shekel** [Molga & Smutnicki (2005): 2.19]: Bounded, continuous, differentiable, finite_at_inf, multimodal, non-convex, non-separable. Global minimum: -10.53640982 at (4.00074653, 4.00059293, 3.9996634, 3.9995098). Bounds: [(0, 0, 0, 0), (10, 10, 10, 10)]. Dimensions: \( n = 4 \).
-- **Shubert** [Molga & Smutnicki (2005): 2.18]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -186.7309 at (-1.42512843, -0.8003211). Bounds: [(-10, -10), (10, 10)]. Dimensions: \( n = 2 \).
+- **shubert_additive_cosine** [Jamil & Yang (2013, p. 56):] continuous, differentiable, multimodal, scalable, separable. Minimum: -25.741771 at (-1.42512843, -1.42512843). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
+- **shubert_additive_sine** [Jamil & Yang (2013, p. 55):] continuous, differentiable, multimodal, scalable, separable. Minimum: -29.67590005 at (-7.397285, -7.397285). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
+- **shubert_classic** [Jamil & Yang (2013, p. 55):] continuous, differentiable, highly multimodal, non-separable, scalable. Minimum: -186.73090883 at (4.85805688, 5.48286421). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
+- **shubert_coupled** [Jamil & Yang (2013, p. 56):] continuous, differentiable, highly multimodal, non-separable, scalable. Minimum: -186.73090883 at (4.85805688, 5.48286421). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
+- **shubert_generalized** [Jamil & Yang (2013, p. 56):] continuous, differentiable, multimodal, scalable, separable. Minimum: -25.741771 at (-1.42512843, -1.42512843). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
+- **shubert_hybrid_rastrigin** [Jamil & Yang (2013, p. 56):] bounded, continuous, differentiable, ill-conditioned, multimodal, non-separable. Minimum: -79.36953021 at (-0.81305187, -1.41787744). Bounds: [(-10, -10), (10, 10)]. Dimensions: n = 2.
+- **shubert_noisy** [Jamil & Yang (2013, p. 55):] continuous, differentiable, has_noise, multimodal, non-separable, scalable. Minimum: -186.7309 at (4.858, 5.4828). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
+- **shubert_rotated** [Jamil & Yang (2013, p. 55):] continuous, differentiable, highly multimodal, non-separable, scalable. Minimum: -186.73090883 at (4.85805688, 5.48286421). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
+- **shubert_shifted** [Jamil & Yang (2013, p. 55):] continuous, differentiable, highly multimodal, non-separable, scalable. Minimum: -186.73090883 at (4.85805688, 5.48286421). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
 - **SineEnvelope** [Molga & Smutnicki (2005)]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -1 at (0, 0). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
 - **SixHumpCamelBack** [Molga & Smutnicki (2005): 2.15]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -1.03162845 at (-0.08984201, 0.7126564). Bounds: [(-3, -2), (3, 2)]. Dimensions: \( n = 2 \).
 - **Sphere** [Molga & Smutnicki (2005): 2.1]: Bounded, continuous, convex, differentiable, scalable, separable, unimodal. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-5.12, -5.12), (5.12, 5.12)]. Dimensions: Any \( n \geq 1 \).
