@@ -1,6 +1,6 @@
 # src/functions/shubert_classic.jl
 # Purpose: Implementation of the classical Shubert test function (product form).
-# Global minimum: f(x*)=-186.7309 at x*≈[4.858, 5.483] (n=2, one of 18 global minima).
+# Global minimum: f(x*)=-186.73090883102375 at x*=[4.8580568784680462, 5.4828642069447433] (one of 18 global minima).
 # Bounds: -10 ≤ x_i ≤ 10.
 
 export SHUBERT_CLASSIC_FUNCTION, shubert_classic, shubert_classic_gradient
@@ -9,7 +9,7 @@ function shubert_classic(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff
     n = length(x)
     func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shubert_classic" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -28,7 +28,7 @@ function shubert_classic_gradient(x::AbstractVector{T}) where {T<:Union{Real, Fo
     n = length(x)
     func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))
+    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -61,14 +61,13 @@ const SHUBERT_CLASSIC_FUNCTION = TestFunction(
     Dict(
         :name => basename(@__FILE__)[1:end-3],  # "shubert_classic" [RULE_NAME_CONSISTENCY]
         :description => "Classical Shubert function (product of cosine sums); highly multimodal with 760 local minima in 2D; properties based on Jamil & Yang (2013, p. 55, f133); originally from Shubert (1970).",
-        :math => raw"""f(\mathbf{x}) = \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)x_i + j).""",
-        :start => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); zeros(n) end,
-        :min_position => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions"));  [4.8580568784680462, 5.4828642069447433] end,  # Beispiel für n=2
-        :min_value => (n::Int) -> -186.73090883102375,  # Konstant [RULE_META_CONSISTENCY]
-        :default_n => 2,  # [RULE_DEFAULT_N]
-        :properties => ["continuous", "differentiable", "scalable", "highly multimodal", "non-separable"],
+        :math => raw"""f(\mathbf{x}) = \prod_{i=1}^{2} \left( \sum_{j=1}^{5} j \cos((j+1) x_i + j) \right).""",
+        :start => () -> [0.0, 0.0],
+        :min_position => () -> [4.8580568784680462, 5.4828642069447433],
+        :min_value => () -> -186.73090883102375,
+        :properties => ["continuous", "differentiable", "highly multimodal", "non-separable", "controversial"],
         :source => "Jamil & Yang (2013, p. 55)",  # Direkte Quelle mit Stelle
-        :lb => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); fill(-10.0, n) end,
-        :ub => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); fill(10.0, n) end,
+        :lb => () -> [-10.0, -10.0],
+        :ub => () -> [10.0, 10.0],
     )
 )

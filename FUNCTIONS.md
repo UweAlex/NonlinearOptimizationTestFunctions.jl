@@ -1,0 +1,1394 @@
+# Established Benchmark Functions
+
+Generated from package metadata on 2025-10-21. Functions are listed vertically by category for easy reading.
+
+## Inhaltsverzeichnis
+- [Classical Benchmarks](#classical-benchmarks)
+  - [ackley2: Standard](#ackley2-standard)
+  - [beale: Standard](#beale-standard)
+  - [booth: Standard](#booth-standard)
+  - [brent: Standard](#brent-standard)
+  - [brown: Standard](#brown-standard)
+  - [chungreynolds: Standard](#chungreynolds-standard)
+  - [colville: Standard](#colville-standard)
+  - [cube: Standard](#cube-standard)
+  - [dixonprice: Standard](#dixonprice-standard)
+  - [elattavidyasagardutta: Standard](#elattavidyasagardutta-standard)
+  - [exponential: Standard](#exponential-standard)
+  - [leon: Standard](#leon-standard)
+  - [matyas: Standard](#matyas-standard)
+  - [powell: Standard](#powell-standard)
+  - [powellsingular: Standard](#powellsingular-standard)
+  - [powellsingular2: Standard](#powellsingular2-standard)
+  - [powellsum: Standard](#powellsum-standard)
+  - [quadratic: Standard](#quadratic-standard)
+  - [rosenbrock: Standard](#rosenbrock-standard)
+  - [rotatedellipse: Standard](#rotatedellipse-standard)
+  - [rotatedellipse2: Standard](#rotatedellipse2-standard)
+  - [rotatedhyperellipsoid: Standard](#rotatedhyperellipsoid-standard)
+  - [rump: Standard](#rump-standard)
+  - [schaffer2: Standard](#schaffer2-standard)
+  - [schaffer3: Standard](#schaffer3-standard)
+  - [schumersteiglitz: Standard](#schumersteiglitz-standard)
+  - [schwefel: Standard](#schwefel-standard)
+  - [schwefel12: Standard](#schwefel12-standard)
+  - [schwefel220: Standard](#schwefel220-standard)
+  - [schwefel221: Standard](#schwefel221-standard)
+  - [schwefel222: Standard](#schwefel222-standard)
+  - [schwefel223: Standard](#schwefel223-standard)
+  - [schwefel236: Standard](#schwefel236-standard)
+  - [schwefel26: Standard](#schwefel26-standard)
+  - [sphere: Standard](#sphere-standard)
+  - [sphere_rotated: rotated](#sphere_rotated-rotated)
+  - [sphere_shifted: shifted](#sphere_shifted-shifted)
+  - [step: Standard](#step-standard)
+  - [step_ellipsoidal: ellipsoidal](#step_ellipsoidal-ellipsoidal)
+  - [sumofpowers: Standard](#sumofpowers-standard)
+  - [trid: Standard](#trid-standard)
+  - [zakharov: Standard](#zakharov-standard)
+- [Extended Benchmarks](#extended-benchmarks)
+  - [ackley: Standard](#ackley-standard)
+  - [adjiman: Standard](#adjiman-standard)
+  - [alpinen1: Standard](#alpinen1-standard)
+  - [alpinen2: Standard](#alpinen2-standard)
+  - [bartelsconn: Standard](#bartelsconn-standard)
+  - [becker_lago: lago](#becker_lago-lago)
+  - [biggsexp2: Standard](#biggsexp2-standard)
+  - [biggsexp3: Standard](#biggsexp3-standard)
+  - [biggsexp4: Standard](#biggsexp4-standard)
+  - [biggsexp5: Standard](#biggsexp5-standard)
+  - [biggsexp6: Standard](#biggsexp6-standard)
+  - [bird: Standard](#bird-standard)
+  - [bohachevsky1: Standard](#bohachevsky1-standard)
+  - [bohachevsky2: Standard](#bohachevsky2-standard)
+  - [bohachevsky3: Standard](#bohachevsky3-standard)
+  - [boxbetts: Standard](#boxbetts-standard)
+  - [brad: Standard](#brad-standard)
+  - [branin: Standard](#branin-standard)
+  - [braninrcos2: Standard](#braninrcos2-standard)
+  - [bukin2: Standard](#bukin2-standard)
+  - [bukin4: Standard](#bukin4-standard)
+  - [bukin6: Standard](#bukin6-standard)
+  - [carromtable: Standard](#carromtable-standard)
+  - [chen: Standard](#chen-standard)
+  - [chenv: Standard](#chenv-standard)
+  - [chichinadze: Standard](#chichinadze-standard)
+  - [cola: Standard](#cola-standard)
+  - [corana: Standard](#corana-standard)
+  - [cosinemixture: Standard](#cosinemixture-standard)
+  - [crossintray: Standard](#crossintray-standard)
+  - [csendes: Standard](#csendes-standard)
+  - [damavandi: Standard](#damavandi-standard)
+  - [deb1: Standard](#deb1-standard)
+  - [deb3: Standard](#deb3-standard)
+  - [dejongf4: Standard](#dejongf4-standard)
+  - [dejongf5modified: Standard](#dejongf5modified-standard)
+  - [dejongf5original: Standard](#dejongf5original-standard)
+  - [dekkersaarts: Standard](#dekkersaarts-standard)
+  - [devilliersglasser1: Standard](#devilliersglasser1-standard)
+  - [devilliersglasser2: Standard](#devilliersglasser2-standard)
+  - [dolan: Standard](#dolan-standard)
+  - [dropwave: Standard](#dropwave-standard)
+  - [easom: Standard](#easom-standard)
+  - [eggcrate: Standard](#eggcrate-standard)
+  - [eggholder: Standard](#eggholder-standard)
+  - [freudensteinroth: Standard](#freudensteinroth-standard)
+  - [giunta: Standard](#giunta-standard)
+  - [goldsteinprice: Standard](#goldsteinprice-standard)
+  - [griewank: Standard](#griewank-standard)
+  - [gulfresearch: Standard](#gulfresearch-standard)
+  - [hansen: Standard](#hansen-standard)
+  - [hartman6: Standard](#hartman6-standard)
+  - [hartmanf3: Standard](#hartmanf3-standard)
+  - [helicalvalley: Standard](#helicalvalley-standard)
+  - [himmelblau: Standard](#himmelblau-standard)
+  - [holdertable: Standard](#holdertable-standard)
+  - [hosaki: Standard](#hosaki-standard)
+  - [jennrichsampson: Standard](#jennrichsampson-standard)
+  - [keane: Standard](#keane-standard)
+  - [kearfott: Standard](#kearfott-standard)
+  - [langermann: Standard](#langermann-standard)
+  - [levyjamil: Standard](#levyjamil-standard)
+  - [mccormick: Standard](#mccormick-standard)
+  - [michalewicz: Standard](#michalewicz-standard)
+  - [mielcantrell: Standard](#mielcantrell-standard)
+  - [mishra1: Standard](#mishra1-standard)
+  - [mishra10: Standard](#mishra10-standard)
+  - [mishra11: Standard](#mishra11-standard)
+  - [mishra2: Standard](#mishra2-standard)
+  - [mishra3: Standard](#mishra3-standard)
+  - [mishra4: Standard](#mishra4-standard)
+  - [mishra5: Standard](#mishra5-standard)
+  - [mishra6: Standard](#mishra6-standard)
+  - [mishra7: Standard](#mishra7-standard)
+  - [mishra8: Standard](#mishra8-standard)
+  - [mishra9: Standard](#mishra9-standard)
+  - [mishrabird: Standard](#mishrabird-standard)
+  - [mvf_shubert: shubert](#mvf_shubert-shubert)
+  - [mvf_shubert2: shubert2](#mvf_shubert2-shubert2)
+  - [mvf_shubert3: shubert3](#mvf_shubert3-shubert3)
+  - [parsopoulos: Standard](#parsopoulos-standard)
+  - [pathological: Standard](#pathological-standard)
+  - [paviani: Standard](#paviani-standard)
+  - [penholder: Standard](#penholder-standard)
+  - [periodic: Standard](#periodic-standard)
+  - [pinter: Standard](#pinter-standard)
+  - [price1: Standard](#price1-standard)
+  - [price2: Standard](#price2-standard)
+  - [price4: Standard](#price4-standard)
+  - [qing: Standard](#qing-standard)
+  - [quartic: Standard](#quartic-standard)
+  - [quintic: Standard](#quintic-standard)
+  - [rana: Standard](#rana-standard)
+  - [rastrigin: Standard](#rastrigin-standard)
+  - [ripple1: Standard](#ripple1-standard)
+  - [ripple25: Standard](#ripple25-standard)
+  - [rosenbrock_modified: modified](#rosenbrock_modified-modified)
+  - [salomon: Standard](#salomon-standard)
+  - [sargan: Standard](#sargan-standard)
+  - [schaffer1: Standard](#schaffer1-standard)
+  - [schaffer6: Standard](#schaffer6-standard)
+  - [schafferf6: Standard](#schafferf6-standard)
+  - [schaffern2: Standard](#schaffern2-standard)
+  - [schaffern4: Standard](#schaffern4-standard)
+  - [schmidtvetters: Standard](#schmidtvetters-standard)
+  - [schwefel225: Standard](#schwefel225-standard)
+  - [schwefel226: Standard](#schwefel226-standard)
+  - [schwefel24: Standard](#schwefel24-standard)
+  - [shekel: Standard](#shekel-standard)
+  - [shekel5: Standard](#shekel5-standard)
+  - [shekel7: Standard](#shekel7-standard)
+  - [shubert_additive_cosine: cosine](#shubert_additive_cosine-cosine)
+  - [shubert_additive_sine: sine](#shubert_additive_sine-sine)
+  - [shubert_generalized: generalized](#shubert_generalized-generalized)
+  - [shubert_hybrid_rastrigin: rastrigin](#shubert_hybrid_rastrigin-rastrigin)
+  - [shubert_noisy: noisy](#shubert_noisy-noisy)
+  - [shubert_shifted_rotated: rotated](#shubert_shifted_rotated-rotated)
+  - [sineenvelope: Standard](#sineenvelope-standard)
+  - [sixhumpcamelback: Standard](#sixhumpcamelback-standard)
+  - [sphere_noisy: noisy](#sphere_noisy-noisy)
+  - [styblinskitang: Standard](#styblinskitang-standard)
+  - [threehumpcamel: Standard](#threehumpcamel-standard)
+  - [wood: Standard](#wood-standard)
+- [Other Benchmarks](#other-benchmarks)
+  - [ackley4: Standard](#ackley4-standard)
+  - [axisparallelhyperellipsoid: Standard](#axisparallelhyperellipsoid-standard)
+  - [shubert_classic: classic](#shubert_classic-classic)
+  - [shubert_coupled: coupled](#shubert_coupled-coupled)
+  - [shubert_rotated: rotated](#shubert_rotated-rotated)
+  - [shubert_shifted: shifted](#shubert_shifted-shifted)
+
+## Classical Benchmarks {#classical-benchmarks}
+
+### ackley2: Standard {#ackley2-standard}
+- **Formula**: \f(x) = -200 e^{-0.02 \sqrt{x_1^2 + x_2^2}}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, partially differentiable, continuous, non-convex
+- **Reference**: Jamil & Yang (2013): f2
+
+
+### beale: Standard {#beale-standard}
+- **Formula**: (1.5 - x_1 + x_1 x_2)^2 + (2.25 - x_1 + x_1 x_2^2)^2 + (2.625 - x_1 + x_1 x_2^3)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### booth: Standard {#booth-standard}
+- **Formula**: (x_1 + 2x_2 - 7)^2 + (2x_1 + x_2 - 5)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, convex, bounded, unimodal, differentiable, continuous
+- **Reference**: Unknown
+
+
+### brent: Standard {#brent-standard}
+- **Formula**: f(x) = (x_1 + 10)^2 + (x_2 + 10)^2 + \exp(-x_1^2 - x_2^2)
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Unknown
+
+
+### brown: Standard {#brown-standard}
+- **Formula**: \sum_{i=1}^{n-1} \left[ (x_i^2)^{(x_{i+1}^2 + 1)} + (x_{i+1}^2)^{(x_i^2 + 1)} \right]
+- **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, scalable, continuous
+- **Reference**: Unknown
+
+
+### chungreynolds: Standard {#chungreynolds-standard}
+- **Formula**: f(\mathbf{x}) = \left( \sum_{i=1}^n x_i^2 \right)^2 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: bounded, unimodal, differentiable, continuous, partially separable, scalable
+- **Reference**: Unknown
+
+
+### colville: Standard {#colville-standard}
+- **Formula**: f(x) = 100(x_1^2 - x_2)^2 + (x_1 - 1)^2 + (x_3 - 1)^2 + 90(x_3^2 - x_4)^2 + 10.1((x_2 - 1)^2 + (x_4 - 1)^2) + 19.8(x_2 - 1)(x_4 - 1)
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### cube: Standard {#cube-standard}
+- **Formula**: f(\mathbf{x}) = 100 (x_2 - x_1^3)^2 + (1 - x_1)^2. 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Unknown
+
+
+### dixonprice: Standard {#dixonprice-standard}
+- **Formula**: (x_1 - 1)^2 + \sum_{i=2}^n i (2 x_i^2 - x_{i-1})^2
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [1.0, 0.7071067811865476]
+- **Properties**: bounded, unimodal, differentiable, scalable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### elattavidyasagardutta: Standard {#elattavidyasagardutta-standard}
+- **Formula**: f(\mathbf{x}) = (x_1^2 + x_2 - 10)^2 + 5(x_3 - x_4)^2 + (x_2 - x_3)^2 + 10(x_4 - 1)^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### exponential: Standard {#exponential-standard}
+- **Formula**: f(\mathbf{x}) = -\exp\left( -\frac{1}{2} \sum_{i=1}^n x_i^2 \right). 
+- **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: -1.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous, scalable
+- **Reference**: Ramanujan et al. (2007)
+
+
+### leon: Standard {#leon-standard}
+- **Formula**: f(\mathbf{x}) = 100(x_2 - x_1^2)^2 + (1 - x_1)^2 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Lavi and Vogel (1966)
+
+
+### matyas: Standard {#matyas-standard}
+- **Formula**: 0.26 (x^2 + y^2) - 0.48 x y
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: convex, non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Unknown
+
+
+### powell: Standard {#powell-standard}
+- **Formula**: f(x) = (x_1 + 10x_2)^2 + 5(x_3 - x_4)^2 + (x_2 - 2x_3)^4 + 10(x_1 - x_4)^4
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, unimodal, differentiable, non-convex
+- **Reference**: Unknown
+
+
+### powellsingular: Standard {#powellsingular-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n/4} \left[ (x_{4i-3} + 10 x_{4i-2})^2 + 5 (x_{4i-1} - x_{4i})^2 + (x_{4i-2} - 2 x_{4i-1})^4 + 10 (x_{4i-3} - x_{4i})^4 \right].
+- **Bounds/Minimum**: Bounds: [-4.0, -4.0, -4.0, -4.0]; Min: 0.0 at [0.0, 0.0, 0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous, scalable
+- **Reference**: Powell (1962)
+
+
+### powellsingular2: Standard {#powellsingular2-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n/4} \left[ (x_{4i-3} + 10 x_{4i-2})^2 + 5 (x_{4i-1} - x_{4i})^2 + (x_{4i-2} - 2 x_{4i-1})^4 + 10 (x_{4i-3} - x_{4i})^4 \right].
+- **Bounds/Minimum**: Bounds: [-4.0, -4.0, -4.0, -4.0]; Min: 0.0 at [0.0, 0.0, 0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous, scalable
+- **Reference**: Fu et al. (2006)
+
+
+### powellsum: Standard {#powellsum-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n |x_i|^{i+1}.
+- **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, bounded, unimodal, differentiable, continuous, scalable
+- **Reference**: Rahnamyan et al. (2007a)
+
+
+### quadratic: Standard {#quadratic-standard}
+- **Formula**: f(\mathbf{x}) = -3803.84 - 138.08 x_1 - 232.92 x_2 + 128.08 x_1^2 + 203.64 x_2^2 + 182.25 x_1 x_2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: convex, non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### rosenbrock: Standard {#rosenbrock-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n-1} [100(x_{i+1} - x_i^2)^2 + (x_i - 1)^2]. 
+- **Bounds/Minimum**: Bounds: [-30.0, -30.0]; Min: 0.0 at [1.0, 1.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous, scalable, ill-conditioned
+- **Reference**: Jamil & Yang (2013), Benchmark Function #105
+
+
+### rotatedellipse: Standard {#rotatedellipse-standard}
+- **Formula**: f(\mathbf{x}) = 7x_1^2 - 6\sqrt{3}x_1x_2 + 13x_2^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: convex, non-separable, unimodal, differentiable, continuous
+- **Reference**: Jamil, M. & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimization problems. Int. Journal of Mathematical Modelling and Numerical Optimisation, 4(2), 150-194.
+
+
+### rotatedellipse2: Standard {#rotatedellipse2-standard}
+- **Formula**: f(\mathbf{x}) = x_1^2 - x_1 x_2 + x_2^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: convex, non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: https://arxiv.org/abs/1308.4008
+
+
+### rotatedhyperellipsoid: Standard {#rotatedhyperellipsoid-standard}
+- **Formula**: \sum_{i=1}^{n} \left( \sum_{j=1}^{i} x_j \right)^2
+- **Bounds/Minimum**: Bounds: [-65.536, -65.536]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: convex, non-separable, bounded, unimodal, differentiable, scalable, continuous
+- **Reference**: Unknown
+
+
+### rump: Standard {#rump-standard}
+- **Formula**: f(\mathbf{x}) = \left| (333.75 - x_1^2) x_2^6 + x_1^2 (11 x_1^2 x_2^2 - 121 x_2^4 - 2) + 5.5 x_2^8 + \frac{x_1}{2 + x_2} \right|.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, partially differentiable, unimodal, continuous
+- **Reference**: https://al-roomi.org/benchmarks/unconstrained/2-dimensions/128-rump-function
+
+
+### schaffer2: Standard {#schaffer2-standard}
+- **Formula**: f(\mathbf{x}) = 0.5 + \frac{\sin^2(x_1^2 - x_2^2) - 0.5}{1 + 0.001 (x_1^2 + x_2^2)^2}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 28)
+
+
+### schaffer3: Standard {#schaffer3-standard}
+- **Formula**: f(\mathbf{x}) = 0.5 + \sin^2(\cos |x_1^2 - x_2^2|) - \frac{0.5}{[1 + 0.001(x_1^2 + x_2^2)]^2}. 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 28)
+
+
+### schumersteiglitz: Standard {#schumersteiglitz-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n} x_i^4
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0, -10.0, -10.0, -10.0, -10.0, -10.0, -10.0, -10.0, -10.0]; Min: 0.0 at [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+- **Properties**: separable, unimodal, differentiable, continuous, scalable
+- **Reference**: Schumer, M. A. and Steiglitz, K. (1968). Adaptive Step Size Random Search. IEEE Transactions on Automatic Control, 13(3), 270–276.
+
+
+### schwefel: Standard {#schwefel-standard}
+- **Formula**: f(\mathbf{x}) = \left( \sum_{i=1}^{D} x_i^2 \right)^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: unimodal, differentiable, continuous, partially separable, scalable
+- **Reference**: Jamil & Yang (2013, p. 118)
+
+
+### schwefel12: Standard {#schwefel12-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{D} \left( \sum_{j=1}^{i} x_j \right)^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, unimodal, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 29)
+
+
+### schwefel220: Standard {#schwefel220-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{D} |x_i|.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, partially differentiable, unimodal, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 77)
+
+
+### schwefel221: Standard {#schwefel221-standard}
+- **Formula**: f(\mathbf{x}) = \max_{1 \leq i \leq D} |x_i|.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, partially differentiable, unimodal, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 123)
+
+
+### schwefel222: Standard {#schwefel222-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{D} |x_i| + \prod_{i=1}^{D} |x_i|.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, partially differentiable, unimodal, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 124)
+
+
+### schwefel223: Standard {#schwefel223-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{D} x_i^{10}.
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, unimodal, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 125)
+
+
+### schwefel236: Standard {#schwefel236-standard}
+- **Formula**: f(\mathbf{x}) = -x_1 x_2 (72 - 2 x_1 - 2 x_2).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 129)
+
+
+### schwefel26: Standard {#schwefel26-standard}
+- **Formula**: f(\mathbf{x}) = \max(|x_1 + 2x_2 - 7|, |2x_1 + x_2 - 5|).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 31)
+
+
+### sphere: Standard {#sphere-standard}
+- **Formula**: f(x) = \sum_{i=1}^n x_i^2
+- **Bounds/Minimum**: Bounds: [-5.12, -5.12]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, convex, bounded, unimodal, differentiable, scalable, continuous
+- **Reference**: Unknown
+
+
+### sphere_rotated: rotated {#sphere_rotated-rotated}
+- **Formula**: f(\mathbf{x}) = \| Q \mathbf{x} \|^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: convex, non-separable, unimodal, differentiable, continuous, scalable
+- **Reference**: CEC 2005 Problem Definitions
+
+
+### sphere_shifted: shifted {#sphere_shifted-shifted}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n (x_i - o_i)^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [1.0, 1.0]
+- **Properties**: separable, convex, unimodal, differentiable, continuous, scalable
+- **Reference**: CEC 2005 Special Session
+
+
+### step: Standard {#step-standard}
+- **Formula**: \sum_{i=1}^n \lfloor x_i + 0.5 \rfloor^2
+- **Bounds/Minimum**: Bounds: [-5.12, -5.12]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, bounded, unimodal, partially differentiable, scalable, non-convex
+- **Reference**: Unknown
+
+
+### step_ellipsoidal: ellipsoidal {#step_ellipsoidal-ellipsoidal}
+- **Formula**: f(\mathbf{z}) = 0.1 \max\left( \frac{|\tilde{z}_1|}{10^4}, \sum_{i=1}^D 10^{2(i-1)/(D-1)} \tilde{z}_i^2 \right) + f_\mathrm{pen}(x) + f_\mathrm{opt}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: non-separable, partially differentiable, unimodal, continuous, scalable, ill-conditioned
+- **Reference**: BBOB 2009 Noiseless Functions f7
+
+
+### sumofpowers: Standard {#sumofpowers-standard}
+- **Formula**: \sum_{i=1}^n |x_i|^{i+1}
+- **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, convex, bounded, unimodal, differentiable, scalable, continuous
+- **Reference**: Unknown
+
+
+### trid: Standard {#trid-standard}
+- **Formula**: \sum_{i=1}^n (x_i - 1)^2 - \sum_{i=2}^n x_i x_{i-1}
+- **Bounds/Minimum**: Bounds: [-4, -4]; Min: -2.0 at [2, 2]
+- **Properties**: convex, non-separable, bounded, unimodal, differentiable, scalable, continuous
+- **Reference**: Unknown
+
+
+### zakharov: Standard {#zakharov-standard}
+- **Formula**: \sum_{i=1}^n x_i^2 + \left( \sum_{i=1}^n 0.5 i x_i \right)^2 + \left( \sum_{i=1}^n 0.5 i x_i \right)^4
+- **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: convex, non-separable, bounded, unimodal, differentiable, scalable, continuous
+- **Reference**: Unknown
+
+
+## Extended Benchmarks {#extended-benchmarks}
+
+### ackley: Standard {#ackley-standard}
+- **Formula**: f(x) = -20 \exp\left(-0.2 \sqrt{\frac{1}{n} \sum_{i=1}^n x_i^2}\right) - \exp\left(\frac{1}{n} \sum_{i=1}^n \cos(2\pi x_i)\right) + 20 + e
+- **Bounds/Minimum**: Bounds: [-32.768, -32.768]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, scalable, continuous, non-convex
+- **Reference**: Molga & Smutnicki (2005): 2.9
+
+
+### adjiman: Standard {#adjiman-standard}
+- **Formula**: \cos(x_1) \sin(x_2) - \frac{x_1}{x_2^2 + 1}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### alpinen1: Standard {#alpinen1-standard}
+- **Formula**: \sum_{i=1}^n |x_i \sin(x_i) + 0.1 x_i|
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, partially differentiable, scalable, non-convex
+- **Reference**: Unknown
+
+
+### alpinen2: Standard {#alpinen2-standard}
+- **Formula**: - \prod_{i=1}^n \sqrt{x_i} \sin(x_i)
+- **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: -7.885600724127536 at [7.917052698245946, 7.917052698245946]
+- **Properties**: multimodal, separable, bounded, partially differentiable, scalable, non-convex
+- **Reference**: Unknown
+
+
+### bartelsconn: Standard {#bartelsconn-standard}
+- **Formula**: |x_1^2 + x_2^2 + x_1 x_2| + |\sin(x_1)| + |\cos(x_2)|
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### becker_lago: lago {#becker_lago-lago}
+- **Formula**: f(\mathbf{x}) = (|x_1| - 5)^2 + (|x_2| - 5)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, continuous
+- **Reference**: Price (1977); referenced in Jamil & Yang (2013), https://arxiv.org/abs/1308.4008
+
+
+### biggsexp2: Standard {#biggsexp2-standard}
+- **Formula**: \sum_{i=1}^{10} \left( e^{-t_i x_1} - 5 e^{-t_i x_2} - y_i \right)^2 \quad t_i=0.1i, \, y_i = e^{-t_i} - 5 e^{-10 t_i}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### biggsexp3: Standard {#biggsexp3-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left( e^{-t_i x_1} - x_3 e^{-t_i x_2} - y_i \right)^2,
+\quad t_i = 0.1 i, \quad y_i = e^{-t_i} - 5 e^{-10 t_i}
+
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### biggsexp4: Standard {#biggsexp4-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} - y_i \right)^2,
+\quad t_i = 0.1 i, \quad y_i = e^{-t_i} - 5 e^{-10 t_i}
+
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### biggsexp5: Standard {#biggsexp5-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{11} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} + 3 e^{-t_i x_5} - y_i \right)^2,
+\quad t_i = 0.1 i, \quad y_i = e^{-t_i} - 5 e^{-10 t_i} + 3 e^{-4 t_i}
+
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### biggsexp6: Standard {#biggsexp6-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{13} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} + x_6 e^{-t_i x_5} - y_i \right)^2, \quad t_i = 0.1 i, \quad y_i = e^{-t_i} - 5 e^{-10 t_i} + 3 e^{-4 t_i}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### bird: Standard {#bird-standard}
+- **Formula**: \sin(x_1) \exp\left((1 - \cos(x_2))^2\right) + \cos(x_2) \exp\left((1 - \sin(x_1))^2\right) + (x_1 - x_2)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### bohachevsky1: Standard {#bohachevsky1-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[ x_i^2 + 2 x_{i+1}^2 - 0.3 \cos(3 \pi x_i) - 0.4 \cos(4 \pi x_{i+1}) + 0.7 \right].
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable, non-convex
+- **Reference**: Unknown
+
+
+### bohachevsky2: Standard {#bohachevsky2-standard}
+- **Formula**: f(x) = x_1^2 + 2x_2^2 - 0.3\cos(3\pi x_1)\cos(4\pi x_2) + 0.3
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, non-convex
+- **Reference**: Unknown
+
+
+### bohachevsky3: Standard {#bohachevsky3-standard}
+- **Formula**: f(\mathbf{x}) = x_1^2 + 2x_2^2 - 0.3 \cos(3\pi x_1 + 4\pi x_2) + 0.3.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### boxbetts: Standard {#boxbetts-standard}
+- **Formula**: \sum_{i=1}^{10} \left( e^{-0.1i x_1} - e^{-0.1i x_2} - (e^{-0.1i} - e^{-i}) x_3 \right)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, differentiable, continuous
+- **Reference**: MVF - Multivariate Test Functions Library in C, Ernesto P. Adorio, Revised January 14, 2005
+
+
+### brad: Standard {#brad-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{15} \left( y_i - x_1 - \frac{u_i}{v_i x_2 + w_i x_3} \right)^2, \quad u_i = i, \ v_i = 16 - i, \ w_i = \min(u_i, v_i), \ \mathbf{y} = [0.14, 0.18, 0.22, 0.25, 0.29, 0.32, 0.35, 0.39, 0.37, 0.58, 0.73, 0.96, 1.34, 2.10, 4.39]^\top.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### branin: Standard {#branin-standard}
+- **Formula**: f(x) = a (x_2 - b x_1^2 + c x_1 - r)^2 + s (1 - t) \cos(x_1) + s, a=1, b=5.1/(4\pi^2), c=5/\pi, r=6, s=10, t=1/(8\pi)
+- **Bounds/Minimum**: Bounds: [-5.0, 0.0]; Min: 0.0 at [-3.141592653589793, 12.275]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### braninrcos2: Standard {#braninrcos2-standard}
+- **Formula**: f(\mathbf{x}) = \left( x_2 - \frac{5.1 x_1^2}{4\pi^2} + \frac{5 x_1}{\pi} - 6 \right)^2 + 10 \left( 1 - \frac{1}{8\pi} \right) \cos(x_1) \cos(x_2) \ln(x_1^2 + x_2^2 + 1) + 10.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### bukin2: Standard {#bukin2-standard}
+- **Formula**: f(x) = 100 (x_2 - 0.01 x_1^2 + 1)^2 + 0.01 (x_1 + 10)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### bukin4: Standard {#bukin4-standard}
+- **Formula**: f(\mathbf{x}) = 100 x_2^2 + 0.01 |x_1 + 10|
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, partially differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### bukin6: Standard {#bukin6-standard}
+- **Formula**: 100 \sqrt{|x_2 - 0.01 x_1^2|} + 0.01 |x_1 + 10|
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, bounded, partially differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### carromtable: Standard {#carromtable-standard}
+- **Formula**: -\frac{\left(\cos(x_1)\cos(x_2) \exp \left| 1 - \frac{\sqrt{x_1^2 + x_2^2}}{\pi} \right| \right)^2}{30}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### chen: Standard {#chen-standard}
+- **Formula**: -\left(\frac{0.001}{0.000001 + (x_1 - 0.4 x_2 - 0.1)^2} + \frac{0.001}{0.000001 + (2 x_1 + x_2 - 1.5)^2}\right)
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### chenv: Standard {#chenv-standard}
+- **Formula**: f(\mathbf{x}) = -\frac{0.001}{(0.001)^2 + (x_1^2 + x_2^2 - 1)^2} - \frac{0.001}{(0.001)^2 + (x_1^2 + x_2^2 - 0.5)^2} - \frac{0.001}{(0.001)^2 + (x_1^2 - x_2^2)^2}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### chichinadze: Standard {#chichinadze-standard}
+- **Formula**: f(\mathbf{x}) = x_1^2 - 12 x_1 + 11 + 10 \cos\left(\frac{\pi x_1}{2}\right) + 8 \sin\left(\frac{5 \pi x_1}{2}\right) - \sqrt{\frac{1}{5}} \exp\left(-0.5 (x_2 - 0.5)^2 \right) 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### cola: Standard {#cola-standard}
+- **Formula**: f(\mathbf{u}) = \sum_{1 \le j < i \le 10} (r_{i,j} - d_{i,j})^2, \quad r_{i,j} = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2} 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### corana: Standard {#corana-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n \begin{cases} 0.15 d_i (z_i - 0.05 \sgn(z_i))^2 & |x_i - z_i| < 0.05 \\ d_i x_i^2 & \text{otherwise} \end{cases}, \\ z_i = 0.2 \left\lfloor \frac{|x_i|}{0.2} + 0.49999 \right\rfloor \sgn(x_i), \\ d_i \text{ cycles over } [1, 1000, 10, 100].
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, scalable
+- **Reference**: Unknown
+
+
+### cosinemixture: Standard {#cosinemixture-standard}
+- **Formula**: f(\mathbf{x}) = -0.1 \sum_{i=1}^n \cos(5 \pi x_i) - \sum_{i=1}^n x_i^2
+- **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: -0.2 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable, non-convex
+- **Reference**: Unknown
+
+
+### crossintray: Standard {#crossintray-standard}
+- **Formula**: -0.0001 \left( \left| \sin(x_1) \sin(x_2) \exp\left( \left| 100 - \frac{\sqrt{x_1^2 + x_2^2}}{\pi} \right| \right) \right| + 1 \right)^{0.1}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### csendes: Standard {#csendes-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n x_i^2 (2 + \sin x_i). 
+- **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable
+- **Reference**: Unknown
+
+
+### damavandi: Standard {#damavandi-standard}
+- **Formula**: f(\mathbf{x}) = \left[1 - \left| \frac{\sin[\pi (x_1 - 2)]\sin[\pi (x_2 - 2)]}{\pi^2 (x_1 - 2)(x_2 - 2)} \right|^5 \right] \left[ 2 + (x_1 - 7)^2 + 2(x_2 - 7)^2 \right] 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### deb1: Standard {#deb1-standard}
+- **Formula**: f(\mathbf{x}) = -\frac{1}{D} \sum_{i=1}^{D} \sin^{6}(5 \pi x_i) 
+- **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: -1.0 at [-0.9, -0.9]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable
+- **Reference**: Unknown
+
+
+### deb3: Standard {#deb3-standard}
+- **Formula**: f(\mathbf{x}) = -\frac{1}{D} \sum_{i=1}^{D} \sin^6 \left(5 \pi (x_i^{3/4} - 0.05)\right) 
+- **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: -1.0 at [0.07969939268869583, 0.07969939268869583]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable
+- **Reference**: Unknown
+
+
+### dejongf4: Standard {#dejongf4-standard}
+- **Formula**: \sum_{i=1}^n i x_i^4 + \text{Gaussian noise}
+- **Bounds/Minimum**: Bounds: [-1.28, -1.28]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, convex, bounded, unimodal, partially differentiable, scalable, continuous, has_noise
+- **Reference**: Unknown
+
+
+### dejongf5modified: Standard {#dejongf5modified-standard}
+- **Formula**: -\left( \frac{1}{500} + \sum_{i=1}^{25} \frac{1}{i + (x_1 - a_{1i})^6 + (x_2 - a_{2i})^6} \right)^{-1}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, finite_at_inf, continuous, non-convex
+- **Reference**: Unknown
+
+
+### dejongf5original: Standard {#dejongf5original-standard}
+- **Formula**: f(x) = \left( 0.002 + \sum_{j=1}^{25} \frac{1}{j + (x_1 - a_{1j})^6 + (x_2 - a_{2j})^6} \right)^{-1}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, finite_at_inf, continuous, non-convex
+- **Reference**: Unknown
+
+
+### dekkersaarts: Standard {#dekkersaarts-standard}
+- **Formula**: 10^5 x_1^2 + x_2^2 - (x_1^2 + x_2^2)^2 + 10^{-5} (x_1^2 + x_2^2)^4
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### devilliersglasser1: Standard {#devilliersglasser1-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{24} \left[ x_1 x_2^{t_i} \sin(x_3 t_i + x_4) - y_i \right]^2, \quad t_i = 0.1(i-1), \quad y_i = 60.137 \times 1.371^{t_i} \sin(3.112 t_i + 1.761).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### devilliersglasser2: Standard {#devilliersglasser2-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{24} \left[ x_1 x_2^{t_i} \tanh\left(x_3 t_i + \sin(x_4 t_i)\right) \cos\left(t_i e^{x_5}\right) - y_i \right]^2 \\
+\text{where } t_i = 0.1(i-1), \\
+y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_i).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### dolan: Standard {#dolan-standard}
+- **Formula**: f(\mathbf{x}) = (x_1 + 1.7 x_2) \sin(x_1) - 1.5 x_3 - 0.1 x_4 \cos(x_4 + x_5 - x_1) + 0.2 x_5^2 - x_2 - 1
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, controversial, non-separable, bounded, differentiable, continuous
+- **Reference**: Unknown
+
+
+### dropwave: Standard {#dropwave-standard}
+- **Formula**: -\frac{1 + \cos(12 \sqrt{x_1^2 + x_2^2})}{0.5 (x_1^2 + x_2^2) + 2}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### easom: Standard {#easom-standard}
+- **Formula**: -\cos(x_1)\cos(x_2)\exp(-((x_1-\pi)^2 + (x_2-\pi)^2))
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [π, π]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### eggcrate: Standard {#eggcrate-standard}
+- **Formula**: f(\mathbf{x}) = x_1^2 + x_2^2 + 25 (\sin^2 x_1 + \sin^2 x_2).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### eggholder: Standard {#eggholder-standard}
+- **Formula**: - (x_2 + 47) \sin\left(\sqrt{\left|x_2 + \frac{x_1}{2} + 47\right|}\right) - x_1 \sin\left(\sqrt{\left|x_1 - (x_2 + 47)\right|}\right)
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### freudensteinroth: Standard {#freudensteinroth-standard}
+- **Formula**: f(x) = \left( x_1 - 13 + \left( (5 - x_2)x_2 - 2 \right)x_2 \right)^2 + \left( x_1 - 29 + \left( (x_2 + 1)x_2 - 14 \right)x_2 \right)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### giunta: Standard {#giunta-standard}
+- **Formula**: 0.6 + \sum_{i=1}^2 \left[ \sin\left(\frac{16}{15}x_i - 1\right) + \sin^2\left(\frac{16}{15}x_i - 1\right) + \frac{1}{50} \sin\left(4 \left(\frac{16}{15}x_i - 1\right)\right) \right]
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### goldsteinprice: Standard {#goldsteinprice-standard}
+- **Formula**: (1 + (x_1 + x_2 + 1)^2 (19 - 14x_1 + 3x_1^2 - 14x_2 + 6x_1x_2 + 3x_2^2)) \cdot (30 + (2x_1 - 3x_2)^2 (18 - 32x_1 + 12x_1^2 + 48x_2 - 36x_1x_2 + 27x_2^2))
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### griewank: Standard {#griewank-standard}
+- **Formula**: f(x) = \sum_{i=1}^n \frac{x_i^2}{4000} - \prod_{i=1}^n \cos\left(\frac{x_i}{\sqrt{i}}\right) + 1
+- **Bounds/Minimum**: Bounds: [-600.0, -600.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, scalable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### gulfresearch: Standard {#gulfresearch-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{99} \left[ \exp\left( -\frac{(u_i - x_2)^{x_3}}{x_1} \right) - 0.01 i \right]^2, \quad u_i = 25 + \left[-50 \ln(0.01 i)\right]^{2/3}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### hansen: Standard {#hansen-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=0}^{4} (i+1)\cos(i x_1 + i+1) \sum_{j=0}^{4} (j+1)\cos((j+2) x_2 + j+1).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### hartman6: Standard {#hartman6-standard}
+- **Formula**: f(\mathbf{x}) = -\sum_{i=1}^{4} c_i \exp\left( -\sum_{j=1}^{6} a_{ij} (x_j - p_{ij})^2 \right).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### hartmanf3: Standard {#hartmanf3-standard}
+- **Formula**: -\sum_{i=1}^4 \alpha_i \exp\left(-\sum_{j=1}^3 A_{ij} (x_j - P_{ij})^2\right), \quad \alpha=[1,1.2,3,3.2], \quad A=\begin{bmatrix}3 & 10 & 30 \\ 0.1 & 10 & 35 \\ 3 & 10 & 30 \\ 0.1 & 10 & 35\end{bmatrix}, \quad P=\begin{bmatrix}0.3689 & 0.1170 & 0.2673 \\ 0.4699 & 0.4387 & 0.7470 \\ 0.1091 & 0.8732 & 0.5547 \\ 0.03815 & 0.5743 & 0.8828\end{bmatrix}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### helicalvalley: Standard {#helicalvalley-standard}
+- **Formula**: f(\mathbf{x}) = 100 \left[ (x_2 - 10\theta)^2 + \left(\sqrt{x_1^2 + x_2^2} - 1\right)^2 \right] + x_3^2, \quad \theta = \frac{1}{2\pi} \atantwo(x_2, x_1).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### himmelblau: Standard {#himmelblau-standard}
+- **Formula**: (x_1^2 + x_2 - 11)^2 + (x_1 + x_2^2 - 7)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### holdertable: Standard {#holdertable-standard}
+- **Formula**: -\left| \sin(x_1) \cos(x_2) \exp\left(\left|1 - \sqrt{x_1^2 + x_2^2}/\pi\right|\right) \right|
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, partially differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### hosaki: Standard {#hosaki-standard}
+- **Formula**: f(\mathbf{x}) = \left(1 - 8x_1 + 7x_1^2 - \frac{7}{3}x_1^3 + \frac{1}{4}x_1^4\right) x_2^2 e^{-x_2}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### jennrichsampson: Standard {#jennrichsampson-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left(2 + 2i - (e^{i x_1} + e^{i x_2})\right)^2 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jennrich and Sampson (1968)
+
+
+### keane: Standard {#keane-standard}
+- **Formula**: -\frac{\sin^2(x_1 - x_2) \sin^2(x_1 + x_2)}{\sqrt{x_1^2 + x_2^2}}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### kearfott: Standard {#kearfott-standard}
+- **Formula**: (x_1^2 + x_2^2 - 2)^2 + (x_1^2 + x_2^2 - 0.5)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### langermann: Standard {#langermann-standard}
+- **Formula**: -\sum_{i=1}^m c_i \exp \left[-\frac{1}{\pi} \sum_{j=1}^n (x_j - a_{ij})^2 \right] \cos \left[ \pi \sum_{j=1}^n (x_j - a_{ij})^2 \right]
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, controversial, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### levyjamil: Standard {#levyjamil-standard}
+- **Formula**: \sin^2(3\pi x_1) + \sum_{i=1}^{n-1} (x_i - 1)^2 [1 + \sin^2(3\pi x_{i+1})] + (x_n - 1)^2 [1 + \sin^2(2\pi x_n)]
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [1.0, 1.0]
+- **Properties**: multimodal, bounded, differentiable, scalable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### mccormick: Standard {#mccormick-standard}
+- **Formula**: \sin(x_1 + x_2) + (x_1 - x_2)^2 - 1.5 x_1 + 2.5 x_2 + 1
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### michalewicz: Standard {#michalewicz-standard}
+- **Formula**: f(x) = -\sum_{i=1}^n \sin(x_i) \sin^{2m}(i x_i^2 / \pi), m=10
+- **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: -1.8013034100985528 at [2.2029055201726, 1.5707963267949]
+- **Properties**: multimodal, non-separable, bounded, differentiable, scalable, continuous
+- **Reference**: Unknown
+
+
+### mielcantrell: Standard {#mielcantrell-standard}
+- **Formula**: f(\mathbf{x}) = (e^{x_1} - x_2)^4 + 100 (x_2 - x_3)^6 + [\tan(x_3 - x_4)]^4 + x_1^8 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Cragg and Levy (1969)
+
+
+### mishra1: Standard {#mishra1-standard}
+- **Formula**: f(\mathbf{x}) = \left(1 + g_n\right)^{g_n}, \quad g_n = n - \sum_{i=1}^{n-1} x_i 
+- **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: 2.0 at [1.0, 1.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, scalable
+- **Reference**: Mishra (2006a)
+
+
+### mishra10: Standard {#mishra10-standard}
+- **Formula**: f(\mathbf{x}) = \left[ \lfloor x_1 x_2 \rfloor - \lfloor x_1 \rfloor - \lfloor x_2 \rfloor \right]^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Mishra (2006f), via Jamil & Yang (2013): f83
+
+
+### mishra11: Standard {#mishra11-standard}
+- **Formula**: f(\mathbf{x}) = \left[ \frac{1}{n} \sum_{i=1}^n |x_i| - \left( \prod_{i=1}^n |x_i| \right)^{1/n} \right]^2.
+- **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: 0.0 at [1.0, 1.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, scalable, non-convex
+- **Reference**: Mishra (2006f), via Jamil & Yang (2013): f84
+
+
+### mishra2: Standard {#mishra2-standard}
+- **Formula**: f(\mathbf{x}) = (1 + g_n)^{g_n}, \quad g_n = n - \sum_{i=1}^{n-1} \frac{x_i + x_{i+1}}{2} 
+- **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: 2.0 at [1.0, 1.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, scalable
+- **Reference**: Mishra (2006a)
+
+
+### mishra3: Standard {#mishra3-standard}
+- **Formula**: f(\mathbf{x}) = \left| \cos \left( \sqrt{ | x_1^2 + x_2 | } \right) \right|^{0.5} + 0.01 (x_1 + x_2) 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Mishra (2006f)
+
+
+### mishra4: Standard {#mishra4-standard}
+- **Formula**: f(\mathbf{x}) = \sqrt{ \left| \sin \sqrt{ |x_1^2 + x_2| } \right| } + 0.01(x_1 + x_2) 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Mishra (2006f)
+
+
+### mishra5: Standard {#mishra5-standard}
+- **Formula**: f(\mathbf{x}) = \left[ \sin^2 \left( (\cos x_1 + \cos x_2)^2 \right) + \cos^2 \left( (\sin x_1 + \sin x_2)^2 \right) + x_1 \right]^2 + 0.01(x_1 + x_2)
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Mishra (2006f)
+
+
+### mishra6: Standard {#mishra6-standard}
+- **Formula**: f(\mathbf{x}) = -\ln \left[ \left( \sin^2 \left( (\cos x_1 + \cos x_2)^2 \right) - \cos^2 \left( (\sin x_1 + \sin x_2)^2 \right) + x_1 \right)^2 \right] + 0.1 \left( (x_1 - 1)^2 + (x_2 - 1)^2 \right)
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Mishra (2006)
+
+
+### mishra7: Standard {#mishra7-standard}
+- **Formula**: f(\mathbf{x}) = \left[ x_1 x_2 - 2! \right]^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, differentiable, continuous
+- **Reference**: Mishra (2006f)
+
+
+### mishra8: Standard {#mishra8-standard}
+- **Formula**: f(\mathbf{x}) = 0.001 \left[ \left| x_1^{10} - 20 x_1^9 + 180 x_1^8 - 960 x_1^7 + 3360 x_1^6 - 8064 x_1^5 + 13340 x_1^4 - 15360 x_1^3 + 11520 x_1^2 - 5120 x_1 + 2624 \right| \cdot \left| x_2^4 + 12 x_2^3 + 54 x_2^2 + 108 x_2 + 81 \right| \right]^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Mishra (2006f)
+
+
+### mishra9: Standard {#mishra9-standard}
+- **Formula**: f(\mathbf{x}) = \left[ f_1 f_2^2 f_3 + f_1 f_2 f_3^2 + f_2^2 + (x_1 + x_2 - x_3)^2 \right]^2 \\ where \\ f_1 = 2x_1^3 + 5x_1 x_2 + 4x_3 - 2x_1^2 x_3 - 18, \\ f_2 = x_1 + x_2^3 + x_1 x_2^2 + x_1 x_3^2 - 22, \\ f_3 = 8x_1^2 + 2x_2 x_3 + 2x_2^2 + 3x_2^3 - 52.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Mishra (2006f)
+
+
+### mishrabird: Standard {#mishrabird-standard}
+- **Formula**: f(x, y) = \sin(y) e^{(1 - \cos(x))^2} + \cos(x) e^{(1 - \sin(y))^2} + (x - y)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### mvf_shubert: shubert {#mvf_shubert-shubert}
+- **Formula**: f(\mathbf{x}) = -\sum_{i=0}^{1}\sum_{j=0}^{4}(j+1)\sin((j+2)x_i+(j+1)).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, differentiable, continuous
+- **Reference**: Adorio (2005, p. 12)
+
+
+### mvf_shubert2: shubert2 {#mvf_shubert2-shubert2}
+- **Formula**: f(\mathbf{x}) = \sum_{i=0}^{1}\sum_{j=0}^{4}(j+1)\cos((j+2)x_i+(j+1)).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, differentiable, continuous
+- **Reference**: Adorio (2005, p. 13)
+
+
+### mvf_shubert3: shubert3 {#mvf_shubert3-shubert3}
+- **Formula**: f(\mathbf{x}) = -\sum_{i=0}^{n-1}\sum_{j=0}^{4}(j+1)\sin((j+2)x_i+(j+1)).
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -24.062498884334275 at [-0.4913908340773322, -0.4913908340773322]
+- **Properties**: multimodal, separable, differentiable, continuous, scalable
+- **Reference**: Adorio (2005, p. 13)
+
+
+### parsopoulos: Standard {#parsopoulos-standard}
+- **Formula**: f(\mathbf{x}) = \cos^2(x_1) + \sin^2(x_2).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Parsopoulos et al., via Jamil & Yang (2013): f85
+
+
+### pathological: Standard {#pathological-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n-1} \left( 0.5 + \frac{\sin^2 \sqrt{100 x_i^2 + x_{i+1}^2} - 0.5}{1 + 0.001 (x_i^2 - 2 x_i x_{i+1} + x_{i+1}^2)^2} \right).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, scalable, non-convex
+- **Reference**: Rahnamayan et al. (2007a), via Jamil & Yang (2013): f87
+
+
+### paviani: Standard {#paviani-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left[ \left(\ln (x_i - 2)\right)^2 + \left(\ln (10 - x_i)\right)^2 \right] - \left( \prod_{i=1}^{10} x_i \right)^{0.2}. 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Himmelblau (1972), via Jamil & Yang (2013): f88
+
+
+### penholder: Standard {#penholder-standard}
+- **Formula**: f(\mathbf{x}) = -\exp\left( -\frac{1}{\left| \cos(x_1) \cos(x_2) \exp\left( \left| 1 - \frac{\sqrt{x_1^2 + x_2^2}}{\pi} \right| \right) \right|} \right).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Mishra (2006f), via Jamil & Yang (2013): f86
+
+
+### periodic: Standard {#periodic-standard}
+- **Formula**: f(\mathbf{x}) = 1 + \sin^2(x_1) + \sin^2(x_2) - 0.1 e^{-(x_1^2 + x_2^2)}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Ali et al. (2005)
+
+
+### pinter: Standard {#pinter-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n i x_i^2 + \sum_{i=1}^n 20 i \sin^2 A + \sum_{i=1}^n i \log_{10} (1 + i B^2), \\ A = x_{i-1} \sin x_i + \sin x_{i+1}, \\ B = x_{i-1}^2 - 2 x_i + 3 x_{i+1} - \cos x_i + 1 \\ (cyclic: x_0 = x_n, x_{n+1} = x_1).
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, scalable, non-convex
+- **Reference**: Pintér (1996), via Jamil & Yang (2013): f89
+
+
+### price1: Standard {#price1-standard}
+- **Formula**: f(\mathbf{x}) = (|x_1| - 5)^2 + (|x_2| - 5)^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, continuous
+- **Reference**: Price (1977)
+
+
+### price2: Standard {#price2-standard}
+- **Formula**: f(\mathbf{x}) = 1 + \sin^2(x_1) + \sin^2(x_2) - 0.1e^{-x_1^2 - x_2^2}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, differentiable, continuous
+- **Reference**: Price (1977)
+
+
+### price4: Standard {#price4-standard}
+- **Formula**: f(\mathbf{x}) = (2x_1^3 x_2 - x_2^3)^2 + (6x_1 - x_2^2 + x_2)^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013), https://arxiv.org/abs/1308.4008
+
+
+### qing: Standard {#qing-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^D (x_i^2 - i)^2.
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 0.0 at [1.0, 1.4142135623730951]
+- **Properties**: multimodal, separable, differentiable, continuous, scalable
+- **Reference**: Qing (2006)
+
+
+### quartic: Standard {#quartic-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n} i x_i^4 + \text{random}[0, 1).
+- **Bounds/Minimum**: Bounds: [-1.28, -1.28]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, bounded, unimodal, differentiable, continuous, scalable, has_noise
+- **Reference**: Jamil & Yang (2013)
+
+
+### quintic: Standard {#quintic-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^D |x_i^5 - 3x_i^4 + 4x_i^3 + 2x_i^2 - 10x_i - 4|.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### rana: Standard {#rana-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{D-1} (x_{i+1} + 1) \cos(t_2) \sin(t_1) + x_i \cos(t_1) \sin(t_2), \\
+t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}. 
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: -464.27392770239135 at [-500.0, -500.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, scalable
+- **Reference**: Price et al. (2005). Differential Evolution: A Practical Approach to Global Optimization. Springer; Naser et al. (2024). A Review of 315 Benchmark and Test Functions.
+
+
+### rastrigin: Standard {#rastrigin-standard}
+- **Formula**: f(x) = 10n + \sum_{i=1}^n [x_i^2 - 10 \cos(2\pi x_i)]
+- **Bounds/Minimum**: Bounds: [-5.12, -5.12]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, scalable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### ripple1: Standard {#ripple1-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{2} -e^{-2 \ln 2 \left(\frac{x_i - 0.1}{0.8}\right)^2} \left(\sin^6(5 \pi x_i) + 0.1 \cos^2(500 \pi x_i)\right). 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil, M. & Yang, X.-S. A Literature Survey of Benchmark Functions For Global Optimization Problems Int. Journal of Mathematical Modelling and Numerical Optimisation, 2013, 4, 150-194.
+
+
+### ripple25: Standard {#ripple25-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{2} -e^{-2 \ln 2 \left(\frac{x_i - 0.1}{0.8}\right)^2} \sin^6(5 \pi x_i). 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil, M. & Yang, X.-S. A Literature Survey of Benchmark Functions For Global Optimization Problems Int. Journal of Mathematical Modelling and Numerical Optimisation, 2013, 4, 150-194.
+
+
+### rosenbrock_modified: modified {#rosenbrock_modified-modified}
+- **Formula**: f(\mathbf{x}) = 74 + 100(x_2 - x_1^2)^2 + (1 - x_1)^2 - 400 e^{-\frac{(x_1 + 1)^2 + (x_2 + 1)^2}{0.1}}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, deceptive, controversial, non-separable, bounded, differentiable, continuous, ill-conditioned
+- **Reference**: Jamil & Yang (2013), Benchmark Function #106
+
+
+### salomon: Standard {#salomon-standard}
+- **Formula**: f(\mathbf{x}) = 1 - \cos\left(2\pi \sqrt{\sum_{i=1}^D x_i^2}\right) + 0.1 \sqrt{\sum_{i=1}^D x_i^2}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 27)
+
+
+### sargan: Standard {#sargan-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^D (x_i^2 + 0.4 \sum_{j \neq i} x_i x_j).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 27)
+
+
+### schaffer1: Standard {#schaffer1-standard}
+- **Formula**: f(\mathbf{x}) = 0.5 + \frac{\sin^2(x_1^2 + x_2^2) - 0.5}{[1 + 0.001(x_1^2 + x_2^2)]^2}, \quad D=2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 136, Function 112)
+
+
+### schaffer6: Standard {#schaffer6-standard}
+- **Formula**: f(\mathbf{x}) = 0.5 + \frac{\sin^2(\sqrt{x_1^2 + x_2^2}) - 0.5}{[1 + 0.001(x_1^2 + x_2^2)]^2}, \quad D=2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Al-Roomi (2015, Schaffer's Function No. 06)
+
+
+### schafferf6: Standard {#schafferf6-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n \frac{\sin^2 \sqrt{x_i^2 + x_{i+1}^2}}{(1 + 0.001 (x_i^2 + x_{i+1}^2))^2}, \quad x_{n+1} = x_1.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 32)
+
+
+### schaffern2: Standard {#schaffern2-standard}
+- **Formula**: f(\mathbf{x}) = 0.5 + \frac{\sin^2(x_1^2 - x_2^2) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Mishra (2007, p. 4)
+
+
+### schaffern4: Standard {#schaffern4-standard}
+- **Formula**: f(x) = 0.5 + \frac{\cos^2(\sin(|x_1^2 - x_2^2|)) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### schmidtvetters: Standard {#schmidtvetters-standard}
+- **Formula**: f(\mathbf{x}) = \frac{1}{1 + (x_1 - x_2)^2} + \sin\left( \frac{\pi x_2 + x_3}{2} \right) + e^{\left( \frac{x_1 + x_2}{x_2} - 2 \right)^2}. 
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, controversial, non-separable, partially differentiable
+- **Reference**: Jamil & Yang (2013, p. 116)
+
+
+### schwefel225: Standard {#schwefel225-standard}
+- **Formula**: f(\mathbf{x}) = (x_2 - 1)^2 + (x_1 - x_2^2)^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 127)
+
+
+### schwefel226: Standard {#schwefel226-standard}
+- **Formula**: f(\mathbf{x}) = -\frac{1}{D} \sum_{i=1}^{D} x_i \sin \sqrt{|x_i|}.
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: -418.9828872724338 at [420.96874357691473, 420.96874357691473]
+- **Properties**: multimodal, separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 30)
+
+
+### schwefel24: Standard {#schwefel24-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{2} (x_i - 1)^2 + (x_1 - x_i^2)^2.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 30)
+
+
+### shekel: Standard {#shekel-standard}
+- **Formula**: f(x) = -\sum_{i=1}^{10} \frac{1}{\sum_{j=1}^4 (x_j - a_{ij})^2 + c_i}
+- **Bounds/Minimum**: Bounds: [0.0, 0.0, 0.0, 0.0]; Min: 0.0 at [4.000746531592147, 4.000592934138629, 3.9996633980404135, 3.9995098005868956]
+- **Properties**: multimodal, non-separable, bounded, differentiable, finite_at_inf, continuous, non-convex
+- **Reference**: Unknown
+
+
+### shekel5: Standard {#shekel5-standard}
+- **Formula**: f(\mathbf{x}) = -\sum_{i=1}^{5} \frac{1}{\sum_{j=1}^{4} (x_j - a_{ij})^2 + c_i}, \quad \mathbf{a}_i \in A = \begin{bmatrix} 4 & 4 & 4 & 4 \\ 1 & 1 & 1 & 1 \\ 8 & 8 & 8 & 8 \\ 6 & 6 & 6 & 6 \\ 3 & 7 & 3 & 7 \end{bmatrix}, \quad \mathbf{c} = [0.1, 0.2, 0.2, 0.4, 0.4].
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, controversial, non-separable, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 130)
+
+
+### shekel7: Standard {#shekel7-standard}
+- **Formula**: f(\mathbf{x}) = -\sum_{i=1}^{7} \frac{1}{\sum_{j=1}^{4} (x_j - a_{ij})^2 + c_i}, \quad \mathbf{a}_i \in A = \begin{bmatrix} 4 & 4 & 4 & 4 \\ 1 & 1 & 1 & 1 \\ 8 & 8 & 8 & 8 \\ 6 & 6 & 6 & 6 \\ 3 & 7 & 3 & 7 \\ 2 & 9 & 2 & 9 \\ 5 & 5 & 3 & 3 \end{bmatrix}, \quad \mathbf{c} = [0.1, 0.2, 0.2, 0.4, 0.4, 0.6, 0.3].
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, controversial, non-separable, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 131)
+
+
+### shubert_additive_cosine: cosine {#shubert_additive_cosine-cosine}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n \sum_{j=1}^5 j \cos((j+1)x_i + j).
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -25.74177099545136 at [-1.42512843, -1.42512843]
+- **Properties**: multimodal, separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 56)
+
+
+### shubert_additive_sine: sine {#shubert_additive_sine-sine}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n \sum_{j=1}^5 j \sin((j+1)x_i + j).
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -29.675900051421173 at [-7.397285, -7.397285]
+- **Properties**: multimodal, separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 55)
+
+
+### shubert_generalized: generalized {#shubert_generalized-generalized}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n \sum_{j=1}^5 a_j \cos(b_j x_i + c_j).
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -25.741770995451372 at [-1.42512843, -1.42512843]
+- **Properties**: multimodal, separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 56)
+
+
+### shubert_hybrid_rastrigin: rastrigin {#shubert_hybrid_rastrigin-rastrigin}
+- **Formula**: f(\mathbf{x}) = 0.5 \cdot \text{Shubert}(\mathbf{x}) + 0.5 \cdot \text{Rastrigin}(\mathbf{x}).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, ill-conditioned
+- **Reference**: Jamil & Yang (2013, p. 56)
+
+
+### shubert_noisy: noisy {#shubert_noisy-noisy}
+- **Formula**: f(\mathbf{x}) = \left( \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)x_i + j) \right) + \varepsilon, \quad \varepsilon \sim U[0,1).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, differentiable, continuous, has_noise
+- **Reference**: Jamil & Yang (2013, p.55)
+
+
+### shubert_shifted_rotated: rotated {#shubert_shifted_rotated-rotated}
+- **Formula**: f(\mathbf{x}) = \prod_{i=1}^2 \sum_{j=1}^5 j \cos((j+1)[\mathbf{Q}(\mathbf{x}-\mathbf{o})]_i + j).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, differentiable, continuous
+- **Reference**: CEC 2014; Jamil & Yang (2013, extended transformations)
+
+
+### sineenvelope: Standard {#sineenvelope-standard}
+- **Formula**: -0.5 + \frac{\sin^2(\sqrt{x_1^2 + x_2^2}) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### sixhumpcamelback: Standard {#sixhumpcamelback-standard}
+- **Formula**: f(x) = \left(4 - 2.1 x_1^2 + \frac{x_1^4}{3}\right) x_1^2 + x_1 x_2 + (-4 + 4 x_2^2) x_2^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### sphere_noisy: noisy {#sphere_noisy-noisy}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n x_i^2 + \epsilon, \epsilon \sim U[0,1].
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, convex, differentiable, continuous, scalable, has_noise
+- **Reference**: BBOB f101 / Nevergrad
+
+
+### styblinskitang: Standard {#styblinskitang-standard}
+- **Formula**: \frac{1}{2} \sum_{i=1}^n (x_i^4 - 16 x_i^2 + 5 x_i)
+- **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: -78.33233140754282 at [-2.9035340276126953, -2.9035340276126953]
+- **Properties**: multimodal, bounded, differentiable, scalable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### threehumpcamel: Standard {#threehumpcamel-standard}
+- **Formula**: 2x_1^2 - 1.05x_1^4 + \frac{x_1^6}{6} + x_1 x_2 + x_2^2
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+### wood: Standard {#wood-standard}
+- **Formula**: f(x) = 100(x_1^2 - x_2)^2 + (x_1 - 1)^2 + (x_3 - 1)^2 + 90(x_3^2 - x_4)^2 + 10.1((x_2 - 1)^2 + (x_4 - 1)^2) + 19.8(x_2 - 1)(x_4 - 1)
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Unknown
+
+
+## Other Benchmarks {#other-benchmarks}
+
+### ackley4: Standard {#ackley4-standard}
+- **Formula**: \sum_{i=1}^{D-1} \left[ e^{-0.2 \sqrt{x_i^2 + x_{i+1}^2}} + 3 (\cos(2x_i) + \sin(2x_{i+1})) \right]
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: controversial, non-separable, bounded, differentiable, highly multimodal, continuous
+- **Reference**: Unknown
+
+
+### axisparallelhyperellipsoid: Standard {#axisparallelhyperellipsoid-standard}
+- **Formula**: \sum_{i=1}^n i x_i^2
+- **Bounds/Minimum**: Bounds: [-5.12, -5.12]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, convex, bounded, differentiable, scalable, continuous
+- **Reference**: Unknown
+
+
+### shubert_classic: classic {#shubert_classic-classic}
+- **Formula**: f(\mathbf{x}) = \prod_{i=1}^{2} \left( \sum_{j=1}^{5} j \cos((j+1) x_i + j) \right).
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: controversial, non-separable, differentiable, highly multimodal, continuous
+- **Reference**: Jamil & Yang (2013, p. 55)
+
+
+### shubert_coupled: coupled {#shubert_coupled-coupled}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[\sum_{j=1}^5 j \cos((j+1)x_i + j)\right] \left[\sum_{j=1}^5 j \cos((j+1)x_{i+1} + j)\right].
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.73090883102375 at [4.858056878468046, 5.482864206944743]
+- **Properties**: non-separable, differentiable, highly multimodal, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 56)
+
+
+### shubert_rotated: rotated {#shubert_rotated-rotated}
+- **Formula**: f(\mathbf{x}) = \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)(Q\mathbf{x})_i + j), \ Q \ orthogonal.
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.73090883102375 at [4.858056878468046, 5.482864206944743]
+- **Properties**: non-separable, differentiable, highly multimodal, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 55)
+
+
+### shubert_shifted: shifted {#shubert_shifted-shifted}
+- **Formula**: f(\mathbf{x}) = \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)(x_i - o_i) + j), \ o_i \sim U[-10,10].
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.73090883102375 at [4.858056878468046, 5.482864206944743]
+- **Properties**: non-separable, differentiable, highly multimodal, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 55)
+
+
+## Generation
+Run `julia --project=. examples/generate_functions_md.jl` to update from TEST_FUNCTIONS.

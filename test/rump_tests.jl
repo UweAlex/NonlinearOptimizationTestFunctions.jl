@@ -17,6 +17,5 @@ using Test, NonlinearOptimizationTestFunctions
     min_pos = tf.meta[:min_position]()
     @test tf.f(min_pos) ≈ tf.meta[:min_value]() atol=1e-8
     
-    grad_at_min = tf.grad(min_pos)
-    @test all(isapprox.(grad_at_min, zeros(length(min_pos)), atol=1e-8))
+   
 end

@@ -20,28 +20,66 @@ end
 
 function rump_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
+    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("Rump requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
-    grad = zeros(T, 2)
     x1 = x[1]
     x2 = x[2]
     denom = 2 + x2
-    inner = (333.75 - x1^2) * x2^6 + x1^2 * (11 * x1^2 * x2^2 - 121 * x2^4 - 2) + 5.5 * x2^8 + x1 / denom
     
-    if inner == zero(T)
-        # At points where inner == 0, gradient is zero (subgradient contains 0)
-        return grad
+    # Compute inner expression
+    term1 = (333.75 - x1^2) * x2^6
+    term2 = x1^2 * (11 * x1^2 * x2^2 - 121 * x2^4 - 2)
+    term3 = 5.5 * x2^8
+    term4 = x1 / denom
+    inner = term1 + term2 + term3 + term4
+    
+    # For partially differentiable functions: throw error at non-differentiable points
+    # The function f(x) = |inner(x)| is not differentiable where inner(x) = 0
+    if abs(inner) < eps(T)
+        throw(ArgumentError("$(func_name) is not differentiable at x = $x (inner expression equals zero)"))
     end
     
     sign_inner = sign(inner)
     
-    # Partial derivatives of inner
-    dg_dx1 = -2 * x1 * x2^6 + (22 * x1^3 * x2^2 - 242 * x1 * x2^4 - 2 * x1^2) + 1 / denom
-    dg_dx2 = 6 * (333.75 - x1^2) * x2^5 + x1^2 * (22 * x1^2 * x2 - 484 * x2^3) + 44 * x2^7 - x1 / denom^2
+    # Compute partial derivatives of inner with respect to x1
+    # d(term1)/dx1 = -2*x1 * x2^6
+    dterm1_dx1 = -2 * x1 * x2^6
     
+    # d(term2)/dx1 = d/dx1[x1^2 * (11*x1^2*x2^2 - 121*x2^4 - 2)]
+    #               = 2*x1 * (11*x1^2*x2^2 - 121*x2^4 - 2) + x1^2 * 22*x1*x2^2
+    #               = 2*x1 * (11*x1^2*x2^2 - 121*x2^4 - 2) + 22*x1^3*x2^2
+    dterm2_dx1 = 2 * x1 * (11 * x1^2 * x2^2 - 121 * x2^4 - 2) + 22 * x1^3 * x2^2
+    
+    # d(term3)/dx1 = 0
+    dterm3_dx1 = zero(T)
+    
+    # d(term4)/dx1 = 1/denom
+    dterm4_dx1 = 1 / denom
+    
+    dg_dx1 = dterm1_dx1 + dterm2_dx1 + dterm3_dx1 + dterm4_dx1
+    
+    # Compute partial derivatives of inner with respect to x2
+    # d(term1)/dx2 = (333.75 - x1^2) * 6*x2^5
+    dterm1_dx2 = (333.75 - x1^2) * 6 * x2^5
+    
+    # d(term2)/dx2 = d/dx2[x1^2 * (11*x1^2*x2^2 - 121*x2^4 - 2)]
+    #               = x1^2 * (22*x1^2*x2 - 484*x2^3)
+    dterm2_dx2 = x1^2 * (22 * x1^2 * x2 - 484 * x2^3)
+    
+    # d(term3)/dx2 = 5.5 * 8*x2^7 = 44*x2^7
+    dterm3_dx2 = 44 * x2^7
+    
+    # d(term4)/dx2 = -x1/denom^2
+    dterm4_dx2 = -x1 / denom^2
+    
+    dg_dx2 = dterm1_dx2 + dterm2_dx2 + dterm3_dx2 + dterm4_dx2
+    
+    # Apply chain rule for abs(inner)
+    grad = zeros(T, 2)
     grad[1] = sign_inner * dg_dx1
     grad[2] = sign_inner * dg_dx2
     grad

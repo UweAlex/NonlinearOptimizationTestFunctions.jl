@@ -643,6 +643,9 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **shubert_noisy** [Jamil & Yang (2013, p. 55):] continuous, differentiable, has_noise, multimodal, non-separable, scalable. Minimum: -186.7309 at (4.858, 5.4828). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
 - **shubert_rotated** [Jamil & Yang (2013, p. 55):] continuous, differentiable, highly multimodal, non-separable, scalable. Minimum: -186.73090883 at (4.85805688, 5.48286421). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
 - **shubert_shifted** [Jamil & Yang (2013, p. 55):] continuous, differentiable, highly multimodal, non-separable, scalable. Minimum: -186.73090883 at (4.85805688, 5.48286421). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
+- **mvf_shubert** [Adorio (2005, p. 12):] continuous, differentiable, multimodal, separable. Minimum: -24.06249888 at (-0.49139084, 5.79179447). Bounds: [(-10, -10), (10, 10)]. Dimensions: n = 2.
+- **mvf_shubert2** [Adorio (2005, p. 13):] continuous, differentiable, multimodal, separable. Minimum: -25.741771 at (-1.42512843, -1.42512843). Bounds: [(-10, -10), (10, 10)]. Dimensions: n = 2.
+- **mvf_shubert3** [Adorio (2005, p. 13):] continuous, differentiable, multimodal, scalable, separable. Minimum: -24.06249888 at (-0.49139083, -0.49139083). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
 - **SineEnvelope** [Molga & Smutnicki (2005)]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -1 at (0, 0). Bounds: [(-100, -100), (100, 100)]. Dimensions: \( n = 2 \).
 - **SixHumpCamelBack** [Molga & Smutnicki (2005): 2.15]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: -1.03162845 at (-0.08984201, 0.7126564). Bounds: [(-3, -2), (3, 2)]. Dimensions: \( n = 2 \).
 - **Sphere** [Molga & Smutnicki (2005): 2.1]: Bounded, continuous, convex, differentiable, scalable, separable, unimodal. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-5.12, -5.12), (5.12, 5.12)]. Dimensions: Any \( n \geq 1 \).
@@ -758,7 +761,7 @@ Some test functions are referred to by different names in the literature. Below 
 - **ackley**: Ackley's function, Ackley No. 1, Ackley Path Function.
 - **alpinen1**: Alpine No. 1 function, Alpine function.
 - **alpinen2**: Alpine No. 2 function, Alpine function.
-- **axisparallelhyperellipsoid**: Axis parallel hyper-ellipsoid function, Sum squares function, Weighted sphere model, Quadratic function (axis-aligned variant).
+- **axisparallelhyperellipsoid**: Axis parallel hyper-ellipsoid function, Sum squares function, Weighted sphere model, Quadratic function (axis-aligned variant), Weighted Sphere (Ellipsoid).
 - **beale**: Beale's function.
 - **bird**: Bird's function.
 - **bohachevsky**: Bohachevsky's function, Bohachevsky No. 1 (for the standard variant).
@@ -791,7 +794,7 @@ Some test functions are referred to by different names in the literature. Below 
 - **rana**: Rana's function.
 - **rastrigin**: Rastrigin's function.
 - **rosenbrock**: Rosenbrock's valley, De Jong F2, Banana function.
-- **rotatedhyperellipsoid**: Rotated Hyper-Ellipsoid function, Schwefel's function 1.2, Extended sum squares function, Extended Rosenbrock function (in some contexts).
+- **rotatedhyperellipsoid**: Rotated Hyper-Ellipsoid function, Schwefel's function 1.2, Extended sum squares function, Extended Rosenbrock function (in some contexts), Rotated Ellipsoid.
 - **schaffern1**: Schaffer function N. 1.
 - **schaffern2**: Schaffer function N. 2.
 - **schaffern4**: Schaffer function N. 4.
