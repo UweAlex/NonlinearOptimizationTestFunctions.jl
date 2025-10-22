@@ -8,12 +8,30 @@ using NonlinearOptimizationTestFunctions
 using Dates
 
 # Safe call for meta functions with try-catch
-function safe_meta_call(func::Function, n::Int, fallback)
-    try
-        func(n)
-    catch e
-        @warn "Error calling meta function with n=$n: $e. Using fallback."
-        fallback
+function safe_meta_call(func::Function, is_scalable::Bool, n::Int, fallback)
+    if !is_scalable
+        try
+            func()
+        catch e
+            if isa(e, MethodError)
+                try
+                    func(n)
+                catch e2
+                    @warn "Error calling meta function (tried () and (n)): $e2. Using fallback."
+                    fallback
+                end
+            else
+                @warn "Error calling meta function (): $e. Using fallback."
+                fallback
+            end
+        end
+    else
+        try
+            func(n)
+        catch e
+            @warn "Error calling meta function (n): $e. Using fallback."
+            fallback
+        end
     end
 end
 
@@ -27,16 +45,33 @@ function get_dimension(tf::TestFunction)
         end
         return default_n
     else
-        # Fallback strategy: Try n=2, then n=4 if fails
+        # Try () for non-scalable
         try
-            tf.meta[:min_position](2)  # Test if n=2 works
-            return 2
-        catch
-            try
-                tf.meta[:min_position](4)
-                return 4
-            catch e
-                @warn "No valid n for $(tf.meta[:name]): $e. Using fallback n=2."
+            min_pos = tf.meta[:min_position]()
+            return length(min_pos)
+        catch e
+            if isa(e, MethodError)
+                # Scalable, try n=2
+                try
+                    tf.meta[:min_position](2)
+                    return 2
+                catch e2
+                    if isa(e2, ArgumentError)
+                        # Try n=4 for block
+                        try
+                            tf.meta[:min_position](4)
+                            return 4
+                        catch e3
+                            @warn "No valid n for $(tf.meta[:name]): $e3. Using fallback n=2."
+                            return 2
+                        end
+                    else
+                        @warn "Unexpected error for $(tf.meta[:name]): $e2. Using fallback n=2."
+                        return 2
+                    end
+                end
+            else
+                @warn "Unexpected error for $(tf.meta[:name]): $e. Using fallback n=2."
                 return 2
             end
         end
@@ -64,11 +99,17 @@ end
 # Generiere einen Block pro Funktion (vertikale Bullet-Formatierung)
 function generate_block(tf::TestFunction, variant::String)
     n = get_dimension(tf)
-    # Extrahiere Werte (Fallbacks für fehlende Meta; handle scalable vs non-scalable)
+    is_scalable = "scalable" in tf.meta[:properties]
+    # Fallbacks
+    lb_fallback = fill(-100.0, n)
+    min_pos_fallback = fill(0.0, n)
+    min_val_fallback = 0.0
+
+    # Extrahiere Werte
     formula = get(tf.meta, :math, raw"Placeholder: f(\mathbf{x}) = \dots")
-    lb_func = get(tf.meta, :lb, () -> fill(-100.0, n))
-    min_pos_func = get(tf.meta, :min_position, () -> zeros(n))
-    min_val_func = get(tf.meta, :min_value, () -> 0.0)
+    lb_func = get(tf.meta, :lb, () -> lb_fallback)
+    min_pos_func = get(tf.meta, :min_position, () -> min_pos_fallback)
+    min_val_func = get(tf.meta, :min_value, () -> min_val_fallback)
     props_raw = tf.meta[:properties]
     if isa(props_raw, String)
         props = split(props_raw, ", "; keepempty=false)
@@ -78,10 +119,9 @@ function generate_block(tf::TestFunction, variant::String)
     props_str = join(props, ", ")
     ref = get(tf.meta, :source, "Unknown")
 
-    is_scalable = "scalable" in props
-    lb = safe_meta_call(lb_func, n, fill(-100.0, n))
-    min_pos = safe_meta_call(min_pos_func, n, zeros(n))
-    min_val = safe_meta_call(min_val_func, n, 0.0)
+    lb = safe_meta_call(lb_func, is_scalable, n, lb_fallback)
+    min_pos = safe_meta_call(min_pos_func, is_scalable, n, min_pos_fallback)
+    min_val = safe_meta_call(min_val_func, is_scalable, n, min_val_fallback)
 
     bounds_str = "Bounds: [$(join(lb, ", "))]"
     min_str = "Min: $min_val at $min_pos"
