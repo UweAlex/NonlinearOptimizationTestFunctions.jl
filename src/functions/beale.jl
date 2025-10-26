@@ -61,6 +61,7 @@ const BEALE_FUNCTION = TestFunction(
         :ub => () -> [4.5, 4.5],
         :in_molga_smutnicki_2005 => true,
         :description => "Beale function: Unimodal, non-convex, non-separable, differentiable, fixed, bounded, continuous.",
-        :math => "(1.5 - x_1 + x_1 x_2)^2 + (2.25 - x_1 + x_1 x_2^2)^2 + (2.625 - x_1 + x_1 x_2^3)^2"
+        :math => "(1.5 - x_1 + x_1 x_2)^2 + (2.25 - x_1 + x_1 x_2^2)^2 + (2.625 - x_1 + x_1 x_2^3)^2",
+	:source => "Jamil & Yang (2013, entry 10)"
     )
 )

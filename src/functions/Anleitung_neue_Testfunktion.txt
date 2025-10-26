@@ -5,7 +5,7 @@ Diese Anleitung basiert auf der ursprünglichen Version und ist verbessert durch
 ## Grundprinzipien
 - Verwende RFC-2119-Keywords: MUST (verpflichtend), SHOULD (empfohlen), MAY (optional).
 - Suche nach Tags wie [RULE_SIGNATURE] für schnelle Referenz.
-- Automatisierte Checks: Führe vor jedem Commit CI-Skripte aus (z.B. Syntax-Check mit julia --project=. -e 'include("src/functions/<name>.jl")' + Namens-Check: julia --project=. -e 'tf = <UPPER>_FUNCTION; @test tf.meta[:name] == basename("src/functions/<name>.jl")[1:end-3]').
+- Automatisierte Checks: Führe vor jedem Commit CI-Skripte aus (z.B. Syntax-Check mit julia --project=. -e 'include("src/functions/<name>.jl")' + Namens-Check: julia --project=. -e 'tf = <UPPER>_FUNCTION; @test tf.meta[:name] == "<name>"').
 - Wiederhole kritische Regeln: z.B. Vermeide globale Konstanten [RULE_NO_CONST_ARRAYS].
 - Assume gute Absicht: Keine moralisierenden Kommentare; fokussiere auf Fakten.
 - [RULE_META_CONSISTENCY] MUST: Alle Meta-Funktionen (:start, :min_position, :min_value, :lb, :ub) müssen konsistente Signaturen haben. Für skalierbare Funktionen: Wenn der Wert von n unabhängig ist (z.B. konstantes Minimum), verwende (n::Int) -> value (ignoriere n intern). Wenn abhängig (z.B. Position sqrt.(1:n)), verwende (n::Int) -> ... . Teste im REPL: tf.meta[:min_value](2) – muss funktionieren; tf.meta[:min_value]() darf MethodError werfen, da runtests.jl für scalable n aufruft. [NEW] Für konstante Werte in skalierbaren Funktionen (z.B. min_value=0.0 unabhängig von n): Verwende (n::Int) -> value, um MethodError in runtests.jl zu vermeiden (Aufruf mit n bei ()-Signatur).
@@ -33,7 +33,8 @@ Häufige Fehler (konsolidiert mit Beispielen):
 - [NEW] Meta-Signatur-Mismatch: Falsche Signatur für :min_value in skalierbaren Funktionen führt zu MethodError (z.B. Aufruf mit n bei ()-Signatur). Lösung: Überprüfe mit REPL: julia> using NonlinearOptimizationTestFunctions; tf = QING_FUNCTION; tf.meta[:min_value](2).
 - [NEW] Test-Syntax-Fehler: all(vec .≈ 0, atol=1e-8) schlägt fehl, da all() kein atol akzeptiert. Verwende all(isapprox.(vec, 0, atol=1e-8)).
 - [NEW] Noise-Validation-Fehler: In runtests.jl schlägt f(min_pos) ≈ 0 atol=1e-6 fehl durch rand() (z.B. Quartic). Lösung: Füge if "has_noise" in properties: @test f_val >=0 && f_val <1 (für [0,1)-Noise).
-- [NEW] Statische Fehlermeldungen: Führt zu Namenskonflikten bei Refactoring. Lösung: Immer dynamisch via `basename(@__FILE__)[1:end-3]` in ArgumentError.
+- [NEW] Dynamik in AD-Pfad: basename(@__FILE__) in f/grad oder Meta führt zu Zygote.CompileError bei Hessian-Tests (QuoteNode-Assertion). Lösung: Hartkodierte Strings (z.B. "sphere requires..."); basename nur in CI/Assert.
+- [NEW] Name-Inkonsistenz bei hartkodiert: Tippfehler in "sphere" vs. Datei "shpere.jl" – Lösung: Optional @assert "<name>" == basename(@__FILE__)[1:end-3] + CI-Regex-Check ('sphere requires' in sphere.jl).
 - [NEW] Redundante T()-Konvertierungen: `T(0.5)` in Formeln führt zu leichten Instabilitäten. Lösung: Entferne sie; Julia inferiert automatisch. Beispiel: In Schaffer1: `T(0.5) + numerator / denominator` → `0.5 + numerator / denominator`.
 - [NEW] Inkonsistente Quellen: Properties aus Quelle mit abweichender Formel (z.B. sin^2(cos) vs. cos^2(sin)) – Lösung: Suche exakte Matches oder notiere Adaption in :description per [RULE_SOURCE_FORMULA_CONSISTENCY].
 - [NEW] Namenskonflikte in lokalen Hilfsfunktionen: Lokale `rastrigin`-Funktion überschreibt globale → Lösung: Präfix `_shubert_hybrid_rastrigin_rastrigin_component`. Prüfe mit `grep -r "function rastrigin" src/` vor Commit.
@@ -85,10 +86,10 @@ Beispiel: Price Function 1 ist laut Jamil & Yang (2013, p. 32) "non-differentiab
 Ziel: Erstelle <name>.jl mit konsistenter Signatur, ohne externe Deps.
 
 - [RULE_NO_MODULE] MUST: Kein module ... end in src/functions/*.jl. Wird via include geladen.
-- [RULE_SIGNATURE] MUST: Funktionssignatur: function <name>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}. Export: export <UPPER>_FUNCTION, <name>, <name>_gradient.
-- [RULE_NAME_CONSISTENCY] MUST: Der gewählte, kleingeschriebene Funktionsname (`<name>`) MUST in allen folgenden Artefakten konsistent verwendet werden: Dateiname (`<name>.jl`), Funktionssignatur (`function <name>`), Gradientensignatur (`function <name>_gradient`), exportierte Konstante (`<UPPERCASE>_FUNCTION`), und im `:name`-Meta-Feld (exakt der Dateiname ohne Extension, klein, ohne Leerzeichen). | Z. B. Datei `schaffer1.jl` → `schaffer1`, `schaffer1_gradient`, `SCHAFFER1_FUNCTION`, `:name => "schaffer1"`. Automatisierbar: `:name => basename(@__FILE__)[1:end-3]`. Häufiger Fehler: Tippfehler wie "shaffer" vs. "schaffer" – prüfe mit `grep -r "<name>" src/` vor Commit.
-- [RULE_NAME_CONSISTENCY] SHOULD: In Fehlermeldungen (z. B. ArgumentError) den exakten `<name>` verwenden, um Konsistenz zu wahren. Für lesbare Anzeigen (z. B. in Docs/Print-Funktionen) eine separate Formatierung nutzen (z. B. titlecase(`<name>`)). | Z. B. `throw(ArgumentError("$(basename(@__FILE__)[1:end-3]) requires exactly 2 dimensions"))` – dynamisch konsistent. In `print_function_properties.jl`: "Schaffer1" via String-Manipulation. Für skalierbare: Gleiche Regel (z. B. `:name => "ackley"`).
-- [RULE_ERROR_TEXT_DYNAMIC] MUST: In allen Fehlermeldungen (z. B. ArgumentError für Dimension, NaN/Inf-Handling) den dynamischen Funktionsnamen verwenden: `func_name = basename(@__FILE__)[1:end-3]; throw(ArgumentError("$(func_name) requires exactly <DIM> dimensions"))`. Dies gewährleistet Konsistenz mit `:name` und vermeidet manuelle Tippfehler. Beispiel: Statischer Text `"schaffer1 requires exactly 2 dimensions"` → dynamisch `"$(func_name) requires exactly 2 dimensions"`. Automatisierbar: CI-Check mit Regex auf `basename(@__FILE__)` in Fehlern.
+- [RULE_SIGNATURE] MUST: Funktionssignatur: function <name>(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual}}. Export: export <UPPER>_FUNCTION, <name>, <name>_gradient.
+- [RULE_NAME_CONSISTENCY] MUST: Der gewählte, kleingeschriebene Funktionsname (`<name>`) MUST in allen folgenden Artefakten konsistent verwendet werden: Dateiname (`<name>.jl`), Funktionssignatur (`function <name>`), Gradientensignatur (`function <name>_gradient`), exportierte Konstante (`<UPPERCASE>_FUNCTION`), und im `:name`-Meta-Feld (exakt der Dateiname ohne Extension, klein, ohne Leerzeichen). | Z. B. Datei `schaffer1.jl` → `schaffer1`, `schaffer1_gradient`, `SCHAFFER1_FUNCTION`, `:name => "schaffer1"`. [NEW] Für Einfachheit: Hartkodierte Strings in Errors/Meta (z.B. :name => "schaffer1"); vermeide basename [NEW RULE_AD_COMPATIBILITY]. Automatisierbar: `:name => "<name>"`. Häufiger Fehler: Tippfehler wie "shaffer" vs. "schaffer" – prüfe mit `grep -r "<name>" src/` vor Commit. Optional: @assert "<name>" == basename(@__FILE__)[1:end-3] für Validierung.
+- [RULE_NAME_CONSISTENCY] SHOULD: In Fehlermeldungen (z. B. ArgumentError) den exakten `<name>` verwenden, um Konsistenz zu wahren. Für lesbare Anzeigen (z. B. in Docs/Print-Funktionen) eine separate Formatierung nutzen (z. B. titlecase(`<name>`)). | Z. B. `throw(ArgumentError("<name> requires exactly 2 dimensions"))` – hartkodiert konsistent. In `print_function_properties.jl`: "Schaffer1" via String-Manipulation. Für skalierbare: Gleiche Regel (z. B. `:name => "ackley"`).
+- [RULE_ERROR_TEXT_DYNAMIC] SHOULD: In allen Fehlermeldungen (z. B. ArgumentError für Dimension, NaN/Inf-Handling) den exakten <name> verwenden (hartkodiert, z.B. "<name> requires exactly <DIM> dimensions"). Für maximale Einfachheit: Statische Strings; Dynamik via let optional, aber vermeide basename in f/grad [NEW RULE_AD_COMPATIBILITY]. Automatisierbar: CI-Check mit Regex auf "<name> requires" in <name>.jl.
 - [RULE_GRADTYPE] MUST: Gradient als Vector<T> (z.B. zeros(T, n)). Kein SVector.
 - [RULE_NO_CONST_ARRAYS] MUST: Keine globalen const-Arrays. Lokale let-Blöcke für Caching. Wiederholung: Vermeide globale Konstanten.
 - [RULE_ERROR_HANDLING] MUST: Prüfe length(x)==0 → ArgumentError. Handle NaN/Inf (return NaN/Inf).
@@ -96,13 +97,13 @@ Ziel: Erstelle <name>.jl mit konsistenter Signatur, ohne externe Deps.
 - [RULE_TYPE_CONVERSION_MINIMAL] SHOULD: Vermeide redundante explizite Typ-Konvertierungen wie `T(0.5)` oder `T(1.0)` in Ausdrücken, da Julia die Inferenz korrekt durchführt (T ist Subtyp von Real). Verwende stattdessen `0.5` oder `1.0`. Dies verbessert Type-Stability und vermeidet unnötigen Overhead. Beispiel: `numerator = sin(sq_sum)^2 - T(0.5)` → `numerator = sin(sq_sum)^2 - 0.5`. Prüfe mit `@code_warntype tf.f([1.0, 1.0])` – sollte keine Type-Instabilitäten zeigen.
 - [NEW] [RULE_LOCAL_HELPERS_NAMING] MUST: Alle lokalen Hilfsfunktionen in `src/functions/<name>.jl` (z. B. für Komponenten wie Shubert-Produkt oder Rastrigin-Summe) MÜSSEN mit einem Präfix benannt werden, das den Dateinamen enthält und einen Unterstrich (z. B. `_<name>_component` oder `_<name>_inner`). Dies verhindert Namenskonflikte mit exportierten Funktionen aus anderen Dateien, da `include` den Namespace teilt.  
   - Beispiel: In `shubert_hybrid_rastrigin.jl` → `_shubert_hybrid_rastrigin_inner` statt `shubert_inner`; `_shubert_hybrid_rastrigin_rastrigin_component` statt `rastrigin`.  
-  - Automatisierbar: Verwende `func_name = basename(@__FILE__)[1:end-3]; eval(:(function _\$func_name_inner(...)))` für dynamische Namen, aber priorisiere statische für Klarheit.  
+  - Automatisierbar: Verwende statische Präfixe für Klarheit.  
   - Häufiger Fehler: Lokale `rastrigin`-Funktion kollidiert mit globaler `rastrigin` aus `rastrigin.jl`, führt zu falschem Dispatch in Tests (z. B. `cos(Inf)`-Fehler).  
   - CI-Check: Füge zu CI-Skripten hinzu: `grep -r "function [a-zA-Z]" src/functions/ | grep -v "_.*_"` → warnt bei fehlenden Präfixen.
 - [NEW] [RULE_LOCAL_HELPERS_ERROR_HANDLING] MUST: Lokale Hilfsfunktionen MÜSSEN die gleichen Edge-Case-Checks wie die Hauptfunktion implementieren (leeres Array, NaN, Inf), um konsistente Fehlerbehandlung zu gewährleisten. Returniere `T(NaN)` für NaN-Inputs und `T(Inf)` für Inf-Inputs **vor** mathematischen Operationen (z. B. `cos`), um DomainErrors zu vermeiden.  
   - SHOULD: Für skalierbare Hilfsfunktionen: Prüfe `n < 1` und wirf `ArgumentError`.  
   - Beispiel: 
-     function _shubert_hybrid_rastrigin_rastrigin_component(x::AbstractVector{T}) where {T}
+     function _shubert_hybrid_rastrigin_rastrigin_component(x::AbstractVector<T>) where {T}
          n = length(x)
          n == 0 && throw(ArgumentError("Input vector cannot be empty"))
          any(isnan.(x)) && return T(NaN)
@@ -124,11 +125,10 @@ Template für src/functions/<name>.jl (non-scalable, z.B. Biggs EXP3, n=3):
 
 export <UPPERCASE>_FUNCTION, <name>, <name>_gradient
 
-function <name>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function <name>(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "<name>" für Konsistenz [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != <DIM> && throw(ArgumentError("$(func_name) requires exactly <DIM> dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
+    n != <DIM> && throw(ArgumentError("<name> requires exactly <DIM> dimensions"))  # Hartkodiert [UPDATED RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -144,11 +144,10 @@ function <name>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     sum_sq
 end
 
-function <name>_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function <name>_gradient(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "<name>" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != <DIM> && throw(ArgumentError("$(func_name) requires exactly <DIM> dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n != <DIM> && throw(ArgumentError("<name> requires exactly <DIM> dimensions"))  # Hartkodiert [UPDATED RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -165,7 +164,7 @@ const <UPPERCASE>_FUNCTION = TestFunction(
     <name>,
     <name>_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "<name>" – exakt Dateiname [RULE_NAME_CONSISTENCY]
+        :name => "<name>",  # Hartkodiert [RULE_NAME_CONSISTENCY]
         :description => "<Beschreibung; Properties based on [Direkte Quelle, z.B. Jamil & Yang (2013, p. 15)]; ursprünglich aus [Mutmaßliche Ursprungsquelle, falls bekannt]>.",
         :math => raw"""f(\mathbf{x}) = <LaTeX>. """,
         :start => () -> [<start1>, ...],  # Für scalable: (n::Int) -> ...
@@ -178,7 +177,10 @@ const <UPPERCASE>_FUNCTION = TestFunction(
     )
 )
 
-Für scalable: Ersetze () -> [...] durch (n::Int) -> begin n<1 && throw(...); fill(<val>, n) end. Füge "scalable" zu properties. [NEW] Beispiel-Anpassung für Qing: :min_value => (n::Int) -> 0.0 (konstant), :min_position => (n::Int) -> sqrt.(1:n). Füge :default_n => 2 hinzu.
+# Optional: Validierung beim Laden
+@assert "<name>" == basename(@__FILE__)[1:end-3] "<name>: Dateiname mismatch!"
+
+Für scalable: Ersetze () -> [...] durch (n::Int) -> begin n<1 && throw(ArgumentError("<name> requires at least 1 dimension")); fill(<val>, n) end. Füge "scalable" zu properties. [NEW] Beispiel-Anpassung für Qing: :min_value => (n::Int) -> 0.0 (konstant), :min_position => (n::Int) -> sqrt.(1:n). Füge :default_n => 2 hinzu.
 
 Template für src/functions/<name>.jl (scalable, z.B. Qing):
 
@@ -189,11 +191,10 @@ Template für src/functions/<name>.jl (scalable, z.B. Qing):
 
 export <UPPERCASE>_FUNCTION, <name>, <name>_gradient
 
-function <name>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function <name>(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "<name>" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch, angepasst für scalable [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("<name> requires at least 1 dimension"))  # Hartkodiert, angepasst für scalable [UPDATED RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -205,11 +206,10 @@ function <name>(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     sum_sq
 end
 
-function <name>_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function <name>_gradient(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "<name>"
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("<name> requires at least 1 dimension"))  # Hartkodiert [UPDATED RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -225,19 +225,22 @@ const <UPPERCASE>_FUNCTION = TestFunction(
     <name>,
     <name>_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "<name>" – exakt Dateiname [RULE_NAME_CONSISTENCY]
+        :name => "<name>",  # Hartkodiert [RULE_NAME_CONSISTENCY]
         :description => "<Beschreibung; Properties based on [Direkte Quelle, z.B. Jamil & Yang (2013, p. 29)]; Multiple global minima due to sign choices; ursprünglich aus [Mutmaßliche Ursprungsquelle, falls bekannt]>.",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^D (x_i^2 - i)^2.""",
-        :start => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); zeros(n) end,
-        :min_position => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); sqrt.(1:n) end,
+        :start => (n::Int) -> begin n < 1 && throw(ArgumentError("<name> requires at least 1 dimension")); zeros(n) end,
+        :min_position => (n::Int) -> begin n < 1 && throw(ArgumentError("<name> requires at least 1 dimension")); sqrt.(1:n) end,
         :min_value => (n::Int) -> 0.0,  # Konstant: (n::Int) -> value [RULE_META_CONSISTENCY]
         :default_n => 2,  # Kleinste n >1; hier 2 für allgemein skalierbar [RULE_DEFAULT_N]
         :properties => ["continuous", "differentiable", "separable", "scalable", "multimodal"],
         :source => "<Direkte Quelle, z.B. Jamil & Yang (2013, p. 29)>",
-        :lb => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); fill(<lb>, n) end,
-        :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); fill(<ub>, n) end,
+        :lb => (n::Int) -> begin n < 1 && throw(ArgumentError("<name> requires at least 1 dimension")); fill(<lb>, n) end,
+        :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("<name> requires at least 1 dimension")); fill(<ub>, n) end,
     )
 )
+
+# Optional: Validierung beim Laden
+@assert "<name>" == basename(@__FILE__)[1:end-3] "<name>: Dateiname mismatch!"
 
 ## Tests und Validierung
 Ziel: Zentrale Tests + funktionsspezifisch in test/<name>_tests.jl.
@@ -253,6 +256,7 @@ Ziel: Zentrale Tests + funktionsspezifisch in test/<name>_tests.jl.
   - MUST: Nach jedem Commit: Führe `julia --project=. -e 'using NonlinearOptimizationTestFunctions; open("test/properties_counts.jl", "w") do f; println(f, "export BOUNDED_COUNT = ", length(filter_testfunctions(...))) end'` aus.  
   - Häufiger Fehler: Harte Zahlen (z. B. 127 vs. 128) brechen bei neuen Funktionen (wie `shubert_hybrid_rastrigin` mit "bounded").  
   - Vorteil: Macht Tests wartbar; CI kann Counts validieren.
+- [NEW] Name-Validierung: In test/<name>_tests.jl: @test tf.meta[:name] == "<name>" && occursin("<name> requires", @code_string(<name>([1.0]))) (via try-catch für Error-Text).
 
 Template für test/<name>_tests.jl (non-scalable):
 
@@ -261,7 +265,7 @@ Template für test/<name>_tests.jl (non-scalable):
 using Test, NonlinearOptimizationTestFunctions
 @testset "<name>" begin
     tf = <UPPERCASE>_FUNCTION
-    @test tf.meta[:name] == basename("src/functions/<name>.jl")[1:end-3]  # Dynamisch: "<name>"
+    @test tf.meta[:name] == "<name>"  # Hartkodiert [RULE_NAME_CONSISTENCY]
     @test has_property(tf, "<prop1>")  # Für jede Property
     
     start_point = tf.meta[:start]()
@@ -278,7 +282,7 @@ Template für test/<name>_tests.jl (scalable, z.B. Qing):
 using Test, NonlinearOptimizationTestFunctions
 @testset "<name>" begin
     tf = <UPPERCASE>_FUNCTION
-    @test tf.meta[:name] == basename("src/functions/<name>.jl")[1:end-3]  # Dynamisch: "<name>"
+    @test tf.meta[:name] == "<name>"  # Hartkodiert [RULE_NAME_CONSISTENCY]
     @test has_property(tf, "<prop1>")  # Für jede Property
     
     n = tf.meta[:default_n]  # Verwende default_n für Standard-Tests
@@ -342,4 +346,142 @@ grad = tf.gradient([1.0, 2.0])  # ❌ Fehler!
 5. Gesamttests: julia --project=. test/runtests.jl. [NEW] Überprüche Noise-Adaptation in Minimum Validation.
 6. Validierung: [ ] Properties aus Tabelle; [ ] Keine globalen const; [ ] Gradient als Vector<T>; [NEW] Keine MethodError in Meta-Aufrufen; [ ] Vektor-Tests mit isapprox.. [NEW] :default_n >=2 und verwendet in Tests; [NEW] Noise-Handling in Tests/runtests.jl; [NEW] :source mit spezifischer Stelle (z.B. "Jamil & Yang (2013, p. 27)"); [NEW] Lokale Hilfsfunktionen mit Präfix und Edge-Checks; [NEW] Keine Namenskonflikte (grep -r "function <common_name>" src/).
 
-Finale Validierung: Alle MUST-Regeln erfüllt? Benchmark mit @btime tf.f(rand(tf.meta[:default_n])) <1μs. [NEW] Führe manuell: julia> tf = <UPPER>_FUNCTION; n = tf.meta[:default_n]; min_pos = tf.meta[:min_position](n); für Noise: multiple tf.f(min_pos) in [0,1); sonst @test tf.f(min_pos) ≈ tf.meta[:min_value](n) atol=1e-8 – passe Signatur an, falls Error. Überprüche :source auf direkte Übernahme mit Stelle. [NEW] Prüfe lokale Hilfsfunktionen: Kein Kollision (z.B. grep -r "function rastrigin" src/functions/ | grep -v "_.*_rastrigin"); Edge-Cases: `@test isinf(_<name>_helper([Inf]))`.
+Finale Validierung: Alle MUST-Regeln erfüllt? Benchmark mit @btime tf.f(rand(tf.meta[:default_n])) <1μs. [NEW] Führe manuell: julia> tf = <UPPER>_FUNCTION; n = tf.meta[:default_n]; min_pos = tf.meta[:min_position](n); für Noise: multiple tf.f(min_pos) in [0,1); sonst @test tf.f(min_pos) ≈ tf.meta[:min_value](n) atol=1e-8 – passe Signatur an, falls Error. Überprüche :source auf direkte Übernahme mit Stelle. [NEW] Prüfe lokale Hilfsfunktionen: Kein Kollision (z.B. grep -r "function rastrigin" src/functions/ | grep -v "_.*_rastrigin"); Edge-Cases: `@test isinf(_<name>_helper([Inf]))`. 
+
+# KI-Anleitung: Testfunktion implementieren (v3.1)
+
+**Ziel**: Maschinenlesbare Struktur für KI-Assistenten. Parse nach `[RULE_ID]`-Tags. Priorisiere MUST > SHOULD > MAY (RFC-2119). Jede Regel hat Code-Beispiel + Validierung.
+
+**KI-Parser-Instruktionen**: 
+- Extrahiere [RULE_*], [ERROR_*], [TEMPLATE_*], [VALID_PROPERTIES]
+- Generiere Code mit [RULE_ID]-Kommentaren
+- Validiere via Code-Tools (REPL bevorzugen)
+- Bei Unsicherheit: Suche Tag, kopiere Beispiel
+
+---
+
+## Meta: Parsing-Strategie
+
+[PARSE_STRATEGY] KI MUST:
+1. Parse alle [RULE_*] als Dict: `{"ID": {"priority": "MUST|SHOULD|MAY", "example": "...", "validation": "..."}}`
+2. Template-Wahl: IS scalable? → [TEMPLATE_B], ELSE → [TEMPLATE_A]
+3. Code-Generierung: Ersetze Platzhalter, füge [RULE_ID]-Kommentare hinzu
+4. Validierung: Syntax → Meta-Calls → Edge-Cases → Type-Stability → Tests
+5. Output: Code + Validierungs-Report (✅/❌ pro Regel)
+
+---
+
+## Schritt 1: Recherche & Datensammlung
+
+[RULE_PROPERTIES_SOURCE] MUST: Sammle ALLE Daten vor Code-Generierung in Dict-Format:
+
+# Template für Datensammlung (KI: Parse als Dict)
+data = Dict(
+    :name => "<name>",  # Kleinbuchstaben (z.B. "schaffer1")
+    :dimensions => "fest n=<DIM>" | "scalable n>=<MIN_N>",
+    :min_value => <VALUE>,  # Exakt (REPL-berechnet)
+    :min_position => [<POS1>, <POS2>, ...],
+    :bounds_lb => [<LB1>, ...],
+    :bounds_ub => [<UB1>, ...],
+    :start => [<START1>, ...],
+    :source => "Autor (YEAR, p. XX)",  # MUST: Mit Seitenangabe!
+    :properties => ["<prop1>", ...],  # Nur aus [VALID_PROPERTIES]
+    :formula_latex => raw"<LaTeX>",  # Exakt aus Quelle
+)
+
+**Validierung**:
+# KI MUST ausführen (Code-Tool):
+@assert occursin(r"p\. \d+", data[:source]) "Quelle ohne Seite!"
+@assert all(p in VALID_PROPERTIES for p in data[:properties]) "Ungültige Property!"
+
+---
+
+[VALID_PROPERTIES] MUST: Nur folgende Properties verwenden (als Array für Parsing):
+
+VALID_PROPERTIES = [
+    "bounded", "continuous", "controversial", "convex", "deceptive", 
+    "differentiable", "finite_at_inf", "fully non-separable", 
+    "has_constraints", "has_noise", "highly multimodal", "multimodal", 
+    "non-convex", "non-separable", "partially differentiable", 
+    "partially separable", "quasi-convex", "scalable", "separable", 
+    "strongly convex", "unimodal", "ill-conditioned"
+]
+
+[RULE_MISSING_PROPERTIES] MUST: Fehlende Properties → :description, NICHT erfinden.
+
+**Beispiel**:
+:properties => ["continuous", "separable"],  # ✅ Nur erlaubte
+:description => "Contains absolute value terms."  # ✅ In Description
+# ❌ FALSCH: :properties => ["non-differentiable"]  # Existiert nicht!
+
+---
+
+[RULE_SOURCE_FORMULA_CONSISTENCY] MUST: Formel in Quelle == Implementierung. Bei Abweichung:
+
+:description => "Adapted from Jamil & Yang (2013, p. 27) for variant without absolute value."
+
+**Validierung** (SHOULD mit SymPy):
+# KI Code-Tool (Python):
+import sympy as sp
+x1, x2 = sp.symbols('x1 x2')
+impl = x1**2 + x2**2  # Implementierte Formel
+quelle = x1**2 + x2**2  # Aus Quelle
+assert sp.simplify(impl - quelle) == 0, "Formel-Mismatch!"
+
+---
+
+[RULE_DEFAULT_N] MUST (scalable): :default_n >= 2, kleinste gültige Dimension.
+
+:default_n => 2   # ✅ Allgemein skalierbar (Ackley, Qing)
+:default_n => 4   # ✅ Block-skalierbar (n%4==0, PowellSingular2)
+
+**Validierung**:
+# KI MUST ausführen:
+@assert haskey(data, :default_n) "Scalable ohne :default_n!"
+@assert data[:default_n] >= 2 ":default_n < 2!"
+
+---
+
+## Schritt 2: Implementierung
+
+[RULE_NAME_CONSISTENCY] MUST: Name überall identisch (Datei/Funktion/Export/:name):
+
+# Datei: src/functions/<name>.jl
+function <name>(x) ...  # ✅ Gleich wie Datei
+export <UPPER>_FUNCTION, <name>, <name>_gradient  # ✅ Uppercase für Konstante
+const <UPPER>_FUNCTION = TestFunction(..., Dict(:name => "<name>", ...))  # ✅ Hartkodiert
+
+**Anti-Pattern**:
+# ❌ FALSCH:
+# Datei: schaffer1.jl
+function schaffer_1(x) ...  # Name-Mismatch!
+:name => "Schaffer1"  # Statisch + Uppercase!
+
+---
+
+[RULE_ERROR_TEXT_DYNAMIC] SHOULD: Fehlermeldungen mit hartkodiertem Namen:
+
+# ✅ RICHTIG:
+throw(ArgumentError("<name> requires exactly <DIM> dimensions"))
+
+# ❌ FALSCH (optional vermeiden):
+throw(ArgumentError("schaffer1 requires exactly 2 dimensions"))  # Tippfehler-Risiko!
+
+---
+
+[RULE_ERROR_HANDLING] MUST: Edge-Cases VOR mathematischen Operationen:
+
+# Template (KI: Immer einfügen):
+n = length(x)
+n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+n != <DIM> && throw(ArgumentError("<name> requires exactly <DIM> dimensions"))  # Für non-scalable
+# ODER:
+n < 1 && throw(ArgumentError("<name> requires at least 1 dimension"))  # Für scalable
+any(isnan.(x)) && return T(NaN)
+any(isinf.(x)) && return T(Inf)  # WICHTIG: Vor cos/sin/exp!
+
+---
+
+[RULE_NO_CONST_ARRAYS] MUST: Keine globalen const-Arrays:
+
+# ❌ FALSCH...

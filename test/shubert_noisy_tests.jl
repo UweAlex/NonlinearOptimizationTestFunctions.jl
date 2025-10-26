@@ -1,6 +1,6 @@
 # test/shubert_noisy_tests.jl
 
-using Test, NonlinearOptimizationTestFunctions
+using Test, NonlinearOptimizationTestFunctions , Statistics
 @testset "shubert_noisy" begin
     tf = SHUBERT_NOISY_FUNCTION
     

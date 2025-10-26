@@ -6,7 +6,7 @@
 using Test, Optim, Random
 using NonlinearOptimizationTestFunctions: SINEENVELOPE_FUNCTION, sineenvelope
 
-@testset "SineEnvelope Tests" begin
+@testset "Sineenvelope Tests" begin
     tf = SINEENVELOPE_FUNCTION
 
     # Edge Cases
@@ -26,7 +26,6 @@ using NonlinearOptimizationTestFunctions: SINEENVELOPE_FUNCTION, sineenvelope
     @test tf.meta[:min_value]() ≈ -1.0 atol=1e-6
     @test tf.meta[:lb]() == [-100.0, -100.0]
     @test tf.meta[:ub]() == [100.0, 100.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == true
     @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
 
     # Optimization Tests

@@ -1,9 +1,9 @@
-# test/step_tests.jl
+# test/stepint_tests.jl
 
 using Test, NonlinearOptimizationTestFunctions
-@testset "step" begin
-    tf = STEP_FUNCTION
-    @test tf.meta[:name] == "step"
+@testset "stepint" begin
+    tf = STEPINT_FUNCTION
+    @test tf.meta[:name] == "stepint"
     @test has_property(tf, "partially differentiable")
     @test has_property(tf, "separable")
     @test has_property(tf, "scalable")
@@ -21,11 +21,15 @@ using Test, NonlinearOptimizationTestFunctions
     min_pos = tf.meta[:min_position](n)
     @test tf.f(min_pos) ≈ tf.meta[:min_value](n) atol=1e-8
     
-    # Extra: Check another point in the minimum basin
-    min_pos_alt = fill(0.999, n)
-    @test tf.f(min_pos_alt) ≈ 0.0 atol=1e-8
+    # Extra: Check another point (not minimum)
+    min_pos_alt = fill(-5.0, n)
+    @test tf.f(min_pos_alt) > tf.meta[:min_value](n)
     
     # Check gradient (should be zeros)
     grad = tf.grad(min_pos)
     @test all(grad .== 0)
+    
+    # Type Stability Check (SHOULD per RULE_DEFAULT_N)
+    @code_warntype tf.f(rand(n))
+    @code_warntype tf.grad(rand(n))
 end

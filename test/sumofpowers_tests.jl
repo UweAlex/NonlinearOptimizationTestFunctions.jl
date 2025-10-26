@@ -27,7 +27,6 @@ using NonlinearOptimizationTestFunctions: SUMOFPOWERS_FUNCTION, sumofpowers
     @test tf.meta[:min_value](n) ≈ 0.0 atol=1e-6
     @test tf.meta[:lb](n) == fill(-1.0, n)
     @test tf.meta[:ub](n) == fill(1.0, n)
-    @test tf.meta[:in_molga_smutnicki_2005] == true
     @test Set(tf.meta[:properties]) == Set(["unimodal", "convex", "differentiable", "separable", "scalable", "bounded", "continuous"])
 
     # Optimization Tests

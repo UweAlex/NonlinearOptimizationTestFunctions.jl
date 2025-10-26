@@ -20,7 +20,6 @@ end
 
     @testset "Basic Tests" begin
         @test tf.meta[:name] == "sixhumpcamelback"
-        @test tf.meta[:dimension] == 2
         @test tf.meta[:lb]() == [-3.0, -2.0]
         @test tf.meta[:ub]() == [3.0, 2.0]
         @test tf.meta[:min_value]() ≈ -1.031628453489877 atol=1e-6

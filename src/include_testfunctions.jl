@@ -7,7 +7,6 @@
 
 
 
-
 #include("functions/shubert_constrained.jl")
 include("functions/ackley.jl")
 include("functions/ackley2.jl")
@@ -77,6 +76,8 @@ include("functions/hartman6.jl")
 include("functions/hartmanf3.jl")
 include("functions/helicalvalley.jl")
 include("functions/himmelblau.jl")
+include("functions/holder_table1.jl")
+include("functions/holder_table2.jl")
 include("functions/holdertable.jl")
 include("functions/hosaki.jl")
 include("functions/jennrichsampson.jl")
@@ -174,15 +175,16 @@ include("functions/sphere_noisy.jl")
 include("functions/sphere_rotated.jl")
 include("functions/sphere_shifted.jl")
 include("functions/step.jl")
+include("functions/step2.jl")
+include("functions/step3.jl")
 include("functions/step_ellipsoidal.jl")
-include("functions/styblinskitang.jl")
+include("functions/stepint.jl")
+include("functions/stretched_v_sine_wave.jl")
+include("functions/styblinski_tang.jl")
 include("functions/sumofpowers.jl")
+include("functions/testtubeholder.jl")
 include("functions/threehumpcamel.jl")
+include("functions/trecanni.jl")
 include("functions/trid.jl")
 include("functions/wood.jl")
 include("functions/zakharov.jl")
-
-
-
-
-

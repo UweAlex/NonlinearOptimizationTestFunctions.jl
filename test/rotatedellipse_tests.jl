@@ -12,7 +12,7 @@ using Test, NonlinearOptimizationTestFunctions
     @test has_property(tf, "non-separable")
     @test has_property(tf, "unimodal")
     @test has_property(tf, "convex")
-    @test tf.meta[:properties_source] == "Jamil & Yang (2013)"
+    @test tf.meta[:source] == "Jamil & Yang (2013, Entry 107)"
     
     # Test dimension requirement
     @test_throws ArgumentError tf.f([1.0])

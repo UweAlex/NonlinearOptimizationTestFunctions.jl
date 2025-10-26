@@ -1,9 +1,9 @@
-# test/step_tests.jl
+# test/step3_tests.jl
 
 using Test, NonlinearOptimizationTestFunctions
-@testset "step" begin
-    tf = STEP_FUNCTION
-    @test tf.meta[:name] == "step"
+@testset "step3" begin
+    tf = STEP3_FUNCTION
+    @test tf.meta[:name] == "step3"
     @test has_property(tf, "partially differentiable")
     @test has_property(tf, "separable")
     @test has_property(tf, "scalable")
@@ -28,4 +28,8 @@ using Test, NonlinearOptimizationTestFunctions
     # Check gradient (should be zeros)
     grad = tf.grad(min_pos)
     @test all(grad .== 0)
+    
+    # Type Stability Check (SHOULD per RULE_DEFAULT_N)
+    @code_warntype tf.f(rand(n))
+    @code_warntype tf.grad(rand(n))
 end

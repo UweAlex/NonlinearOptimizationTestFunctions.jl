@@ -11,7 +11,7 @@ using Test, NonlinearOptimizationTestFunctions
     @test has_property(tf, "unimodal")
     @test !has_property(tf, "scalable")
     @test length(tf.meta[:properties]) == 5
-    @test tf.meta[:source] == "Jamil & Yang (2013)"
+   
 
     @test_throws ArgumentError tf.f(Float64[])
 

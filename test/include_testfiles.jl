@@ -3,8 +3,7 @@
 # Context: Part of the test suite, enables modular test loading for individual test functions.
 # Last modified: 18. Juli 2025
 
-using Test, ForwardDiff, Optim, Zygote
-
+using Test, ForwardDiff, Optim, Zygote, InteractiveUtils  # Added InteractiveUtils for @code_warntype
 
 
 
@@ -77,6 +76,8 @@ include("hartman6_tests.jl")
 include("hartmanf3_tests.jl")
 include("helicalvalley_tests.jl")
 include("himmelblau_tests.jl")
+include("holder_table1_tests.jl")
+include("holder_table2_tests.jl")
 include("holdertable_tests.jl")
 include("hosaki_tests.jl")
 include("jennrichsampson_tests.jl")
@@ -173,14 +174,17 @@ include("sphere_noisy_tests.jl")
 include("sphere_rotated_tests.jl")
 include("sphere_shifted_tests.jl")
 include("sphere_tests.jl")
+include("step2_tests.jl")
+include("step3_tests.jl")
 include("step_ellipsoidal_tests.jl")
 include("step_tests.jl")
-include("styblinskitang_tests.jl")
+include("stepint_tests.jl")
+include("stretched_v_sine_wave_tests.jl")
+include("styblinski_tang_tests.jl")
 include("sumofpowers_tests.jl")
+include("testtubeholder_tests.jl")
 include("threehumpcamel_tests.jl")
+include("trecanni_tests.jl")
 include("trid_tests.jl")
 include("wood_tests.jl")
 include("zakharov_tests.jl")
-
-
-
