@@ -42,7 +42,7 @@ const MCCORMICK_FUNCTION = TestFunction(
         :properties => Set(["differentiable", "non-convex", "multimodal", "bounded", "continuous"]),
         :lb => () -> [-1.5, -3.0],
         :ub => () -> [4.0, 4.0],
-        :in_molga_smutnicki_2005 => true,
+        :source => "molga&smutnicki(2005)",
         :description => "McCormick function: Multimodal, non-convex function with global minimum at approximately -1.91322295, defined for 2 dimensions.",
         :math => "\\sin(x_1 + x_2) + (x_1 - x_2)^2 - 1.5 x_1 + 2.5 x_2 + 1"
     )

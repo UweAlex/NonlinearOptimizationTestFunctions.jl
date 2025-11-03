@@ -663,8 +663,16 @@ The package includes a variety of test functions for nonlinear optimization, eac
 - **stretched_v_sine_wave** [Jamil & Yang (2013, function 142):] bounded, continuous, differentiable, non-separable, scalable, unimodal. Minimum: 0 at (0, 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: scalable (n ≥ 1).
 - **styblinski_tang** [Jamil & Yang (2013, function 144):] bounded, continuous, differentiable, multimodal, non-convex, scalable, separable. Minimum: -78.33233141 at (-2.90353403, -2.90353403). Bounds: [(-5, -5), (5, 5)]. Dimensions: scalable (n ≥ 1).
 - **sumofpowers** [Jamil & Yang (2013, p. 32):] bounded, continuous, convex, differentiable, scalable, separable, unimodal. Minimum: 0 at (0, 0). Bounds: [(-1, -1), (1, 1)]. Dimensions: scalable (n ≥ 1).
-- **ThreeHumpCamel** [Jamil & Yang (2013): f29]: Bounded, continuous, differentiable, multimodal, non-convex, non-separable. Global minimum: 0 at (0, 0). Bounds: [(-5, -5), (5, 5)]. Dimensions: \( n = 2 \).
-- **Trid** [Jamil & Yang (2013): f150, f151]: Bounded, continuous, convex, differentiable, non-separable, scalable, unimodal. Global minimum: -2 at (2, 2, ..., 2). Bounds: [(-4, -4), (4, 4)]. Dimensions: Any \( n \geq 1 \).
+- **testtubeholder** [Jamil & Yang (2013, p. 34):] bounded, continuous, multimodal, non-separable. Minimum: -10.87230011 at (1.57060261, 0). Bounds: [(-10, -10), (10, 10)]. Dimensions: n = 2.
+- **threehumpcamel** [Unknown Source:] bounded, continuous, differentiable, multimodal, non-convex, non-separable. Minimum: 0 at (0, 0). Bounds: [(-5, -5), (5, 5)]. Dimensions: n = 2.
+- **trecanni** [Jamil & Yang (2013, p. 35):] bounded, continuous, differentiable, multimodal, separable. Minimum: 0 at (-2, 0). Bounds: [(-5, -5), (5, 5)]. Dimensions: n = 2.
+- **trefethen** [Jamil & Yang (2013, p. 35):] bounded, continuous, differentiable, multimodal, non-separable. Minimum: -3.30686865 at (-0.024403, 0.210612). Bounds: [(-10, -10), (10, 10)]. Dimensions: n = 2.
+- **trid** [Unknown Source:] bounded, continuous, convex, differentiable, non-separable, scalable, unimodal. Minimum: -2 at (2, 2). Bounds: [(-4, -4), (4, 4)]. Dimensions: scalable (n ≥ 1).
+- **trid10** [Jamil & Yang (2013, p. 35):] bounded, continuous, differentiable, non-separable, unimodal. Minimum: -210 at (10, 18, 24, 28, 30, 30, 28, 24, 18, 10). Bounds: [(-100, -100, -100, -100, -100, -100, -100, -100, -100, -100), (100, 100, 100, 100, 100, 100, 100, 100, 100, 100)]. Dimensions: n = 10.
+- **trid6** [Jamil & Yang (2013, p. 35):] bounded, continuous, differentiable, multimodal, non-separable. Minimum: -50 at (6, 10, 12, 12, 10, 6). Bounds: [(-36, -36, -36, -36, -36, -36), (36, 36, 36, 36, 36, 36)]. Dimensions: n = 6.
+- **trigonometric1** [Jamil & Yang (2013, p. 36):] continuous, differentiable, multimodal, non-separable, scalable. Minimum: 0 at (0, 0). Bounds: [(0, 0), (3.14159265, 3.14159265)]. Dimensions: scalable (n ≥ 1).
+- **trigonometric2** [Jamil & Yang (2013, p. 36):] continuous, differentiable, multimodal, non-separable, scalable. Minimum: 1 at (0.9, 0.9). Bounds: [(-500, -500), (500, 500)]. Dimensions: scalable (n ≥ 1).
+- **tripod** [Jamil & Yang (2013, p. 37):] bounded, multimodal, non-separable, partially differentiable. Minimum: 0 at (0, -50). Bounds: [(-100, -100), (100, 100)]. Dimensions: n = 2.
 - **Wood** [Jamil & Yang (2013): f121]: Bounded, continuous, differentiable, non-convex, non-separable, unimodal. Global minimum: 0 at (1, 1, 1, 1). Bounds: [(-10, -10, -10, -10), (10, 10, 10, 10)]. Dimensions: \( n = 4 \).
 - **Zakharov** [Naser (2024): 4.311]: Bounded, continuous, convex, differentiable, non-separable, scalable, unimodal. Global minimum: 0 at (0, 0, ..., 0). Bounds: [(-5, -5), (10, 10)]. Dimensions: Any \( n \geq 1 \).
 ## Upcoming Test Functions

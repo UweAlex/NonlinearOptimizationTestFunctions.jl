@@ -249,6 +249,12 @@ Ziel: Zentrale Tests + funktionsspezifisch in test/<name>_tests.jl.
 - MUST: Einbinden via include("test/<name>_tests.jl") in include_testfiles.jl.
 - SHOULD: Berechne Test-Werte exakt via REPL (z.B. tf.f(start_point)). [NEW] Für Noise: Multiple Evaluations (z.B. mean([tf.f(min_pos) for _ in 1:10]) ≈ deterministischer Wert).
 - [RULE_TEST_SYNTAX] MUST: Für Vektor-Vergleiche: Verwende all(isapprox.(vec, target, atol=1e-8)) statt all(vec .≈ target, atol=1e-8) – letzteres wirft MethodError, da all() atol ignoriert. Für Skalare: x ≈ y atol=1e-8.
+[NEW RULE_TESTFILE_LOADING] MUST: In test/include_testfiles.jl (oder test/include_testfiles.jl, falls in test/): 
+- Füge `using NonlinearOptimizationTestFunctions` **nach** den anderen using-Statements (z.B. using Test, ForwardDiff, ...) und **vor** allen include-Statements hinzu. Dies gewährleistet, dass alle exportierten Konstanten (z.B. <UPPER>_FUNCTION) global im Scope verfügbar sind, bevor die Testdateien geladen werden. 
+- Für Pfad-Konsistenz: Wenn include_testfiles.jl in src/ liegt, verwende `include("../test/<name>_tests.jl")`; wenn in test/, verwende `include("<name>_tests.jl")`.
+- Automatisierbar: Erstelle ein Skript (z.B. examples/generate_includes.jl), das dynamisch Includes generiert und das using pre-pendet.
+- Häufiger Fehler: UndefVarError für <UPPER>_FUNCTION – Lösung: Pre-load das Paket, um Scope-Kollisionen in runtests.jl zu vermeiden.
+- Validierung: In runtests.jl: Nach include("include_testfiles.jl"), teste `@test isdefined(Main, :TRIGONOMETRIC2_FUNCTION)` für neu hinzugefügte Funktionen.
 - [NEW] Meta-Aufruf im Test: Passe Aufruf an Signatur an: Wenn () -> ..., dann tf.meta[:min_value](); wenn (n::Int) -> ..., dann tf.meta[:min_value](n).
 - [NEW] Für skalierbare: Verwende n = tf.meta[:default_n] in Tests für Standard-Validierungen (z.B. min_pos = tf.meta[:min_position](n)).
 - [NEW RULE_NOISE_VALIDATION] MUST: In funktionsspezifischen Tests und runtests.jl: Für "has_noise": @test f_min >= min_value && f_min < min_value + noise_upper (z.B. <1 für [0,1)). 
@@ -300,6 +306,26 @@ using Test, NonlinearOptimizationTestFunctions
     @test tf.f(min_pos_neg) ≈ 0.0 atol=1e-8
 end
 
+Template für test/include_testfiles.jl (zentraler Test-Loader):
+
+# test/include_testfiles.jl
+# Purpose: Includes all function-specific test files for NonlinearOptimizationTestFunctions.
+# Context: Part of the test suite, enables modular test loading for individual test functions.
+# Last modified: [Datum]
+
+using Test, ForwardDiff, Optim, Zygote, InteractiveUtils  # Basis-Deps
+using NonlinearOptimizationTestFunctions  # [NEW RULE_TESTFILE_LOADING]: Pre-load Paket für globale Scope (TF_FUNCTIONs)
+
+# Includes (alphabetisch sortiert; dynamisch generierbar via Skript)
+include("ackley_tests.jl")
+include("booth_tests.jl")
+# ... (alle <name>_tests.jl)
+include("trigonometric2_tests.jl")
+include("tripod_tests.jl")
+
+# Optional: Dynamische Validierung
+@test all([isdefined(Main, symbol("$TF_FUNCTION")) for TF in ["TRIGONOMETRIC2", "TRIPOD"]])  # Scope-Check für neue Funktionen
+
 [NEW] Für noisy Funktionen (z.B. Quartic): Erweitere Template um:
     f_min = tf.f(min_pos)
     @test f_min >= 0 && f_min < 1  # Für [0,1)-Noise
@@ -343,6 +369,7 @@ grad = tf.gradient([1.0, 2.0])  # ❌ Fehler!
 2. Implementiere src/functions/<name>.jl [RULE_SIGNATURE, RULE_NO_CONST_ARRAYS]. Füge :default_n hinzu. [NEW] Für konstante min_value: (n::Int) -> value. Verwende direkte Quelle mit Stelle in :source. [NEW] Lokale Hilfsfunktionen: Benenne mit Präfix `_ <name> _ <zweck>` [RULE_LOCAL_HELPERS_NAMING]; füge Edge-Checks hinzu [RULE_LOCAL_HELPERS_ERROR_HANDLING].
 3. Syntax-Check: julia --project=. -e 'include("src/functions/<name>.jl")' [RULE_SYNTAXCHECK]. [NEW] Überprüfe lokale Hilfsfunktionen: `@test_throws ArgumentError _<name>_helper(Float64[]); @test isinf(_<name>_helper([Inf]))`.
 4. Tests: Schreibe test/<name>_tests.jl, einbinden. [NEW] REPL-Validierung: Lade tf, teste tf.meta[:min_value](tf.meta[:default_n]) ≈ tf.f(tf.meta[:min_position](tf.meta[:default_n])) atol=1e-8; für Noise: Range-Check. [NEW] Dynamische Properties-Counts in runtests.jl [RULE_PROPERTIES_DYNAMIC_COUNT].
+4. Tests: Schreibe test/<name>_tests.jl, einbinden. [NEW] Überprüfe in include_testfiles.jl: using NonlinearOptimizationTestFunctions vor includes; teste Scope mit @test isdefined(Main, :<UPPER>_FUNCTION).
 5. Gesamttests: julia --project=. test/runtests.jl. [NEW] Überprüche Noise-Adaptation in Minimum Validation.
 6. Validierung: [ ] Properties aus Tabelle; [ ] Keine globalen const; [ ] Gradient als Vector<T>; [NEW] Keine MethodError in Meta-Aufrufen; [ ] Vektor-Tests mit isapprox.. [NEW] :default_n >=2 und verwendet in Tests; [NEW] Noise-Handling in Tests/runtests.jl; [NEW] :source mit spezifischer Stelle (z.B. "Jamil & Yang (2013, p. 27)"); [NEW] Lokale Hilfsfunktionen mit Präfix und Edge-Checks; [NEW] Keine Namenskonflikte (grep -r "function <common_name>" src/).
 

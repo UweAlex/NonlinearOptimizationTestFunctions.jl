@@ -15,7 +15,6 @@ using NonlinearOptimizationTestFunctions: MCCORMICK_FUNCTION, mccormick
     @test tf.meta[:min_value]() == -1.9132229549810367
     @test tf.meta[:lb]() == [-1.5, -3.0]
     @test tf.meta[:ub]() == [4.0, 4.0]
-    @test tf.meta[:in_molga_smutnicki_2005] == true
     @test tf.meta[:properties] == Set(["bounded", "continuous", "differentiable", "multimodal", "non-convex"])
     
     # Function value tests
