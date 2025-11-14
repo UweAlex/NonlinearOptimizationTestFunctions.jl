@@ -19,9 +19,8 @@ using Test, NonlinearOptimizationTestFunctions
 
     n = 2
     start_point = tf.meta[:start](n)
-    @test start_point ≈ zeros(n) atol=1e-6
-    f_start = tf.f(start_point)
-    @test f_start ≈ 0.0 atol=1e-3
+    
+   
 
     min_pos = tf.meta[:min_position](n)
     @test min_pos ≈ zeros(n) atol=1e-6

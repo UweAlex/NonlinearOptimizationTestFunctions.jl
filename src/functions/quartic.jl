@@ -3,8 +3,8 @@
 # Context: Scalable (n >= 1), with additive uniform noise [0,1). Unimodal deterministic part.
 # Global minimum: f(x*)=0 at x*=zeros(n) (ignoring noise).
 # Bounds: -1.28 ≤ x_i ≤ 1.28.
-# Last modified: October 02, 2025.
-# Wichtig: Halte Code sauber – keine Erklärungen inline ohne #; validiere Mapping/Gradient separat.
+# Start point: fill(0.8, n) → NICHT das Minimum!
+# Last modified: November 13, 2025.
 
 export QUARTIC_FUNCTION, quartic, quartic_gradient
 
@@ -18,7 +18,7 @@ function quartic(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     @inbounds for i in 1:n
         sum_f += i * x[i]^4
     end
-    sum_f + rand()
+    sum_f + rand()  # Uniform noise in [0,1)
 end
 
 function quartic_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
@@ -31,24 +31,38 @@ function quartic_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDif
     @inbounds for i in 1:n
         grad[i] = 4 * i * x[i]^3
     end
-    grad
+    grad  # Noise is non-differentiable → gradient of deterministic part only
 end
 
 const QUARTIC_FUNCTION = TestFunction(
     quartic,
     quartic_gradient,
-    Dict(
+    Dict{Symbol, Any}(
         :name => "quartic",
         :description => "Quartic Function with additive uniform noise from [0,1). The deterministic part is strictly convex. Properties based on Jamil & Yang (2013).",
-        :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{n} i x_i^4 + \text{random}[0, 1).""",
-        :start => (n::Int) -> begin n < 1 && throw(ArgumentError("Start requires n >= 1")); zeros(n) end,
-        :min_position => (n::Int) -> begin n < 1 && throw(ArgumentError("Min position requires n >= 1")); zeros(n) end,
-        :min_value => (n::Int) -> 0.0,
+        :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{n} i x_i^4 + \mathcal{U}[0, 1).""",
+        :start => (n::Int) -> begin
+            n < 1 && throw(ArgumentError("quartic requires n >= 1"))
+            fill(0.8, n)  # GEÄNDERT: NICHT zeros(n)
+        end,
+        :min_position => (n::Int) -> begin
+            n < 1 && throw(ArgumentError("quartic requires n >= 1"))
+            zeros(n)
+        end,
+        :min_value => (n::Int) -> 0.0,  # Ignoring noise
         :default_n => 2,
         :properties => ["bounded", "continuous", "differentiable", "separable", "scalable", "has_noise", "unimodal"],
-        :properties_source => "Jamil & Yang (2013)",
         :source => "Jamil & Yang (2013)",
-        :lb => (n::Int) -> begin n < 1 && throw(ArgumentError("LB requires n >= 1")); fill(-1.28, n) end,
-        :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("UB requires n >= 1")); fill(1.28, n) end,
+        :lb => (n::Int) -> begin
+            n < 1 && throw(ArgumentError("quartic requires n >= 1"))
+            fill(-1.28, n)
+        end,
+        :ub => (n::Int) -> begin
+            n < 1 && throw(ArgumentError("quartic requires n >= 1"))
+            fill(1.28, n)
+        end,
     )
 )
+
+# Validierung beim Laden
+@assert basename(@__FILE__)[1:end-3] == "quartic" "quartic: Dateiname mismatch!"

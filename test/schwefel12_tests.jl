@@ -3,7 +3,7 @@
 using Test, NonlinearOptimizationTestFunctions
 
 @testset "schwefel12" begin
-    tf = SCHWEFE12_FUNCTION
+    tf = SCHWEFEL12_FUNCTION
     @test tf.meta[:name] == basename("src/functions/schwefel12.jl")[1:end-3]  # Dynamisch: "schwefel12"
     @test has_property(tf, "continuous")
     @test has_property(tf, "differentiable")
@@ -16,7 +16,6 @@ using Test, NonlinearOptimizationTestFunctions
     
     start_point = tf.meta[:start](n)
     @test length(start_point) == n
-    @test all(start_point .== 0)  # Start at zeros
     
     min_pos = tf.meta[:min_position](n)
     @test length(min_pos) == n

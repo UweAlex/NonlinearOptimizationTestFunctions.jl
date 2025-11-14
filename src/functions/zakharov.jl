@@ -1,52 +1,61 @@
 # src/functions/zakharov.jl
-# Purpose: Implements the Zakharov test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: August 12, 2025
+# Purpose: Implementation of the Zakharov test function.
+# Global minimum: f(x*)=0.0 at x*=(0.0, ..., 0.0).
+# Bounds: -5.0 ≤ x_i ≤ 10.0.
 
 export ZAKHAROV_FUNCTION, zakharov, zakharov_gradient
 
-using LinearAlgebra
-using ForwardDiff
-
-# Computes the Zakharov function value at point `x`. Scalable to any dimension n >= 1.
-#
-# Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
 function zakharov(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n < 1 && throw(ArgumentError("zakharov requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
-    sum_sq = dot(x, x)
-    s = sum(0.5 * i * x[i] for i in 1:n)
-    return sum_sq + s^2 + s^4
-end #function
+    
+    sum_sq = zero(T)
+    s = zero(T)
+    @inbounds for i in 1:n
+        sum_sq += x[i]^2
+        s += 0.5 * i * x[i]
+    end
+    sum_sq + s^2 + s^4
+end
 
-# Computes the gradient of the Zakharov function. Returns a vector of length n.
 function zakharov_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n < 1 && throw(ArgumentError("zakharov requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
-    s = sum(0.5 * i * x[i] for i in 1:n)
+    
+    s = zero(T)
+    @inbounds for i in 1:n
+        s += 0.5 * i * x[i]
+    end
     grad = zeros(T, n)
-    for k in 1:n
+    @inbounds for k in 1:n
         grad[k] = 2 * x[k] + k * s + 2 * k * s^3
-    end #for
-    return grad
-end #function
+    end
+    grad
+end
 
 const ZAKHAROV_FUNCTION = TestFunction(
     zakharov,
     zakharov_gradient,
-    Dict(
+    Dict{Symbol, Any}(
         :name => "zakharov",
-        :start => (n::Int) -> ones(n),
-        :min_position => (n::Int) -> zeros(n),
-        :min_value => (n::Int) -> 0.0,
-        :properties => Set(["unimodal", "convex", "non-separable", "differentiable", "scalable","bounded","continuous"]),
+        :description => "Zakharov function; Properties based on Jamil & Yang (2013, p. 39); ursprünglich aus Rahnamyan et al. (2007).",
+        :math => raw"""f(\mathbf{x}) = \sum_{i=1}^n x_i^2 + \left( \sum_{i=1}^n \frac{1}{2} i x_i \right)^2 + \left( \sum_{i=1}^n \frac{1}{2} i x_i \right)^4.""",
+        :start => (n::Int) -> begin n < 1 && throw(ArgumentError("zakharov requires at least 1 dimension")); ones(n) end,
+        :min_position => (n::Int) -> begin n < 1 && throw(ArgumentError("zakharov requires at least 1 dimension")); zeros(n) end,
+        :min_value => (n::Int) -> begin n < 1 && throw(ArgumentError("zakharov requires at least 1 dimension")); 0.0 end,
         :default_n => 2,
-        :lb => (n::Int) -> fill(-5.0, n),
-        :ub => (n::Int) -> fill(10.0, n),
-        :in_molga_smutnicki_2005 => true,
-        :description => "Zakharov function: A scalable, unimodal, convex test function for optimization.",
-        :math => "\\sum_{i=1}^n x_i^2 + \\left( \\sum_{i=1}^n 0.5 i x_i \\right)^2 + \\left( \\sum_{i=1}^n 0.5 i x_i \\right)^4"
+        :properties => ["continuous", "differentiable", "non-separable", "scalable", "multimodal", "bounded"],
+        :source => "Jamil & Yang (2013, p. 39)",
+        :lb => (n::Int) -> begin n < 1 && throw(ArgumentError("zakharov requires at least 1 dimension")); fill(-5.0, n) end,
+        :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("zakharov requires at least 1 dimension")); fill(10.0, n) end,
     )
 )
+
+# Optional: Validierung beim Laden
+@assert "zakharov" == basename(@__FILE__)[1:end-3] "zakharov: Dateiname mismatch!"

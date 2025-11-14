@@ -3,8 +3,9 @@
 #         testet sie grob (z. B. f(min_pos) ≈ min_value), validiert den Gradienten an ausgewählten Punkten
 #         und berechnet/validiert endgültige Parameter wie min_pos, min_value via REPL-Evaluation.
 #         Optimierung (BFGS) nur, wenn Gradient validiert ist (Deviation < 1e-6 an allen Testpunkten).
+#         Erweiterung: High-Precision-Optimierung mit BigFloat (Präzision 256) für exakte Float64-Ausgabe.
 # Usage: julia --project=. validate_last_function.jl
-# Last modified: October 24, 2025
+# Last modified: November 14, 2025
 
 using NonlinearOptimizationTestFunctions
 using Test
@@ -230,6 +231,9 @@ function validate_and_refine_last_function()
     objective = (x) -> tf.f(x)
     gradient! = (storage, x) -> copyto!(storage, tf.grad(x))
     
+    # Float64-Optimierung (ursprünglich)
+    optimized_min_pos = nothing
+    optimized_min_value = nothing
     try
         # Wenn Bounds definiert sind (nicht ±Inf), verwende box-constrained optimizer
         has_finite_bounds = all(isfinite.(lb)) && all(isfinite.(ub))
@@ -246,8 +250,8 @@ function validate_and_refine_last_function()
         
         optimized_min_pos = Optim.minimizer(result)
         optimized_min_value = Optim.minimum(result)
-        println("  Optimiertes min_pos: $optimized_min_pos")
-        println("  Optimiertes min_value: $optimized_min_value")
+        println("  Optimiertes min_pos (Float64): $optimized_min_pos")
+        println("  Optimiertes min_value (Float64): $optimized_min_value")
         println("  Erfolg: $(Optim.converged(result))")
         
         # Prüfe ob Optimierung sinnvolle Werte liefert
@@ -256,21 +260,114 @@ function validate_and_refine_last_function()
             optimized_min_pos = min_pos
             optimized_min_value = f_val_computed
         end
-        
-        # Schritt 6: Ausgabe für Meta-Update (kopiere in :min_position und :min_value)
-        println("\nEmpfohlene Meta-Updates für $last_name:")
-        if is_scalable
-            println("  :min_position => (n::Int) -> fill($(optimized_min_pos[1]), n),  # Annahme: konstant pro Dim")
-            println("  :min_value => (n::Int) -> $(optimized_min_value / n) * n,  # Skalierbar")
-        else
-            println("  :min_position => () -> $(optimized_min_pos),")
-            println("  :min_value => () -> $optimized_min_value,")
-        end
     catch e
-        println("  ❌ Optimierung fehlgeschlagen: $e")
+        println("  ❌ Float64-Optimierung fehlgeschlagen: $e")
         println("  Verwende bekannte Werte aus Meta:")
-        println("  :min_position => () -> $min_pos,")
-        println("  :min_value => () -> $f_val_computed,")
+        optimized_min_pos = min_pos
+        optimized_min_value = f_val_computed
+    end
+    
+    # Initialisiere finale Werte (außerhalb try für Scope-Fix)
+    final_min_pos = min_pos
+    final_min_value = f_val_computed
+    
+    # High-Precision-Optimierung mit BigFloat (Präzision 256)
+    println("\nHigh-Precision-Optimierung (BigFloat, Präzision 256):")
+    setprecision(BigFloat, 256)
+    
+    # Konvertiere zu BigFloat
+    opt_start_big = BigFloat.(opt_start)
+    lb_big = BigFloat.(lb)
+    ub_big = BigFloat.(ub)
+    
+    # Definiere BigFloat-kompatible Objective und Gradient (tf.f/grad sind T-generic, unterstützen BigFloat)
+    objective_big = (x) -> tf.f(x)  # x ist Vector{BigFloat}, tf.f akzeptiert AbstractVector{Real}
+    gradient_big! = (storage, x) -> copyto!(storage, tf.grad(x))  # Ähnlich
+    
+    try
+        has_finite_bounds = all(isfinite.(lb)) && all(isfinite.(ub))
+        if has_finite_bounds
+            println("  → Verwende Fminbox (BigFloat) wegen endlicher Bounds")
+            result_big = optimize(objective_big, gradient_big!, lb_big, ub_big, opt_start_big, Fminbox(BFGS()), 
+                                Optim.Options(iterations=3000, f_reltol=1e-60))  # Höhere Iterationen/Tol für High-Prec
+        else
+            println("  → Verwende BFGS (BigFloat, unbounded)")
+            result_big = optimize(objective_big, gradient_big!, opt_start_big, BFGS(), 
+                                Optim.Options(iterations=3000, f_reltol=1e-60))
+        end
+        
+        optimized_min_pos_big = Optim.minimizer(result_big)
+        optimized_min_value_big = Optim.minimum(result_big)
+        println("  Optimiertes min_pos (BigFloat): $optimized_min_pos_big")
+        println("  Optimiertes min_value (BigFloat): $optimized_min_value_big")
+        println("  Erfolg (BigFloat): $(Optim.converged(result_big))")
+        
+        # Konvertiere zu Float64 und runde auf letzte signifikante Stelle (für Exaktheit in Float64)
+        # Runde auf 15 Dezimalstellen (Mantisse von Float64), um Rundungsfehler zu minimieren
+        function to_exact_float64(val::AbstractArray)
+            Float64.(round.(val, digits=15))
+        end
+        function to_exact_float64_scalar(val::Real)
+            Float64(round(val, digits=15))
+        end
+        
+        optimized_min_pos_exact = to_exact_float64(optimized_min_pos_big)
+        optimized_min_value_exact = to_exact_float64_scalar(optimized_min_value_big)
+        
+        println("  Exakte Float64 min_pos (gerundet): $optimized_min_pos_exact")
+        println("  Exakte Float64 min_value (gerundet): $optimized_min_value_exact")
+        println("  Validierung: f(exakte pos) = $(tf.f(optimized_min_pos_exact))")
+        
+        # Prüfe auf NaN/Inf in BigFloat-Ergebnis
+        if any(isnan.(optimized_min_pos_big)) || any(isinf.(optimized_min_pos_big)) || isnan(optimized_min_value_big) || isinf(optimized_min_value_big)
+            println("  ⚠️  BigFloat-Optimierung lieferte NaN/Inf - verwende Float64-Ergebnis")
+            optimized_min_pos = optimized_min_pos
+            optimized_min_value = optimized_min_value
+        else
+            # Übernimm exakte Float64-Werte
+            optimized_min_pos = optimized_min_pos_exact
+            optimized_min_value = optimized_min_value_exact
+        end
+        
+        # FIX: Vergleiche Opt vs. Meta – nimm besseres (kleineres f)
+        f_meta = f_val_computed
+        f_opt = optimized_min_value
+        if f_opt < f_meta - 1e-10  # Tol für numerische Gleichheit
+            println("  Opt besser als Meta: Verwende Opt (f=$f_opt < $f_meta).")
+            final_min_pos = optimized_min_pos
+            final_min_value = f_opt
+        else
+            println("  ⚠️ Opt schlechter/gleich Meta: Fallback zu Meta (f=$f_meta).")
+            final_min_pos = min_pos
+            final_min_value = f_meta
+        end
+        
+    catch e
+        println("  ❌ BigFloat-Optimierung fehlgeschlagen: $e")
+        println("  Verwende Float64-Ergebnis:")
+        optimized_min_pos = optimized_min_pos
+        optimized_min_value = optimized_min_value
+        
+        # FIX: Fallback-Vergleich
+        f_meta = f_val_computed
+        f_opt = optimized_min_value
+        if f_opt < f_meta - 1e-10
+            final_min_pos = optimized_min_pos
+            final_min_value = f_opt
+        else
+            final_min_pos = min_pos
+            final_min_value = f_meta
+        end
+    end
+    
+    # Schritt 6: Ausgabe für Meta-Update (kopiere in :min_position und :min_value)
+    println("\nEmpfohlene Meta-Updates für $last_name (exakt in Float64):")
+    if is_scalable
+        println("  :min_position => (n::Int) -> $(final_min_pos),  # Annahme: konstant pro Dim (High-Prec gerundet)")
+        println("  :min_value => (n::Int) -> $final_min_value,  # Skalierbar (High-Prec gerundet)")
+    else
+        println("  :min_position => () -> $(final_min_pos),")
+        println("  :min_value => () -> $final_min_value,")
     end
     
     # Zusätzlich: Bounds und Start prüfen
@@ -292,7 +389,7 @@ function validate_and_refine_last_function()
     if abs(f_val_computed - min_value_expected) > 1e-7
         println("\n⚠️  min_value könnte präziser sein:")
         println("   Aktuell: $min_value_expected")
-        println("   Präziser: $f_val_computed")
+        println("   Präziser (High-Prec): $final_min_value")
     end
     
     println("\nFertig! Passe src/functions/$(last_name).jl und test/$(last_name)_tests.jl an.")

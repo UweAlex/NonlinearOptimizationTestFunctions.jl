@@ -3,8 +3,8 @@
 # Context: Scalable multimodal function from Rahnamayan et al. (2007a), as f87 in Jamil & Yang (2013).
 # Global minimum: f(x*)=0 at x*=zeros(n).
 # Bounds: -100 ≤ x_i ≤ 100.
-# Last modified: September 29, 2025.
-# Wichtig: Halte Code sauber – keine Erklärungen inline ohne #; validiere Mapping/Gradient separat.
+# Start point: fill(50.0, n)  → NICHT das Minimum!
+# Last modified: November 13, 2025.
 
 export PATHOLOGICAL_FUNCTION, pathological, pathological_gradient
 
@@ -54,7 +54,7 @@ function pathological_gradient(x::AbstractVector{T}) where {T<:Union{Real, Forwa
         end
         
         # Partial wrt xi
-        dsqrt_dxi = (100 * xi) / sqrt_term  # Fixed: 100 instead of 50
+        dsqrt_dxi = (100 * xi) / sqrt_term
         dnum_dxi = 2 * sin_val * cos_val * dsqrt_dxi
         dden_dxi = 0.001 * 2 * den_sq * (2 * xi - 2 * xip1)
         dterm_dxi = (dnum_dxi * den - num * dden_dxi) / den^2
@@ -77,7 +77,7 @@ const PATHOLOGICAL_FUNCTION = TestFunction(
         :name => "pathological",
         :description => "Pathological Function: Scalable multimodal function with interdependent variables. Properties based on Jamil & Yang (2013).",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{n-1} \left( 0.5 + \frac{\sin^2 \sqrt{100 x_i^2 + x_{i+1}^2} - 0.5}{1 + 0.001 (x_i^2 - 2 x_i x_{i+1} + x_{i+1}^2)^2} \right).""",
-        :start => (n::Int) -> zeros(n),
+        :start => (n::Int) -> fill(50.0, n),  # GEÄNDERT: NICHT zeros(n)
         :min_position => (n::Int) -> zeros(n),
         :min_value => (n::Int) -> 0.0,
         :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-separable", "non-convex", "scalable"],

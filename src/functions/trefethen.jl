@@ -51,8 +51,8 @@ const TREFETHEN_FUNCTION = TestFunction(
         :description => "Properties based on Jamil & Yang (2013, p. 35); originally from MVF Library (Adorio & Diliman, 2005).",
         :math => raw"""f(\mathbf{x}) = e^{\sin(50 x_1)} + \sin(60 e^{x_2}) + \sin(70 \sin(x_1)) + \sin(\sin(80 x_2)) - \sin(10(x_1 + x_2)) + \frac{1}{4}(x_1^2 + x_2^2). """,
         :start => () -> zeros(2),
-        :min_position => () -> [-0.024403, 0.210612],
-        :min_value => () -> -3.30686865,  # Für konstante Werte: Immer () -> value, auch bei scalable
+:min_position => () -> [-0.0244030799684242, 0.2106124278736910],
+  :min_value => () -> -3.306868647475232,
         :properties => ["bounded", "continuous", "differentiable", "non-separable", "multimodal"],
         :source => "Jamil & Yang (2013, p. 35)",
         :lb => () -> [-10.0, -10.0],

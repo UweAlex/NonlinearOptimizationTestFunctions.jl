@@ -1,6 +1,6 @@
 # Established Benchmark Functions
 
-Generated from package metadata on 2025-10-26. Functions are listed vertically by category for easy reading.
+Generated from package metadata on 2025-11-14. Functions are listed vertically by category for easy reading.
 
 ## Inhaltsverzeichnis
 - [Classical Benchmarks](#classical-benchmarks)
@@ -17,7 +17,6 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
   - [exponential: Standard](#exponential-standard)
   - [leon: Standard](#leon-standard)
   - [matyas: Standard](#matyas-standard)
-  - [powell: Standard](#powell-standard)
   - [powellsingular: Standard](#powellsingular-standard)
   - [powellsingular2: Standard](#powellsingular2-standard)
   - [powellsum: Standard](#powellsum-standard)
@@ -25,7 +24,6 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
   - [rosenbrock: Standard](#rosenbrock-standard)
   - [rotatedellipse: Standard](#rotatedellipse-standard)
   - [rotatedellipse2: Standard](#rotatedellipse2-standard)
-  - [rotatedhyperellipsoid: Standard](#rotatedhyperellipsoid-standard)
   - [rump: Standard](#rump-standard)
   - [schaffer2: Standard](#schaffer2-standard)
   - [schaffer3: Standard](#schaffer3-standard)
@@ -49,7 +47,13 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
   - [stretched_v_sine_wave: wave](#stretched_v_sine_wave-wave)
   - [sumofpowers: Standard](#sumofpowers-standard)
   - [trid: Standard](#trid-standard)
-  - [zakharov: Standard](#zakharov-standard)
+  - [trid10: Standard](#trid10-standard)
+  - [ursem1: Standard](#ursem1-standard)
+  - [watson: Standard](#watson-standard)
+  - [wayburnseader1: Standard](#wayburnseader1-standard)
+  - [wayburnseader2: Standard](#wayburnseader2-standard)
+  - [wayburnseader3: Standard](#wayburnseader3-standard)
+  - [wolfe: Standard](#wolfe-standard)
 - [Extended Benchmarks](#extended-benchmarks)
   - [ackley: Standard](#ackley-standard)
   - [adjiman: Standard](#adjiman-standard)
@@ -139,6 +143,7 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
   - [penholder: Standard](#penholder-standard)
   - [periodic: Standard](#periodic-standard)
   - [pinter: Standard](#pinter-standard)
+  - [powell: Standard](#powell-standard)
   - [price1: Standard](#price1-standard)
   - [price2: Standard](#price2-standard)
   - [price4: Standard](#price4-standard)
@@ -174,11 +179,24 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
   - [sixhumpcamelback: Standard](#sixhumpcamelback-standard)
   - [sphere_noisy: noisy](#sphere_noisy-noisy)
   - [styblinski_tang: tang](#styblinski_tang-tang)
-  - [styblinskitang: Standard](#styblinskitang-standard)
   - [testtubeholder: Standard](#testtubeholder-standard)
   - [threehumpcamel: Standard](#threehumpcamel-standard)
   - [trecanni: Standard](#trecanni-standard)
+  - [trefethen: Standard](#trefethen-standard)
+  - [trid6: Standard](#trid6-standard)
+  - [trigonometric1: Standard](#trigonometric1-standard)
+  - [trigonometric2: Standard](#trigonometric2-standard)
+  - [tripod: Standard](#tripod-standard)
+  - [ursem3: Standard](#ursem3-standard)
+  - [ursem4: Standard](#ursem4-standard)
+  - [ursem_waves: waves](#ursem_waves-waves)
+  - [wavy: Standard](#wavy-standard)
+  - [weierstrass: Standard](#weierstrass-standard)
+  - [whitley: Standard](#whitley-standard)
   - [wood: Standard](#wood-standard)
+  - [xin_she_yang1: yang1](#xin_she_yang1-yang1)
+  - [xin_she_yang2: yang2](#xin_she_yang2-yang2)
+  - [zakharov: Standard](#zakharov-standard)
 - [Other Benchmarks](#other-benchmarks)
   - [ackley4: Standard](#ackley4-standard)
   - [axisparallelhyperellipsoid: Standard](#axisparallelhyperellipsoid-standard)
@@ -186,6 +204,7 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
   - [shubert_coupled: coupled](#shubert_coupled-coupled)
   - [shubert_rotated: rotated](#shubert_rotated-rotated)
   - [shubert_shifted: shifted](#shubert_shifted-shifted)
+  - [venter_sobiezcczanski_sobieski: sobieski](#venter_sobiezcczanski_sobieski-sobieski)
 
 ## Classical Benchmarks {#classical-benchmarks}
 
@@ -274,17 +293,10 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
 
 
 ### matyas: Standard {#matyas-standard}
-- **Formula**: 0.26 (x^2 + y^2) - 0.48 x y
+- **Formula**: f(\mathbf{x}) = 0.26 (x_1^2 + x_2^2) - 0.48 x_1 x_2
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [0.0, 0.0]
 - **Properties**: convex, non-separable, bounded, unimodal, differentiable, continuous
-- **Reference**: Unknown
-
-
-### powell: Standard {#powell-standard}
-- **Formula**: f(x) = (x_1 + 10x_2)^2 + 5(x_3 - x_4)^2 + (x_2 - 2x_3)^4 + 10(x_1 - x_4)^4
-- **Bounds/Minimum**: Bounds: [-4.0, -4.0, -4.0, -4.0]; Min: 0.0 at [0.0, 0.0, 0.0, 0.0]
-- **Properties**: non-separable, unimodal, differentiable, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 20)
 
 
 ### powellsingular: Standard {#powellsingular-standard}
@@ -336,13 +348,6 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
 - **Reference**: Jamil & Yang (2013, Entry 107)
 
 
-### rotatedhyperellipsoid: Standard {#rotatedhyperellipsoid-standard}
-- **Formula**: \sum_{i=1}^{n} \left( \sum_{j=1}^{i} x_j \right)^2
-- **Bounds/Minimum**: Bounds: [-65.536, -65.536]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: convex, non-separable, bounded, unimodal, differentiable, scalable, continuous
-- **Reference**: Unknown
-
-
 ### rump: Standard {#rump-standard}
 - **Formula**: f(\mathbf{x}) = \left| (333.75 - x_1^2) x_2^6 + x_1^2 (11 x_1^2 x_2^2 - 121 x_2^4 - 2) + 5.5 x_2^8 + \frac{x_1}{2 + x_2} \right|.
 - **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 0.0 at [0.0, 0.0]
@@ -379,9 +384,9 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
 
 
 ### schwefel12: Standard {#schwefel12-standard}
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{D} \left( \sum_{j=1}^{i} x_j \right)^2.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n \left( \sum_{j=1}^i x_j \right)^2.
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: non-separable, unimodal, differentiable, continuous, scalable
+- **Properties**: convex, non-separable, bounded, unimodal, differentiable, continuous, scalable
 - **Reference**: Jamil & Yang (2013, p. 29)
 
 
@@ -491,24 +496,66 @@ Generated from package metadata on 2025-10-26. Functions are listed vertically b
 
 
 ### sumofpowers: Standard {#sumofpowers-standard}
-- **Formula**: \sum_{i=1}^n |x_i|^{i+1}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n |x_i|^{i+1}
 - **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: separable, convex, bounded, unimodal, differentiable, scalable, continuous
-- **Reference**: Unknown
+- **Properties**: separable, convex, bounded, unimodal, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 32)
 
 
 ### trid: Standard {#trid-standard}
-- **Formula**: \sum_{i=1}^n (x_i - 1)^2 - \sum_{i=2}^n x_i x_{i-1}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n (x_i - 1)^2 - \sum_{i=2}^n x_i x_{i-1}.
 - **Bounds/Minimum**: Bounds: [-4, -4]; Min: -2.0 at [2, 2]
-- **Properties**: convex, non-separable, bounded, unimodal, differentiable, scalable, continuous
-- **Reference**: Unknown
+- **Properties**: convex, non-separable, bounded, unimodal, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 35)
 
 
-### zakharov: Standard {#zakharov-standard}
-- **Formula**: \sum_{i=1}^n x_i^2 + \left( \sum_{i=1}^n 0.5 i x_i \right)^2 + \left( \sum_{i=1}^n 0.5 i x_i \right)^4
-- **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: convex, non-separable, bounded, unimodal, differentiable, scalable, continuous
-- **Reference**: Unknown
+### trid10: Standard {#trid10-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} (x_i - 1)^2 - \sum_{i=2}^{10} x_i x_{i-1}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0]; Min: -210.0 at [10.0, 18.0, 24.0, 28.0, 30.0, 30.0, 28.0, 24.0, 18.0, 10.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 35)
+
+
+### ursem1: Standard {#ursem1-standard}
+- **Formula**: f(\mathbf{x}) = -\sin(2x_1 - 0.5\pi) - 3\cos(x_2) - 0.5x_1.
+- **Bounds/Minimum**: Bounds: [-2.5, -2.0]; Min: -4.816814063734245 at [1.697137, 0.0]
+- **Properties**: separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 36)
+
+
+### watson: Standard {#watson-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{29} \left[ \sum_{j=2}^{6} (j-1) x_j t_i^{j-2} - \left( \sum_{j=1}^{6} x_j t_i^{j-1} \right)^2 - 1 \right]^2 + x_1^2, \quad t_i = i / 29.
+- **Bounds/Minimum**: Bounds: [-5.0, -5.0, -5.0, -5.0, -5.0, -5.0]; Min: 0.00193306874741329 at [-0.01367625, 1.02929024, -0.33159222, 1.50042489, -1.75935227, 1.08739726]
+- **Properties**: controversial, non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Moré et al. (1981). Testing Unconstrained Optimization Software. ACM TOMS, 7(1), 17–41.
+
+
+### wayburnseader1: Standard {#wayburnseader1-standard}
+- **Formula**: f(\mathbf{x}) = (x_1^6 + x_2^4 - 17)^2 + (2x_1 + x_2 - 4)^2.
+- **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: 0.0 at [1.0, 2.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 37)
+
+
+### wayburnseader2: Standard {#wayburnseader2-standard}
+- **Formula**: f(\mathbf{x}) = \left[ 1.613 - 4(x_1 - 0.3125)^2 - 4(x_2 - 1.625)^2 \right]^2 + (x_2 - 1)^2.
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 0.0 at [0.2, 1.0]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 63)
+
+
+### wayburnseader3: Standard {#wayburnseader3-standard}
+- **Formula**: f(\mathbf{x}) = \frac{2 x_1^3}{3} - 8 x_1^2 + 33 x_1 - x_1 x_2 + 5 + \left[ (x_1 - 4)^2 + (x_2 - 5)^2 - 4 \right]^2.
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 19.105879794568022 at [5.14689674946688, 6.83958974367702]
+- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013)
+
+
+### wolfe: Standard {#wolfe-standard}
+- **Formula**: f(\mathbf{x}) = \frac{4}{3} (x_1^2 + x_2^2 - x_1 x_2)^{0.75} + x_3.
+- **Bounds/Minimum**: Bounds: [0.0, 0.0, 0.0]; Min: 0.0 at [0.0, 0.0, 0.0]
+- **Properties**: bounded, unimodal, differentiable, continuous, partially separable
+- **Reference**: Al-Roomi (2015); adapted from Jamil & Yang (2013, p. 39)
 
 
 ## Extended Benchmarks {#extended-benchmarks}
@@ -973,7 +1020,7 @@ y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_
 - **Formula**: \sin(x_1 + x_2) + (x_1 - x_2)^2 - 1.5 x_1 + 2.5 x_2 + 1
 - **Bounds/Minimum**: Bounds: [-1.5, -3.0]; Min: -1.9132229549810367 at [-0.54719755, -1.54719755]
 - **Properties**: multimodal, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: molga&smutnicki(2005)
 
 
 ### michalewicz: Standard {#michalewicz-standard}
@@ -1137,6 +1184,13 @@ y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_
 - **Reference**: Pintér (1996), via Jamil & Yang (2013): f89
 
 
+### powell: Standard {#powell-standard}
+- **Formula**: f(\mathbf{x}) = (x_1 + 10x_2)^2 + 5(x_3 - x_4)^2 + (x_2 - 2x_3)^4 + 10(x_1 - x_4)^4.
+- **Bounds/Minimum**: Bounds: [-5.0, -5.0, -5.0, -5.0]; Min: 0.0 at [0.0, 0.0, 0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 28)
+
+
 ### price1: Standard {#price1-standard}
 - **Formula**: f(\mathbf{x}) = (|x_1| - 5)^2 + (|x_2| - 5)^2.
 - **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 0.0 at [5.0, 5.0]
@@ -1166,7 +1220,7 @@ y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_
 
 
 ### quartic: Standard {#quartic-standard}
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n} i x_i^4 + \text{random}[0, 1).
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n} i x_i^4 + \mathcal{U}[0, 1).
 - **Bounds/Minimum**: Bounds: [-1.28, -1.28]; Min: 0.0 at [0.0, 0.0]
 - **Properties**: separable, bounded, unimodal, differentiable, continuous, scalable, has_noise
 - **Reference**: Jamil & Yang (2013)
@@ -1258,10 +1312,10 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 
 
 ### schaffern4: Standard {#schaffern4-standard}
-- **Formula**: f(x) = 0.5 + \frac{\cos^2(\sin(|x_1^2 - x_2^2|)) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}
+- **Formula**: f(\mathbf{x}) = 0.5 + \frac{\cos^2(\sin(|x_1^2 - x_2^2|)) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.29257863203598033 at [0.0, 1.253131828792882]
 - **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Al-Roomi (2015, Modified Schaffer's Function No. 04)
 
 
 ### schmidtvetters: Standard {#schmidtvetters-standard}
@@ -1293,10 +1347,10 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 
 
 ### shekel: Standard {#shekel-standard}
-- **Formula**: f(x) = -\sum_{i=1}^{10} \frac{1}{\sum_{j=1}^4 (x_j - a_{ij})^2 + c_i}
+- **Formula**: f(\mathbf{x}) = -\sum_{i=1}^{10} \frac{1}{\sum_{j=1}^4 (x_j - a_{ij})^2 + c_i}
 - **Bounds/Minimum**: Bounds: [0.0, 0.0, 0.0, 0.0]; Min: -10.536409816692043 at [4.000746531592147, 4.000592934138629, 3.9996633980404135, 3.9995098005868956]
 - **Properties**: multimodal, non-separable, bounded, differentiable, finite_at_inf, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 30)
 
 
 ### shekel5: Standard {#shekel5-standard}
@@ -1342,10 +1396,10 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 
 
 ### shubert_noisy: noisy {#shubert_noisy-noisy}
-- **Formula**: f(\mathbf{x}) = \left( \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)x_i + j) \right) + \varepsilon, \quad \varepsilon \sim U[0,1).
-- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.7309088310239 at [4.85805687893418, 5.482864207318173]
+- **Formula**: f(\mathbf{x}) = \prod_{i=1}^D \sum_{j=1}^5 j \cos((j + 1) x_i + j) + \varepsilon, \quad \varepsilon \sim U[0,1).
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.7309088310239 at [-7.083506405745021, -7.708313737307907]
 - **Properties**: multimodal, non-separable, differentiable, continuous, has_noise
-- **Reference**: Jamil & Yang (2013, p.55)
+- **Reference**: Jamil & Yang (2013, p. 55); noise adapted
 
 
 ### shubert_shifted_rotated: rotated {#shubert_shifted_rotated-rotated}
@@ -1356,17 +1410,17 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 
 
 ### sineenvelope: Standard {#sineenvelope-standard}
-- **Formula**: -0.5 + \frac{\sin^2(\sqrt{x_1^2 + x_2^2}) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}
+- **Formula**: f(\mathbf{x}) = -0.5 + \frac{\sin^2(\sqrt{x_1^2 + x_2^2}) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: -1.0 at [0.0, 0.0]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Molga & Smutnicki (2005)
 
 
 ### sixhumpcamelback: Standard {#sixhumpcamelback-standard}
-- **Formula**: f(x) = \left(4 - 2.1 x_1^2 + \frac{x_1^4}{3}\right) x_1^2 + x_1 x_2 + (-4 + 4 x_2^2) x_2^2
+- **Formula**: f(\mathbf{x}) = \left(4 - 2.1 x_1^2 + \frac{x_1^4}{3}\right) x_1^2 + x_1 x_2 + (-4 + 4 x_2^2) x_2^2
 - **Bounds/Minimum**: Bounds: [-3.0, -2.0]; Min: -1.031628453489877 at [0.08984201368301331, -0.7126564032704135]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 10)
 
 
 ### sphere_noisy: noisy {#sphere_noisy-noisy}
@@ -1381,13 +1435,6 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: -78.33233140754282 at [-2.903534027771177, -2.903534027771177]
 - **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable, non-convex
 - **Reference**: Jamil & Yang (2013, function 144)
-
-
-### styblinskitang: Standard {#styblinskitang-standard}
-- **Formula**: \frac{1}{2} \sum_{i=1}^n (x_i^4 - 16 x_i^2 + 5 x_i)
-- **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: -78.33233140754282 at [-2.9035340276126953, -2.9035340276126953]
-- **Properties**: multimodal, bounded, differentiable, scalable, continuous, non-convex
-- **Reference**: Unknown
 
 
 ### testtubeholder: Standard {#testtubeholder-standard}
@@ -1411,11 +1458,109 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Reference**: Jamil & Yang (2013, p. 35)
 
 
+### trefethen: Standard {#trefethen-standard}
+- **Formula**: f(\mathbf{x}) = e^{\sin(50 x_1)} + \sin(60 e^{x_2}) + \sin(70 \sin(x_1)) + \sin(\sin(80 x_2)) - \sin(10(x_1 + x_2)) + \frac{1}{4}(x_1^2 + x_2^2). 
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -3.306868647475232 at [-0.0244030799684242, 0.210612427873691]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 35)
+
+
+### trid6: Standard {#trid6-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{6} (x_i - 1)^2 - \sum_{i=2}^{6} x_i x_{i-1}.
+- **Bounds/Minimum**: Bounds: [-36.0, -36.0, -36.0, -36.0, -36.0, -36.0]; Min: -50.0 at [6.0, 10.0, 12.0, 12.0, 10.0, 6.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 35)
+
+
+### trigonometric1: Standard {#trigonometric1-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n} \left[ n - \sum_{j=1}^{n} \cos x_j + i (1 - \cos( x_i ) - \sin( x_i )) \right]^2.
+- **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 36)
+
+
+### trigonometric2: Standard {#trigonometric2-standard}
+- **Formula**: f(\mathbf{x}) = 1 + \sum_{i=1}^n \left[ 8 \sin^2 \left( 7 (x_i - 0.9)^2 \right) + (x_i - 0.9)^2 \right] + 6 \sin^2 \left( 14 (x_1 - 0.9)^2 \right).
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 1.0 at [0.9, 0.9]
+- **Properties**: multimodal, non-separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 36)
+
+
+### tripod: Standard {#tripod-standard}
+- **Formula**: f(\mathbf{x}) = p(x_2)(1 + p(x_1)) + |x_1 + 50 p(x_2)(1 - 2 p(x_1))| + |x_2 + 50(1 - 2 p(x_2))|, \\ \text{where } p(x) = \begin{cases} 1 & x \geq 0 \\ 0 & x < 0 \end{cases}.
+- **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, -50.0]
+- **Properties**: multimodal, non-separable, bounded, partially differentiable
+- **Reference**: Jamil & Yang (2013, p. 37)
+
+
+### ursem3: Standard {#ursem3-standard}
+- **Formula**: f(\mathbf{x}) = -\frac{3 - |x_1|}{2} \cdot \frac{2 - |x_2|}{2} \cdot \sin(2.2\pi x_1 + 0.5\pi) - \frac{2 - |x_1|}{2} \cdot \frac{2 - |x_2|}{2} \cdot \sin(0.5\pi x_2^2 + 0.5\pi).
+- **Bounds/Minimum**: Bounds: [-2.0, -1.5]; Min: -2.5 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 36)
+
+
+### ursem4: Standard {#ursem4-standard}
+- **Formula**: f(\mathbf{x}) = -\frac{3}{4} \sin\left(0.5 \pi x_1 + 0.5 \pi\right) \left(2 - \sqrt{x_1^2 + x_2^2}\right). 
+- **Bounds/Minimum**: Bounds: [-2.0, -2.0]; Min: -1.5 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, non-convex
+- **Reference**: Jamil & Yang (2013, p. 36)
+
+
+### ursem_waves: waves {#ursem_waves-waves}
+- **Formula**: f(\mathbf{x}) = -0.9 x_1^2 + (x_2^2 - 4.5 x_2^2) x_1 x_2 + 4.7 \cos(3 x_1 - x_2^2 (2 + x_1)) \sin(2.5 \pi x_1). 
+- **Bounds/Minimum**: Bounds: [-0.9, -1.2]; Min: -8.5536 at [1.2, 1.2]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Jamil & Yang (2013, p. 36)
+
+
+### wavy: Standard {#wavy-standard}
+- **Formula**: f(\mathbf{x}) = 1 - \frac{1}{n} \sum_{i=1}^{n} \cos(10 x_i) e^{-x_i^2 / 2}.
+- **Bounds/Minimum**: Bounds: [-3.141592653589793, -3.141592653589793]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 38)
+
+
+### weierstrass: Standard {#weierstrass-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n} \left[ \sum_{k=0}^{20} a^k \cos(2 \pi b^k (x_i + 0.5)) \right] - n \sum_{k=0}^{20} a^k \cos(\pi b^k), \quad a=0.5, b=3.
+- **Bounds/Minimum**: Bounds: [-0.5, -0.5]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 38); parameters adapted from Al-Roomi (2015)
+
+
+### whitley: Standard {#whitley-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^D \sum_{j=1}^D \left[ \frac{\left(100(x_i^2 - x_j)^2 + (1 - x_j)^2\right)^2}{4000} - \cos\left(100(x_i^2 - x_j)^2 + (1 - x_j)^2\right) + 1 \right]
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [1.0, 1.0]
+- **Properties**: multimodal, non-separable, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, #167)
+
+
 ### wood: Standard {#wood-standard}
 - **Formula**: f(x) = 100(x_1^2 - x_2)^2 + (x_1 - 1)^2 + (x_3 - 1)^2 + 90(x_3^2 - x_4)^2 + 10.1((x_2 - 1)^2 + (x_4 - 1)^2) + 19.8(x_2 - 1)(x_4 - 1)
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0, -10.0, -10.0]; Min: 0.0 at [1.0, 1.0, 1.0, 1.0]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
 - **Reference**: Unknown
+
+
+### xin_she_yang1: yang1 {#xin_she_yang1-yang1}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^D \epsilon_i |x_i|^i, \quad \epsilon_i \sim U(0,1).
+- **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: separable, bounded, unimodal, partially differentiable, scalable, has_noise
+- **Reference**: Jamil & Yang (2013, Section 3)
+
+
+### xin_she_yang2: yang2 {#xin_she_yang2-yang2}
+- **Formula**: f(\mathbf{x}) = \left( \sum_{i=1}^{D} |x_i| \right) \exp \left[ - \sum_{i=1}^{D} \sin^2(x_i) \right].
+- **Bounds/Minimum**: Bounds: [-6.283185307179586, -6.283185307179586]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 30)
+
+
+### zakharov: Standard {#zakharov-standard}
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n x_i^2 + \left( \sum_{i=1}^n \frac{1}{2} i x_i \right)^2 + \left( \sum_{i=1}^n \frac{1}{2} i x_i \right)^4.
+- **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: 0.0 at [0.0, 0.0]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, scalable
+- **Reference**: Jamil & Yang (2013, p. 39)
 
 
 ## Other Benchmarks {#other-benchmarks}
@@ -1460,6 +1605,13 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.73090883102375 at [4.858056878468046, 5.482864206944743]
 - **Properties**: non-separable, differentiable, highly multimodal, continuous, scalable
 - **Reference**: Jamil & Yang (2013, p. 55)
+
+
+### venter_sobiezcczanski_sobieski: sobieski {#venter_sobiezcczanski_sobieski-sobieski}
+- **Formula**: f(\mathbf{x}) = x_1^2 - 100 \cos^2(x_1) - 100 \cos\left(\frac{x_1^2}{30}\right) + x_2^2 - 100 \cos^2(x_2) - 100 \cos\left(\frac{x_2^2}{30}\right). 
+- **Bounds/Minimum**: Bounds: [-50.0, -50.0]; Min: -400.0 at [0.0, 0.0]
+- **Properties**: separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 37)
 
 
 ## Generation

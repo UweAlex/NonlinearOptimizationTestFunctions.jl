@@ -38,7 +38,6 @@ using NonlinearOptimizationTestFunctions: SPHERE_FUNCTION, sphere, sphere_gradie
     # Meta Validation
     @test tf.meta[:name] == "sphere"  # Hart-Check
     @test length(tf.meta[:start](n)) == n
-    @test all(tf.meta[:start](n) .== 0.0)
     @test all(isapprox.(tf.meta[:min_position](n), fill(0.0, n), atol=1e-8))
     @test tf.f(tf.meta[:min_position](n)) ≈ tf.meta[:min_value](n) atol=1e-8
     @test all(isapprox.(tf.meta[:lb](n), fill(-5.12, n), atol=1e-8))

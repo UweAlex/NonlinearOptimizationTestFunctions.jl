@@ -1,5 +1,5 @@
 using Test, Optim, ForwardDiff, LinearAlgebra
-using NonlinearOptimizationTestFunctions: SIXHUMPCAMELBACK_FUNCTION, sixhumpcamelback, sixhumpcamelback_gradient, SIXHUMPCAMELBACK_MINIMA
+using NonlinearOptimizationTestFunctions
 
 function finite_difference_gradient(f, x, h=1e-6)
     n = length(x)

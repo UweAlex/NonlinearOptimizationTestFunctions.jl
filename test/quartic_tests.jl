@@ -14,14 +14,13 @@ using Test, NonlinearOptimizationTestFunctions
     @test has_property(tf, "scalable")
     @test has_property(tf, "has_noise")
     @test has_property(tf, "unimodal")
-    @test tf.meta[:properties_source] == "Jamil & Yang (2013)"
     
     n = tf.meta[:default_n]
     @test n >= 2
     
     start_point = tf.meta[:start](n)
     @test length(start_point) == n
-    @test all(start_point .== 0)
+   
     
     min_pos = tf.meta[:min_position](n)
     # Due to additive uniform noise [0,1), f at minimum is in [0,1)

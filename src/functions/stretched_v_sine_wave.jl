@@ -2,6 +2,8 @@
 # Purpose: Implementation of the Stretched V Sine Wave test function.
 # Global minimum: f(x*)=0.0 at x*=(0.0, ..., 0.0).
 # Bounds: -10.0 ≤ x_i ≤ 10.0.
+# Start point: fill(5.0, n)  → NICHT das Minimum!
+# Last modified: November 13, 2025.
 
 export STRETCHED_V_SINE_WAVE_FUNCTION, stretched_v_sine_wave, stretched_v_sine_wave_gradient
 
@@ -38,7 +40,6 @@ function stretched_v_sine_wave_gradient(x::AbstractVector{T}) where {T<:Union{Re
             du_dx_i = 2 * x[i]
             du_dx_ip1 = 2 * x[i+1]
             
-            # Partial wrt u
             partial_u = 0.25 * u^(-0.75) * inner + u^0.25 * (2 * sin_term * cos_term * 50 * 0.1 * u^(-0.9))
             
             grad[i] += partial_u * du_dx_i
@@ -55,7 +56,7 @@ const STRETCHED_V_SINE_WAVE_FUNCTION = TestFunction(
         :name => "stretched_v_sine_wave",
         :description => "Properties based on Jamil & Yang (2013, function 142); originally from Schaffer et al. (1989).",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{D-1} (x_i^2 + x_{i+1}^2)^{0.25} \left[ \sin^2 \left\{ 50 (x_i^2 + x_{i+1}^2)^{0.1} \right\} + 0.1 \right].""",
-        :start => (n::Int) -> begin n < 2 && throw(ArgumentError("stretched_v_sine_wave requires at least 2 dimensions")); zeros(n) end,
+        :start => (n::Int) -> begin n < 2 && throw(ArgumentError("stretched_v_sine_wave requires at least 2 dimensions")); fill(5.0, n) end,
         :min_position => (n::Int) -> begin n < 2 && throw(ArgumentError("stretched_v_sine_wave requires at least 2 dimensions")); zeros(n) end,
         :min_value => (n::Int) -> 0.0,
         :default_n => 2,
@@ -66,5 +67,5 @@ const STRETCHED_V_SINE_WAVE_FUNCTION = TestFunction(
     )
 )
 
-# Optional: Validierung beim Laden
+# Validierung beim Laden
 @assert "stretched_v_sine_wave" == basename(@__FILE__)[1:end-3] "stretched_v_sine_wave: Dateiname mismatch!"

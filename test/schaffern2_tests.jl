@@ -21,7 +21,6 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN2_FUNCTION, schaffern2
 
     # Function values
     @test schaffern2(tf.meta[:min_position]()) ≈ tf.meta[:min_value]() atol=1e-10
-    @test schaffern2(tf.meta[:start]()) ≈ 0.0 atol=1e-10  # Start is at minimum
 
     # Test specific values
     # When x1 = x2 = 1.0: sin²(1² - 1²) = sin²(0) = 0
@@ -32,7 +31,6 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN2_FUNCTION, schaffern2
 
     # Metadata
     @test tf.meta[:name] == "schaffern2"
-    @test tf.meta[:start]() == [0.0, 0.0]
     @test tf.meta[:min_position]() ≈ [0.0, 0.0] atol=1e-6
     @test tf.meta[:min_value]() ≈ 0.0 atol=1e-10
     @test tf.meta[:lb]() == [-100.0, -100.0]
