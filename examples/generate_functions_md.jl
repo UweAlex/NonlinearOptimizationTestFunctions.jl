@@ -1,8 +1,8 @@
 # examples/generate_functions_md.jl
-# Purpose: Dynamically generate FUNCTIONS.md with vertical block formatting and TOC from TEST_FUNCTIONS.
-# Also updates a compact list for README.md.
+# Purpose: Dynamically generate FUNCTIONS.md with alphabetical list of functions and their details from TEST_FUNCTIONS.
+# Includes name, description, formula, bounds/minimum, properties, and reference for each function.
 # Run: julia --project=. examples/generate_functions_md.jl
-# Last modified: October 21, 2025
+# Last modified: November 15, 2025
 
 using NonlinearOptimizationTestFunctions
 using Dates
@@ -78,26 +78,8 @@ function get_dimension(tf::TestFunction)
     end
 end
 
-# Hilfsfunktion: Kategorisiere basierend auf Properties (anpassen nach Bedarf)
-function categorize(tf::TestFunction)
-    props_raw = tf.meta[:properties]
-    # Sicherstellen, dass props iterierbar ist (Vector/Set, nicht String)
-    if isa(props_raw, String)
-        props = split(props_raw, ", "; keepempty=false)
-    else
-        props = collect(props_raw)  # Zu Vector konvertieren
-    end
-    if "unimodal" in props && !("multimodal" in props) && !("has_noise" in props)
-        return "Classical Benchmarks"
-    elseif any(p in props for p in ["multimodal", "has_noise", "non-convex"])
-        return "Extended Benchmarks"
-    else
-        return "Other Benchmarks"
-    end
-end
-
 # Generiere einen Block pro Funktion (vertikale Bullet-Formatierung)
-function generate_block(tf::TestFunction, variant::String)
+function generate_block(tf::TestFunction)
     n = get_dimension(tf)
     is_scalable = "scalable" in tf.meta[:properties]
     # Fallbacks
@@ -107,6 +89,7 @@ function generate_block(tf::TestFunction, variant::String)
 
     # Extrahiere Werte
     formula = get(tf.meta, :math, raw"Placeholder: f(\mathbf{x}) = \dots")
+    desc = get(tf.meta, :description, "No description available.")
     lb_func = get(tf.meta, :lb, () -> lb_fallback)
     min_pos_func = get(tf.meta, :min_position, () -> min_pos_fallback)
     min_val_func = get(tf.meta, :min_value, () -> min_val_fallback)
@@ -127,7 +110,8 @@ function generate_block(tf::TestFunction, variant::String)
     min_str = "Min: $min_val at $min_pos"
 
     block = """
-### $(tf.meta[:name]): $variant
+### $(tf.meta[:name])
+- **Description**: $desc
 - **Formula**: $formula
 - **Bounds/Minimum**: $bounds_str; $min_str
 - **Properties**: $props_str
@@ -136,95 +120,25 @@ function generate_block(tf::TestFunction, variant::String)
     return block
 end
 
-# Generiere TOC (Nested List)
-function generate_toc(by_category::Dict{String, Vector{TestFunction}})
-    toc = ["## Inhaltsverzeichnis"]
-    for (cat, funcs) in sort(collect(by_category); by = first)
-        push!(toc, "- [$cat](#$(lowercase(replace(cat, " " => "-"))))")
-        for tf in sort(funcs, by = tf -> tf.meta[:name])
-            variant = length(split(tf.meta[:name], "_")) > 1 ? split(tf.meta[:name], "_")[end] : "Standard"
-            variant = String(variant)  # Ensure String
-            link = lowercase(replace("$(tf.meta[:name])-$variant", r"\s+" => "-"))
-            push!(toc, "  - [$(tf.meta[:name]): $variant](#$link)")
-        end
-    end
-    join(toc, "\n")
-end
-
-# Hauptfunktion: Schreibe FUNCTIONS.md
+# Hauptfunktion: Schreibe FUNCTIONS.md mit alphabetischer Liste
 function generate_functions_md()
-    # Gruppiere nach Kategorie
-    by_category = Dict{String, Vector{TestFunction}}()
-    for tf in values(TEST_FUNCTIONS)
-        cat = categorize(tf)
-        if !haskey(by_category, cat)
-            by_category[cat] = TestFunction[]
-        end
-        push!(by_category[cat], tf)
-    end
-
+    # Sortiere Funktionen alphabetisch nach Name
+    funcs = sort(collect(values(TEST_FUNCTIONS)); by = tf -> tf.meta[:name])
+    
     open("FUNCTIONS.md", "w") do io
-        write(io, "# Established Benchmark Functions\n\n")
-        write(io, "Generated from package metadata on $(Dates.format(now(), "yyyy-mm-dd")). Functions are listed vertically by category for easy reading.\n\n")
+        write(io, "# Alphabetical List of Benchmark Functions\n\n")
+        write(io, "Generated from package metadata on $(Dates.format(now(), "yyyy-mm-dd")). Functions are listed alphabetically with their details.\n\n")
         
-        # TOC
-        toc = generate_toc(by_category)
-        write(io, "$toc\n\n")
-        
-        # Abschnitte mit Blöcken
-        for (cat, funcs) in sort(collect(by_category); by = first)
-            cat_id = lowercase(replace(cat, " " => "-"))
-            write(io, "## $cat {#$cat_id}\n\n")
-            for tf in sort(funcs, by = tf -> tf.meta[:name])
-                variant = length(split(tf.meta[:name], "_")) > 1 ? split(tf.meta[:name], "_")[end] : "Standard"
-                variant = String(variant)  # Ensure String
-                link_id = lowercase(replace("$(tf.meta[:name])-$variant", r"\s+" => "-"))
-                block = generate_block(tf, variant)
-                # Füge ID zum Header hinzu
-                header_line = "### $(tf.meta[:name]): $variant {#$link_id}"
-                write(io, replace(block, "### $(tf.meta[:name]): $variant" => header_line))
-                write(io, "\n\n")
-            end
+        # Alphabetische Liste ohne Kategorien
+        for tf in funcs
+            block = generate_block(tf)
+            write(io, "$block\n\n")
         end
         
         write(io, "## Generation\nRun `julia --project=. examples/generate_functions_md.jl` to update from TEST_FUNCTIONS.\n")
     end
-    println("Generated FUNCTIONS.md")
-end
-
-# Update README: Kompakte Bullet-Liste (alphabetisch gruppiert, erste 20 detailliert)
-function update_readme_list()
-    funcs = sort(collect(values(TEST_FUNCTIONS)); by = tf -> tf.meta[:name])
-    bullets = String[]
-    
-    # Gruppiere alphabetisch (A-B, C-E, etc.)
-    current_group = ""
-    group_funcs = String[]
-    for tf in funcs
-        first_letter = uppercase(tf.meta[:name][1])
-        if first_letter != current_group
-            if !isempty(group_funcs)
-                push!(bullets, "### $current_group\n" * join(group_funcs, "\n") * "\n")
-            end
-            current_group = first_letter
-            group_funcs = String[]
-        end
-        desc = split(get(tf.meta, :description, "Benchmark function"), ";")[1]  # Kurze Desc
-        push!(group_funcs, "- **$(tf.meta[:name])**: $desc.")
-    end
-    if !isempty(group_funcs)
-        push!(bullets, "### $current_group\n" * join(group_funcs, "\n"))
-    end
-    
-    # Wenn >20, kürze und "Weitere..."
-    if length(funcs) > 20
-        push!(bullets, "### Weitere Funktionen (F–Z)\n- [Liste aller, z.B. deb1, rastrigin, ...]")
-    end
-    
-    list_md = join(bullets, "\n")
-    println("README List Preview:\n$list_md\n---\nFüge das manuell in README.md unter 'Test Functions' ein oder automatisiere mit File-IO (z.B. replace).")
+    println("Generated FUNCTIONS.md with alphabetical list including descriptions and details.")
 end
 
 # Ausführen
 generate_functions_md()
-update_readme_list()

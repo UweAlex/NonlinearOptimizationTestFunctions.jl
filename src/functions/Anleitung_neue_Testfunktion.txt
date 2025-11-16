@@ -28,6 +28,8 @@ Quellen-Liste (erweitert):
  - Weitere: sfu.ca/~ssurjano, geatbx.com, MVF-Library (Adorio & Diliman, 2005).
 
 Häufige Fehler (konsolidiert mit Beispielen):
+- Meta-Typ-Scope-Fehler: Verwendung von T() in Meta-Funktionen (z. B. fill(T(1.0), n) in :start) führt zu UndefVarError(:T), da Meta-Funktionen außerhalb des where-Kontexts definiert sind. Lösung: Verwende immer Float64-Literale (z. B. fill(1.0, n), zeros(n)). Julia konvertiert bei Bedarf in tf.f(tf.meta[:start](n)). Beispiel: In skalierbaren Funktionen: :start => (n::Int) -> fill(1.0, n). Validiere im REPL: tf.meta[:start](2) – muss Vector{Float64} ohne Error zurückgeben.
+- Automatisierbar: CI-Check: julia --project=. -e 'include("src/functions/<name>.jl"); tf = <UPPER>_FUNCTION; @test eltype(tf.meta[:start](2)) == Float64'.
  - Ungenaue Minima: Berechne exakt via REPL (z.B. tf.f(min_pos) ≈ min_value atol=1e-8).  Für Noise: Verwende multiple Runs und Mittelwert; vermeide atol in runtests.jl.
  - Namenskonflikte: Vermeide T als Konstante (kollidiert mit Typ T).
  - Globale Constants: [RULE_NO_CONST_ARRAYS] MUST – Keine globalen const-Arrays; lokale let-Blöcke verwenden. Beispiel: Bei multi-include (devilliersglasser1/2) überschreiben sich Werte.
@@ -547,4 +549,3 @@ any(isinf.(x)) && return T(Inf)  # WICHTIG: Vor cos/sin/exp!
 [RULE_NO_CONST_ARRAYS] MUST: Keine globalen const-Arrays:
 
 # ❌ FALSCH...
-```
