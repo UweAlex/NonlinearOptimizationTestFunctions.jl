@@ -1,63 +1,68 @@
 # src/functions/bukin6.jl
-# Purpose: Implements the Bukin function N.6 with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctionsInJulia.
-# Last modified: 02 August 2025
+# Purpose: Implementation of the Bukin N.6 test function.
+# Global minimum: f(x*)=0 at x*=[-10.0, 1.0].
+# Bounds: -15 ≤ x_1 ≤ -5, -3 ≤ x_2 ≤ 3.
 
 export BUKIN6_FUNCTION, bukin6, bukin6_gradient
 
-using LinearAlgebra
-using ForwardDiff
-
-"""
-    bukin6(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the Bukin function N.6 value at point `x`. Requires dimension n = 2.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
-function bukin6(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 2 || throw(ArgumentError("Bukin N.6 requires exactly 2 dimensions"))
+function bukin6(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != 2 && throw(ArgumentError("bukin6 requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)
+    end
+    
     x1, x2 = x
     u = x2 - 0.01 * x1^2
     v = x1 + 10
-    return 100 * sqrt(abs(u)) + 0.01 * abs(v)
+    100 * sqrt(abs(u)) + 0.01 * abs(v)
 end
 
-"""
-    bukin6_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Bukin function N.6. Returns a vector of length 2.
-Returns `NaN` at non-differentiable points (x2 = 0.01 * x1^2 or x1 = -10).
-"""
-function bukin6_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) == 2 || throw(ArgumentError("Bukin N.6 requires exactly 2 dimensions"))
-    any(isnan.(x)) && return fill(T(NaN), 2)
-    any(isinf.(x)) && return fill(T(Inf), 2)
+function bukin6_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != 2 && throw(ArgumentError("bukin6 requires exactly 2 dimensions"))
+    any(isnan.(x)) && return fill(T(NaN), n)
+    any(isinf.(x)) && return fill(T(Inf), n)
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)
+    end
+    
+    grad = zeros(T, n)
     x1, x2 = x
     u = x2 - 0.01 * x1^2
     v = x1 + 10
-    grad = zeros(T, 2)
-    if u == 0 || v == 0
-        throw(DomainError(x, "bukin6 function is not differentiable at this point"))
-
-    else
-        grad[1] = -x1 * sign(u) / sqrt(abs(u)) + 0.01 * sign(v)
-        grad[2] = 50 * sign(u) / sqrt(abs(u))
+    if isapprox(u, 0, atol=1e-10) || isapprox(v, 0, atol=1e-10)
+        return fill(T(NaN), n)  # NaN for non-diff points per [RULE_ERROR_HANDLING]
     end
-    return grad
+    grad[1] = -x1 * sign(u) / sqrt(abs(u)) + 0.01 * sign(v)
+    grad[2] = 50 * sign(u) / sqrt(abs(u))
+    grad
 end
 
 const BUKIN6_FUNCTION = TestFunction(
     bukin6,
     bukin6_gradient,
-    Dict(
+    Dict{Symbol, Any}(
         :name => "bukin6",
+        :description => "Properties based on Jamil & Yang (2013, p. 10); Contains absolute value and sqrt(abs) terms leading to non-differentiability at certain points (gradient returns NaN there).",
+        :math => raw"""f(\mathbf{x}) = 100 \sqrt{|x_2 - 0.01 x_1^2|} + 0.01 |x_1 + 10|.""",
         :start => () -> [-9.0, 0.5],
         :min_position => () -> [-10.0, 1.0],
-        :min_value =>() -> 0.0,
-        :properties => Set(["partially differentiable", "non-convex", "multimodal", "bounded", "continuous"]),
+        :min_value => () -> 0.0,
+        :properties => ["multimodal", "non-convex", "partially differentiable", "bounded", "continuous"],
+        :source => "Jamil & Yang (2013, p. 10)",
         :lb => () -> [-15.0, -3.0],
         :ub => () -> [-5.0, 3.0],
-        :description => "Bukin function N.6: Multimodal, partially differentiable, non-convex function with global minimum at zero, defined for 2 dimensions.",
-        :math => "100 \\sqrt{|x_2 - 0.01 x_1^2|} + 0.01 |x_1 + 10|"
     )
 )
+
+# Optional: Validierung beim Laden
+@assert "bukin6" == basename(@__FILE__)[1:end-3] "bukin6: Dateiname mismatch!"

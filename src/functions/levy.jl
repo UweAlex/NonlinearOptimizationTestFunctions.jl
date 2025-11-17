@@ -1,86 +1,86 @@
 # src/functions/levy.jl
-# Purpose: Implements the standard Levy function (Wikipedia, Al-Roomi) with its gradient.
-# Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: August 27, 2025
+# Purpose: Implementation of the Levy test function.
+# Global minimum: f(x*)=0.0 at x*=[1.0, 1.0, ..., 1.0] (n-dependent position, constant value).
+# Bounds: -10 ≤ x_i ≤ 10.
 
-using LinearAlgebra
-using ForwardDiff
+export LEVY_FUNCTION, levy, levy_gradient
 
-"""
-    levy(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the standard Levy function value at point `x`. Works for any dimension n ≥ 1.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
-function levy(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function levy(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("Levy (standard) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("levy requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
-    w = 1 .+ (x .- 1) / 4
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)  # Passe an gewünschte Bits an; [RULE_HIGH_PREC_SUPPORT]
+    end
+    
+    w = 1.0 .+ (x .- 1.0) / 4.0
     term1 = sin(π * w[1])^2
-    term2 = n > 1 ? sum((w[i] - 1)^2 * (1 + 10 * sin(π * w[i] + 1)^2) for i in 1:n-1) : zero(T)
-    term3 = (w[n] - 1)^2 * (1 + sin(2 * π * w[n])^2)  # Correct: 2 * π
+    term2 = zero(T)
+    @inbounds for i in 1:n-1
+        term2 += (w[i] - 1.0)^2 * (1.0 + 10.0 * sin(π * w[i] + 1.0)^2)
+    end
+    term3 = (w[n] - 1.0)^2 * (1.0 + sin(2.0 * π * w[n])^2)
     term1 + term2 + term3
 end
 
-"""
-    levygradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the standard Levy function. Returns a vector of length n.
-Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
-"""
-function levygradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
+function levy_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("Levy (standard) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("levy requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
-    w = 1 .+ (x .- 1) / 4
-    grad = zeros(T, n)
-    dw_dx = 0.25
-    grad[1] = 2 * π * sin(π * w[1]) * cos(π * w[1]) * dw_dx
-    if n > 1
-        grad[1] += 2 * (w[1] - 1) * (1 + 10 * sin(π * w[1] + 1)^2) * dw_dx
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)  # Passe an gewünschte Bits an; [RULE_HIGH_PREC_SUPPORT]
     end
-    for i in 2:n-1
-        grad[i] = 2 * (w[i] - 1) * (1 + 10 * sin(π * w[i] + 1)^2) * dw_dx +
-                  10 * π * sin(π * w[i] + 1) * cos(π * w[i] + 1) * (w[i-1] - 1)^2 * dw_dx
-    end
-    grad[n] = 2 * (w[n] - 1) * (1 + sin(2 * π * w[n])^2) * dw_dx +
-              4 * π * sin(2 * π * w[n]) * cos(2 * π * w[n]) * (w[n] - 1) * dw_dx
-    if n > 1
-        grad[n] += 10 * π * sin(π * w[n] + 1) * cos(π * w[n] + 1) * (w[n-1] - 1)^2 * dw_dx
+    
+    grad = zeros(T, n)  # [RULE_GRADTYPE]
+    dw = T(0.25)
+    w = 1.0 .+ (x .- 1.0) / 4.0
+    @inbounds for i in 1:n
+        term1 = zero(T)
+        if i == 1
+            term1 = π * sin(2 * π * w[i])
+        end
+        term2 = zero(T)
+        if i < n
+            # sum term for i=1 to n-1
+            s = sin(π * w[i] + 1)^2
+            ds_dw = 20 * π * sin(π * w[i] + 1) * cos(π * w[i] + 1)
+            term2 = 2 * (w[i] - 1) * (1 + 10 * s) + (w[i] - 1)^2 * ds_dw
+        else
+            # last term
+            s = sin(2 * π * w[i])^2
+            ds_dw = 4 * π * sin(2 * π * w[i]) * cos(2 * π * w[i])
+            term2 = 2 * (w[i] - 1) * (1 + s) + (w[i] - 1)^2 * ds_dw
+        end
+        grad[i] = (term1 + term2) * dw
     end
     grad
 end
 
-const LEVYFUNCTION = TestFunction(
+const LEVY_FUNCTION = TestFunction(
     levy,
-    levygradient,
-    Dict(
-        :name => "levy",
-        :start => (n::Int) -> begin
-            n < 1 && throw(ArgumentError("Levy (standard) requires at least 1 dimension"))
-            fill(0.0, n)
-        end,
-        :min_position => (n::Int) -> begin
-            n < 1 && throw(ArgumentError("Levy (standard) requires at least 1 dimension"))
-            fill(1.0, n)
-        end,
-        :min_value => () -> 0.0,
-        :properties => Set(["differentiable", "non-convex", "scalable", "multimodal", "bounded", "continuous"]),
-        :lb => (n::Int) -> begin
-            n < 1 && throw(ArgumentError("Levy (standard) requires at least 1 dimension"))
-            fill(-10.0, n)
-        end,
-        :ub => (n::Int) -> begin
-            n < 1 && throw(ArgumentError("Levy (standard) requires at least 1 dimension"))
-            fill(10.0, n)
-        end,
-        :in_molga_smutnicki_2005 => true,
-        :description => "Standard Levy function: Multimodal, differentiable, non-convex, scalable, bounded, continuous. Global minimum at x* = (1, ..., 1), f* = 0. Bounds: [-10, 10]^n. Uses w_i = 1 + (x_i - 1)/4, as per standard literature (e.g., Wikipedia, Al-Roomi, 2015: https://www.al-roomi.org/benchmarks/unconstrained). See levyjamil.jl for the Jamil & Yang (2013) version. The function is also non-separable, but this property is omitted in tests for consistency. Included in [Molga & Smutnicki (2005)].",
-        :math => "\\sin^2(\\pi w_1) + \\sum_{i=1}^{n-1} (w_i - 1)^2 [1 + 10 \\sin^2(\\pi w_i + 1)] + (w_n - 1)^2 [1 + \\sin^2(2\\pi w_n)], \\quad w_i = 1 + \\frac{x_i - 1}{4}"
+    levy_gradient,
+    Dict{Symbol, Any}(
+        :name => "levy",  # Hartkodiert [RULE_NAME_CONSISTENCY]
+        :description => "Levy function. Properties based on Jamil & Yang (2013, p. 164); originally from Levy & Montalvo (1977).",
+        :math => raw"""f(\mathbf{x}) = \sin^2(\pi w_1) + \sum_{i=1}^{n-1} (w_i - 1)^2 [1 + 10 \sin^2(\pi w_i + 1)] + (w_n - 1)^2 [1 + \sin^2(2\pi w_n)], \quad w_i = 1 + \frac{x_i - 1}{4}.""",
+        :start => (n::Int) -> begin n < 1 && throw(ArgumentError("levy requires at least 1 dimension")); zeros(n) end,
+        :min_position => (n::Int) -> begin n < 1 && throw(ArgumentError("levy requires at least 1 dimension")); fill(1.0, n) end,
+        :min_value => (n::Int) -> 0.0,  # Konstant: (n::Int) -> value [RULE_META_CONSISTENCY]
+        :default_n => 2,  # Kleinste n >1; hier 2 für allgemein skalierbar [RULE_DEFAULT_N]
+        :properties => ["bounded", "continuous", "differentiable", "multimodal", "non-convex", "scalable", "separable"],
+        :source => "Jamil & Yang (2013, p. 164)",
+        :lb => (n::Int) -> begin n < 1 && throw(ArgumentError("levy requires at least 1 dimension")); fill(-10.0, n) end,
+        :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("levy requires at least 1 dimension")); fill(10.0, n) end,
     )
 )
 
-export LEVYFUNCTION, levy, levygradient
+# Optional: Validierung beim Laden
+@assert "levy" == basename(@__FILE__)[1:end-3] "levy: Dateiname mismatch!"

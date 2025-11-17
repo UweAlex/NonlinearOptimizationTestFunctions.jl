@@ -1,18 +1,18 @@
 # test/alpinen1_tests.jl
 # Purpose: Tests for the AlpineN1 function in NonlinearOptimizationTestFunctions.
 # Context: Verifies function values, metadata, edge cases, and optimization.
-# Last modified: 28 August 2025
+# Last modified: November 17, 2025
 
 using Test, NonlinearOptimizationTestFunctions, Optim
 using NonlinearOptimizationTestFunctions: ALPINEN1_FUNCTION, alpinen1, alpinen1_gradient
 
 @testset "AlpineN1 Tests" begin
     tf = ALPINEN1_FUNCTION
-    n = 2
+    n = tf.meta[:default_n]  # Use default_n for consistency
 
     # Test metadata
     @test tf.meta[:name] == "alpinen1"
-    @test tf.meta[:properties] == Set(["multimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"])
+    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "separable", "partially differentiable", "scalable", "bounded"])
 
     # Test function values
     @test alpinen1(tf.meta[:min_position](n)) ≈ 0.0 atol=1e-6
@@ -25,9 +25,9 @@ using NonlinearOptimizationTestFunctions: ALPINEN1_FUNCTION, alpinen1, alpinen1_
     @test isfinite(alpinen1(tf.meta[:ub](n)))
     @test isfinite(alpinen1(fill(1e-308, n)))
 
-    # Test non-differentiability
+    # Test non-differentiability (NaN bei non-diff-Punkten, per [RULE_ERROR_HANDLING])
     x_non_diff = [0.0, 0.0]
-    @test_throws DomainError alpinen1_gradient(x_non_diff)
+    @test all(isnan.(alpinen1_gradient(x_non_diff)))
 
     # Compute roots for global minima positions
     using Base.MathConstants: π

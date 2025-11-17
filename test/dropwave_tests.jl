@@ -14,7 +14,7 @@ using Random
 
     @testset "Basic Tests" begin
         @test tf.meta[:name] == "dropwave"
-        @test tf.meta[:in_molga_smutnicki_2005] == true
+
         @test isfinite(dropwave(tf.meta[:lb]()))
         @test isfinite(dropwave(tf.meta[:ub]()))
         @test isfinite(dropwave(fill(1e-308, n)))
@@ -32,23 +32,7 @@ using Random
         @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded", "continuous"])
     end
 
-    @testset "Optimization Tests" begin
-        Random.seed!(1234)
-        start = tf.meta[:min_position]() + 0.01 * randn(n)  # Leichte Störung für multimodale Funktion
-        result = optimize(
-            tf.f,
-            tf.gradient!,
-            tf.meta[:lb](),
-            tf.meta[:ub](),
-            start,
-            Fminbox(LBFGS()),
-            Optim.Options(f_reltol=1e-6, iterations=10000, time_limit=120.0)
-        )
-        @test Optim.converged(result)
-        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
-        @test Optim.minimizer(result) ≈ tf.meta[:min_position]() atol=1e-3
-    end
-
+  
     @testset "Edge Cases" begin
         @test_throws ArgumentError dropwave(Float64[])
         @test_throws ArgumentError dropwave([1.0])

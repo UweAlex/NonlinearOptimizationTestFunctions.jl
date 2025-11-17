@@ -1,15 +1,13 @@
 # test/schaffern4_tests.jl
 # Purpose: Tests for the Schaffer N.4 function.
 # Context: Part of NonlinearOptimizationTestFunctions test suite.
-# Last modified: 03 September 2025
+# Last modified: November 17, 2025
 
 using Test, Optim, Random
-using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4
+using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4, schaffern4_gradient
 
 @testset "Schaffer N.4 Tests" begin
     tf = SCHAFFERN4_FUNCTION
-
-    # More precise values from literature
     PRECISE_MIN_VALUE = 0.292578632035980
     PRECISE_MIN_POS = 1.253131828792882
 
@@ -52,15 +50,14 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4
     @testset "Metadaten" begin
         @test tf.meta[:name] == "schaffern4"
 
-        # Test that start point is one of the global minima or close to it
+        # Test that start point is away from minima
         start_point = tf.meta[:start]()
-        min_distance = minimum([norm(start_point - gm) for gm in GLOBAL_MINIMA])
-        @test min_distance < 1e-3  # Should be very close to one of the global minima
+        @test tf.f(start_point) > tf.meta[:min_value]() + 1e-3  # [NEW RULE_START_AWAY_FROM_MIN]
 
         @test tf.meta[:min_value]() ≈ PRECISE_MIN_VALUE atol=1e-10
         @test tf.meta[:lb]() == [-100.0, -100.0]
         @test tf.meta[:ub]() == [100.0, 100.0]
-        @test Set(tf.meta[:properties]) == Set(["partially differentiable", "multimodal", "non-convex", "non-separable", "bounded", "continuous"])
+        @test Set(tf.meta[:properties]) == Set(["bounded", "continuous", "multimodal", "non-convex", "non-separable", "partially differentiable"])
 
         # Test dimension checks for meta functions
         @test_throws MethodError tf.meta[:start](1)
@@ -69,6 +66,12 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4
         @test_throws MethodError tf.meta[:min_position](3)
         @test_throws MethodError tf.meta[:lb](1)
         @test_throws MethodError tf.meta[:ub](3)
+    end
+
+    @testset "Gradient Tests" begin
+        # Test non-differentiability at x1^2 ≈ x2^2 (e.g., [0,0])
+        x_non_diff = [0.0, 0.0]
+        @test all(isnan.(schaffern4_gradient(x_non_diff)))
     end
 
     @testset "Optimization Tests" begin
@@ -81,6 +84,7 @@ using NonlinearOptimizationTestFunctions: SCHAFFERN4_FUNCTION, schaffern4
         for start_point in close_starts
             result = optimize(tf.f, tf.meta[:lb](), tf.meta[:ub](), start_point, Fminbox(NelderMead()), 
                             Optim.Options(f_reltol=1e-6, iterations=5000))
+            @test Optim.converged(result)
             @test Optim.minimum(result) <= PRECISE_MIN_VALUE + 1e-2
             minimizer = Optim.minimizer(result)
             @test any(isapprox.(norm(minimizer - gm), 0.0, atol=1e-1) for gm in GLOBAL_MINIMA)
