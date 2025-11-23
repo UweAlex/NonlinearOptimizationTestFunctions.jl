@@ -1,96 +1,79 @@
 # src/functions/biggsexp2.jl
-# Purpose: Implementation of the Biggs EXP2 Function for optimization testing.
-# Context: Part of NonlinearOptimizationTestFunctions project.
-# Reference: Biggs (1971), Jamil & Yang (2013), f11.
-# Note: This function is implemented as non-scalable with a fixed dimension of 2, 
-#       as defined in the literature. The global minimum is exactly 0 at [1.0, 10.0].
+# Purpose: Implementation of the Biggs EXP2 test function.
+# Global minimum: f(x*)=0 at x*=[1.0, 10.0].
+# Bounds: 0 ≤ x_i ≤ 20.
 
 export BIGGSEXP2_FUNCTION, biggsexp2, biggsexp2_gradient
 
-const TI = [0.1 * i for i in 1:10]
-const YI = [exp(-t) - 5 * exp(-10 * t) for t in TI]
-
-"""
-    biggsexp2(x)
-
-Biggs EXP2 Function, a continuous, differentiable, non-separable, multimodal function with fixed dimension 2.
-
-# Mathematical Definition
-f(x) = \\sum_{i=1}^{10} \\left( e^{-t_i x_1} - 5 e^{-t_i x_2} - y_i \\right)^2
-
-where t_i = 0.1 i, y_i = e^{-t_i} - 5 e^{-10 t_i}
-
-# Domain
-0 ≤ x_i ≤ 20
-
-# Global Minimum
-f(x*) = 0 at x* = [1, 10]
-
-# Properties
-- continuous
-- differentiable
-- non-separable
-- multimodal
-- bounded
-
-# Reference
-- Biggs, M. C. (1971). Minimization algorithms making use of non-quadratic properties of the objective function. Journal of the Institute of Mathematics and its Applications, 8(3), 315–327.
-- Jamil, M., & Yang, X.-S. (2013). A literature survey of benchmark functions for global optimisation problems. International Journal of Mathematical Modelling and Numerical Optimisation, 4(2), 150–194.
-"""
-function biggsexp2(x::AbstractVector{T}) where T <: Union{Real, ForwardDiff.Dual}
+function biggsexp2(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("Biggs EXP2 requires exactly 2 dimensions"))
-
+    n != 2 && throw(ArgumentError("biggsexp2 requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
-
-    s = zero(T)
-    for i in 1:10
-        t = TI[i]
-        term = exp(-t * x[1]) - 5 * exp(-t * x[2]) - YI[i]
-        s += term * term
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)
     end
-    s
+    
+    let
+        TI = [0.1 * i for i in 1:10]
+        YI = [exp(-t) - 5 * exp(-10 * t) for t in TI]
+        s = zero(T)
+        @inbounds for i in 1:10
+            t = TI[i]
+            term = exp(-t * x[1]) - 5 * exp(-t * x[2]) - YI[i]
+            s += term * term
+        end
+        s
+    end
 end
 
-"""
-    biggsexp2_gradient(x)
-
-Gradient of the Biggs EXP2 Function.
-"""
-function biggsexp2_gradient(x::AbstractVector{T}) where T <: Union{Real, ForwardDiff.Dual}
+function biggsexp2_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
     n = length(x)
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("Biggs EXP2 requires exactly 2 dimensions"))
-
-    any(isnan.(x)) && return fill(T(NaN), 2)
-    any(isinf.(x)) && return fill(T(Inf), 2)
-
-    g = zeros(T, 2)
-    for i in 1:10
-        t = TI[i]
-        exp1 = exp(-t * x[1])
-        exp2 = exp(-t * x[2])
-        term = exp1 - 5 * exp2 - YI[i]
-        g[1] += 2 * term * (-t * exp1)
-        g[2] += 2 * term * (5 * t * exp2)
+    n != 2 && throw(ArgumentError("biggsexp2 requires exactly 2 dimensions"))
+    any(isnan.(x)) && return fill(T(NaN), n)
+    any(isinf.(x)) && return fill(T(Inf), n)
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)
     end
-    g
+    
+    grad = zeros(T, n)
+    let
+        TI = [0.1 * i for i in 1:10]
+        YI = [exp(-t) - 5 * exp(-10 * t) for t in TI]
+        @inbounds for i in 1:10
+            t = TI[i]
+            exp1 = exp(-t * x[1])
+            exp2 = exp(-t * x[2])
+            term = exp1 - 5 * exp2 - YI[i]
+            grad[1] += 2 * term * (-t * exp1)
+            grad[2] += 2 * term * (5 * t * exp2)
+        end
+    end
+    grad
 end
 
 const BIGGSEXP2_FUNCTION = TestFunction(
     biggsexp2,
     biggsexp2_gradient,
-    Dict(
+    Dict{Symbol, Any}(
         :name => "biggsexp2",
+        :description => "Properties based on Jamil & Yang (2013, p. 12); Sum-of-squares function with exact global minimum 0 at [1,10] for n=2.",
+        :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{10} \left( e^{-t_i x_1} - 5 e^{-t_i x_2} - y_i \right)^2, \quad t_i=0.1i, \ y_i = e^{-t_i} - 5 e^{-10 t_i}.""",
         :start => () -> [0.01, 0.01],
         :min_position => () -> [1.0, 10.0],
         :min_value => () -> 0.0,
-        :properties => Set(["continuous", "differentiable", "non-separable", "multimodal", "bounded"]),
+        :properties => ["continuous", "differentiable", "non-separable", "multimodal", "bounded"],
+        :source => "Jamil & Yang (2013, p. 12)",
         :lb => () -> [0.0, 0.0],
         :ub => () -> [20.0, 20.0],
-        :description => "Biggs EXP2 Function, a sum-of-squares function with exact global minimum 0 at [1,10] for n=2. Implemented as non-scalable with fixed dimension 2.",
-        :math => raw"\sum_{i=1}^{10} \left( e^{-t_i x_1} - 5 e^{-t_i x_2} - y_i \right)^2 \quad t_i=0.1i, \, y_i = e^{-t_i} - 5 e^{-10 t_i}"
     )
 )
+
+# Optional: Validierung beim Laden
+@assert "biggsexp2" == basename(@__FILE__)[1:end-3] "biggsexp2: Dateiname mismatch!"

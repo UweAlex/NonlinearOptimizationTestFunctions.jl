@@ -1,36 +1,38 @@
 # test/bohachevsky1_tests.jl
-using Test, NonlinearOptimizationTestFunctions
-@testset "bohachevsky1" begin
+using Test
+using NonlinearOptimizationTestFunctions: BOHACHEVSKY1_FUNCTION, bohachevsky1
+
+@testset "Bohachevsky1 Tests" begin
     tf = BOHACHEVSKY1_FUNCTION
-    n = 2  # Default for scalable
+    n = tf.meta[:default_n]
 
+    # Metadata
     @test tf.meta[:name] == "bohachevsky1"
-    @test has_property(tf, "bounded")
-    @test has_property(tf, "continuous")
-    @test has_property(tf, "differentiable")
-    @test has_property(tf, "multimodal")
-    @test has_property(tf, "scalable")
-    @test has_property(tf, "separable")
-    @test !has_property(tf, "non-separable")
+    @test Set(tf.meta[:properties]) == Set(["bounded", "continuous", "differentiable", "multimodal", "non-convex", "scalable", "separable"])
 
+    # Edge cases
+    @test_throws ArgumentError bohachevsky1(Float64[])
+    @test_throws ArgumentError bohachevsky1([1.0])  # n=1
+    @test isnan(bohachevsky1([NaN, 0.0]))
+    @test isinf(bohachevsky1([Inf, 0.0]))
 
-    @test_throws ArgumentError tf.f(Float64[1.0])  # n=1
+    # Start point
+    start = tf.meta[:start](n)
+    @test start ≈ fill(1.0, n)
+    @test bohachevsky1(start) ≈ 3.6 atol=1e-6  # für n=2
 
-    start_point = tf.meta[:start](n)
-    @test start_point ≈ [1.0, 1.0] atol=1e-6
-    f_start = tf.f(start_point)
-    @test f_start ≈ 3.6 atol=1e-6
-
+    # Minimum
     min_pos = tf.meta[:min_position](n)
-    @test min_pos ≈ [0.0, 0.0] atol=1e-6
-    f_min = tf.f(min_pos)
-    @test f_min ≈ tf.meta[:min_value](n) atol=1e-6
+    @test min_pos ≈ zeros(n)
+    @test bohachevsky1(min_pos) ≈ 0.0 atol=1e-10
 
-    lb, ub = tf.meta[:lb](n), tf.meta[:ub](n)
-    @test lb ≈ [-100.0, -100.0]
-    @test ub ≈ [100.0, 100.0]
+    # Bounds
+    @test tf.meta[:lb](n) == fill(-100.0, n)
+    @test tf.meta[:ub](n) == fill(100.0, n)
 
-    # Extra point for n=3
-    test_pt = [1.0, 1.0, 1.0]
-    @test tf.f(test_pt) ≈ 7.2 atol=1e-6  # 3.6 * 2
+    # Extra point n=3
+    @test bohachevsky1([1.0, 1.0, 1.0]) ≈ 7.2 atol=1e-6
+
+    # Start away from min
+    @test tf.f(start) > tf.meta[:min_value](n) + 1e-3
 end

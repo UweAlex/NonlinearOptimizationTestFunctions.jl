@@ -1,7 +1,7 @@
-# test/axis_parallel_hyper_ellipsoid_tests.jl
-# Purpose: Tests for the axis-parallel hyper-ellipsoid function.
+# test/axisparallelhyperellipsoid_tests.jl
+# Purpose: Tests for the Axis Parallel Hyper-Ellipsoid function.
 # Context: Part of NonlinearOptimizationTestFunctions test suite.
-# Last modified: 16. Juli 2025, 08:20 AM CEST
+# Last modified: November 17, 2025
 
 using Test, Optim, ForwardDiff, LinearAlgebra
 using NonlinearOptimizationTestFunctions: AXISPARALLELHYPERELLIPSOID_FUNCTION, axisparallelhyperellipsoid, axisparallelhyperellipsoid_gradient
@@ -21,24 +21,39 @@ end
 
 @testset "AxisParallelHyperEllipsoid Tests" begin
     tf = AXISPARALLELHYPERELLIPSOID_FUNCTION
+    n = tf.meta[:default_n]
+
+    # Metadata
+    @test tf.meta[:name] == "axisparallelhyperellipsoid"
+    @test Set(tf.meta[:properties]) == Set(["convex", "differentiable", "separable", "scalable", "continuous"])
+
+    # Edge Cases
     @test_throws ArgumentError axisparallelhyperellipsoid(Float64[])
     @test isnan(axisparallelhyperellipsoid([NaN]))
     @test isinf(axisparallelhyperellipsoid([Inf]))
-    @test isfinite(axisparallelhyperellipsoid([1e-308]))
-    @test axisparallelhyperellipsoid([0.0]) ≈ 0.0 atol=1e-6
-    @test axisparallelhyperellipsoid([1.0, 1.0]) ≈ 3.0 atol=1e-6  # 1*1^2 + 2*1^2 = 3
-    @test axisparallelhyperellipsoid_gradient([0.0]) ≈ [0.0] atol=1e-6
-    @test axisparallelhyperellipsoid_gradient([1.0, 1.0]) ≈ [2.0, 4.0] atol=1e-6  # [2*1*1, 2*2*1] = [2, 4]
-    @test axisparallelhyperellipsoid_gradient([1.0, 1.0]) ≈ finite_difference_gradient(axisparallelhyperellipsoid, [1.0, 1.0]) atol=1e-6
-    x = [1.0, 1.0]
-    G = zeros(length(x))
+    @test isfinite(axisparallelhyperellipsoid(fill(1e-308, n)))
+
+    # Function Values
+    @test axisparallelhyperellipsoid(tf.meta[:min_position](n)) ≈ 0.0 atol=1e-6
+    @test axisparallelhyperellipsoid(tf.meta[:start](n)) ≈ sum(i * 1^2 for i in 1:n) atol=1e-6  # n(n+1)/2
+
+    # Gradient
+    @test axisparallelhyperellipsoid_gradient(tf.meta[:min_position](n)) ≈ zeros(n) atol=1e-6
+    @test axisparallelhyperellipsoid_gradient(tf.meta[:start](n)) ≈ [2*i*1 for i in 1:n] atol=1e-6
+    @test axisparallelhyperellipsoid_gradient(tf.meta[:start](n)) ≈ finite_difference_gradient(axisparallelhyperellipsoid, tf.meta[:start](n)) atol=1e-6
+
+    # In-place gradient
+    x = tf.meta[:start](n)
+    G = zeros(n)
     tf.gradient!(G, x)
     @test G ≈ axisparallelhyperellipsoid_gradient(x) atol=1e-6
-    @test tf.meta[:name] == "axisparallelhyperellipsoid"
-    @test tf.meta[:start](1) == [1.0]
-    @test tf.meta[:min_position](1) == [0.0]
-    @test tf.meta[:min_value](2) ≈ 0.0 atol=1e-6
-    result = optimize(tf.f, tf.gradient!, tf.meta[:start](2), LBFGS(), Optim.Options(f_reltol=1e-6))
+
+    # Start away from min
+    @test tf.f(tf.meta[:start](n)) > tf.meta[:min_value](n) + 1e-3
+
+    # Optimization
+    result = optimize(tf.f, tf.gradient!, tf.meta[:start](n), LBFGS(), Optim.Options(f_reltol=1e-6))
+    @test Optim.converged(result)
     @test Optim.minimum(result) < 1e-5
-    @test Optim.minimizer(result) ≈ tf.meta[:min_position](2) atol=1e-3
+    @test Optim.minimizer(result) ≈ tf.meta[:min_position](n) atol=1e-3
 end

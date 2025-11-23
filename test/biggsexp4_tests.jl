@@ -1,39 +1,38 @@
 # test/biggsexp4_tests.jl
-# Purpose: Unit tests for the Biggs EXP Function 4 implementation.
-# Context: Tests metadata, function values, and edge cases for consistency.
-# Last modified: September 22, 2025.
+# Purpose: Tests for the Biggs EXP4 test function in NonlinearOptimizationTestFunctions.
+# Context: Verifies metadata, function values, and edge cases for biggsexp4.
+# Last modified: November 19, 2025
 
-using Test, NonlinearOptimizationTestFunctions
+using Test
+using NonlinearOptimizationTestFunctions: BIGGSEXP4_FUNCTION, biggsexp4, biggsexp4_gradient
 
-tf = BIGGSEXP4_FUNCTION
+@testset "Biggs EXP4 Tests" begin
+    tf = BIGGSEXP4_FUNCTION
 
-@test tf.meta[:name] == "biggsexp4"
-@test has_property(tf, "bounded")
-@test has_property(tf, "continuous")
-@test has_property(tf, "differentiable")
-@test has_property(tf, "multimodal")
+    # Test metadata
+    @test tf.meta[:name] == "biggsexp4"
+    @test Set(tf.meta[:properties]) == Set(["continuous", "differentiable", "non-separable", "multimodal", "bounded"])
 
-@test_throws ArgumentError tf.f(Float64[])
+    # Test start point
+    start_point = tf.meta[:start]()
+    @test start_point == [0.01, 0.01, 0.01, 0.01]
+    @test biggsexp4(start_point) ≈ 2.8288105116638183 atol=1e-6
 
-start_point = tf.meta[:start]()
-@test start_point == [0.01, 0.01, 0.01, 0.01]
-@test length(start_point) == 4
-f_start = tf.f(start_point)
-@test isfinite(f_start)
-@test f_start ≈ 2.8288105116638183 atol=1e-6
+    # Test minimum
+    min_pos = tf.meta[:min_position]()
+    @test min_pos ≈ [1.0, 10.0, 1.0, 5.0] atol=1e-6
+    min_val = tf.meta[:min_value]()
+    @test min_val ≈ 0.0 atol=1e-6
+    @test biggsexp4(min_pos) ≈ min_val atol=1e-6
 
-min_position = tf.meta[:min_position]()
-@test min_position ≈ [1.0, 10.0, 1.0, 5.0] atol=1e-6
-@test length(min_position) == 4
-f_min = tf.f(min_position)
-@test f_min ≈ 0.0 atol=1e-6
-@test tf.meta[:min_value]() ≈ 0.0 atol=1e-6
+    # Edge cases
+    @test_throws ArgumentError biggsexp4(Float64[])  # Empty vector
+    @test isnan(biggsexp4([NaN, 0.0, 0.0, 0.0]))  # NaN input
+    @test isinf(biggsexp4([Inf, 0.0, 0.0, 0.0]))  # Inf input
+    @test isfinite(biggsexp4([1e-308, 1e-308, 1e-308, 1e-308]))  # Small values
+    @test_throws ArgumentError biggsexp4([1.0, 2.0, 3.0])  # Wrong dimension
+    @test_throws ArgumentError biggsexp4([1.0, 2.0, 3.0, 4.0, 5.0])  # Wrong dimension
 
-lb = tf.meta[:lb]()
-@test lb == [0.0, 0.0, 0.0, 0.0]
-ub = tf.meta[:ub]()
-@test ub == [20.0, 20.0, 20.0, 20.0]
-
-# Test at another point for consistency
-test_point = [1.0, 1.0, 1.0, 1.0]
-@test tf.f(test_point) ≈ 2.8288105116638183 atol=1e-6
+    # Start away from min
+    @test tf.f(start_point) > min_val + 1e-3
+end

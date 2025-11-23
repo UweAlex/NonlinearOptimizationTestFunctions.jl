@@ -1,46 +1,66 @@
 # test/bohachevsky2_tests.jl
-# Purpose: Tests for the Bohachevsky 2 test function in NonlinearOptimizationTestFunctions.
-# Context: Verifies function values, metadata, edge cases, and optimization with Optim.jl.
-# Last modified: 07 September 2025
+# Purpose: Tests for the Bohachevsky 2 test function.
+# Context: Verifies metadata, exact function values, edge cases and analytical gradient.
+# NO OPTIMIZATION TESTS – these do not belong here!
 
 using Test
-using NonlinearOptimizationTestFunctions: BOHACHEVSKY2_FUNCTION, bohachevsky2
-using Optim
+using NonlinearOptimizationTestFunctions
 
-@testset "Bohachevsky 2 Tests" begin
+@testset "bohachevsky2" begin
     tf = BOHACHEVSKY2_FUNCTION
-    n = 2  # Feste Dimension
 
-    # Test Metadaten
+    # ------------------------------------------------------------------
+    # Metadata ([RULE_NAME_CONSISTENCY], [RULE_PROPERTIES_SOURCE])
+    # ------------------------------------------------------------------
     @test tf.meta[:name] == "bohachevsky2"
-    @test tf.meta[:start]() == [0.01, 0.01]
-    @test tf.meta[:min_position]() == [0.0, 0.0]
-    @test tf.meta[:min_value]() == 0.0
-    @test tf.meta[:properties] == Set(["multimodal", "non-convex", "non-separable", "differentiable", "bounded"])
-    @test tf.meta[:lb]() == [-100.0, -100.0]
-    @test tf.meta[:ub]() == [100.0, 100.0]
+    @test tf.meta[:source] == "Jamil & Yang (2013, p. 11)"
 
+    expected_props = [
+        "bounded", "continuous", "differentiable",
+        "multimodal", "non-convex", "non-separable"
+    ]
+    @test issetequal(tf.meta[:properties], expected_props)
 
-    # Test Funktionswerte
-    @test isapprox(bohachevsky2([0.0, 0.0]), 0.0, atol=1e-6)  # Minimum
-    @test isapprox(bohachevsky2([0.01, 0.01]), 0.0003 - 0.3*cos(0.03*π)*cos(0.04*π) + 0.3, atol=1e-6)  # Startpunkt: ~0.004
-    @test isapprox(bohachevsky2([-100.0, -100.0]), 10000.0 + 20000.0 - 0.3*cos(3π*(-100.0))*cos(4π*(-100.0)) + 0.3, atol=1e-6)  # Untere Schranke
-    @test isapprox(bohachevsky2([100.0, 100.0]), 10000.0 + 20000.0 - 0.3*cos(3π*100.0)*cos(4π*100.0) + 0.3, atol=1e-6)  # Obere Schranke
+    # ------------------------------------------------------------------
+    # Meta-Funktionen (non-scalable → Aufruf ohne n)
+    # ------------------------------------------------------------------
+    start_point = tf.meta[:start]()
+    min_pos     = tf.meta[:min_position]()
+    min_val     = tf.meta[:min_value]()
+    lb          = tf.meta[:lb]()
+    ub          = tf.meta[:ub]()
 
-    # Test Edge Cases
-    @test_throws ArgumentError bohachevsky2(Float64[])  # Leerer Vektor
-    @test_throws ArgumentError bohachevsky2([1.0, 1.0, 1.0])  # Falsche Dimension
-    @test isnan(bohachevsky2([NaN, 1.0]))
-    @test isnan(bohachevsky2([1.0, NaN]))
-    @test isinf(bohachevsky2([Inf, 1.0]))
-    @test isinf(bohachevsky2([1.0, Inf]))
-    @test isfinite(bohachevsky2([1e-308, 1e-308]))
+    @test start_point == [50.0, 50.0]          # [RULE_START_AWAY_FROM_MIN]
+    @test min_pos     == [0.0, 0.0]
+    @test min_val     == 0.0
+    @test lb          == [-100.0, -100.0]
+    @test ub          == [100.0, 100.0]
 
-    # Test Optimierung mit Optim.jl
-    # Verwende Fminbox(LBFGS()) wegen bounded-Eigenschaft und multimodaler Natur
-    result = optimize(tf.f, tf.gradient!, tf.meta[:lb](), tf.meta[:ub](), tf.meta[:start](), Fminbox(LBFGS()), Optim.Options(f_reltol=1e-6))
-    minimizer = Optim.minimizer(result)
-    minimum = Optim.minimum(result)
-    @test isapprox(minimum, 0.0, atol=1e-2)  # Lockere Toleranz für multimodale Funktion
-    @test isapprox(norm(minimizer), 0.0, atol=1e-2)  # Minimizer nahe (0, 0)
+    # ------------------------------------------------------------------
+    # Exakte Funktionswerte
+    # ------------------------------------------------------------------
+    @test tf.f(min_pos)             ≈ 0.0      atol = 1e-12
+    @test tf.f(start_point)         > min_val + 1.0   # [RULE_START_AWAY_FROM_MIN] Validierung
+    @test isfinite(tf.f(lb))
+    @test isfinite(tf.f(ub))
+
+    # Gradient am globalen Minimum ≈ 0
+    @test norm(tf.grad(min_pos))    < 1e-10
+
+    # ------------------------------------------------------------------
+    # Edge Cases ([RULE_ERROR_HANDLING])
+    # ------------------------------------------------------------------
+    @test_throws ArgumentError tf.f(Float64[])           # leer
+    @test_throws ArgumentError tf.f([1.0, 2.0, 3.0])     # falsche Dimension
+    @test isnan(tf.f([NaN, 0.0]))
+    @test isnan(tf.f([0.0, NaN]))
+    @test isinf(tf.f([Inf, 0.0]))
+    @test isinf(tf.f([0.0, Inf]))
+    @test isfinite(tf.f(fill(1e-308, 2)))
+
+    # ------------------------------------------------------------------
+    # Optional: High-Precision Test (BigFloat)
+    # ------------------------------------------------------------------
+    x_big = BigFloat.(min_pos)
+    @test tf.f(x_big) ≈ BigFloat(min_val) atol = BigFloat("1e-60")
 end

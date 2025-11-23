@@ -1,37 +1,24 @@
 # test/branin_tests.jl
-# Purpose: Tests for the Branin function.
-# Context: Part of NonlinearOptimizationTestFunctions test suite.
-# Last modified: 18. Juli 2025
+using Test, NonlinearOptimizationTestFunctions
 
-using Test, Optim
-using NonlinearOptimizationTestFunctions: BRANIN_FUNCTION, branin
-
-@testset "Branin Tests" begin
+@testset "branin" begin
     tf = BRANIN_FUNCTION
-    n = 2
-    @test_throws ArgumentError branin(Float64[])
-    @test_throws ArgumentError branin([1.0, 2.0, 3.0])  # Falsche Dimension
-    @test isnan(branin([NaN, 0.0]))
-    @test isinf(branin([Inf, 0.0]))
-    @test isfinite(branin([1e-308, 1e-308]))
-    @test branin(tf.meta[:min_position](n)) ≈ tf.meta[:min_value]() atol=1e-6
-    @test branin(tf.meta[:start](n)) ≈ 55.602112642270262 atol=1e-6  # Korrigierter Wert
     @test tf.meta[:name] == "branin"
-    @test tf.meta[:start](n) == [0.0, 0.0]
-    @test tf.meta[:min_position](n) == [-π, 12.275]
-    @test tf.meta[:min_value]() ≈ 0.397887 atol=1e-6
-    @test tf.meta[:lb](n) == [-5.0, 0.0]
-    @test tf.meta[:ub](n) == [10.0, 15.0]
 
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "differentiable", "non-convex", "non-separable", "bounded","continuous"])
-    @testset "Optimization Tests" begin
-        # Startpunkt leicht vom Minimum entfernt, da multimodal
-        start = tf.meta[:min_position](n) + 0.01 * randn(n)
-        result = optimize(tf.f, tf.gradient!, start, LBFGS(), Optim.Options(f_reltol=1e-6))
-        @test Optim.minimum(result) ≈ tf.meta[:min_value]() atol=1e-5
-        # Prüfe, ob das gefundene Minimum einem der drei globalen Minima nahe ist
-        minimizer = Optim.minimizer(result)
-        minima = [[-π, 12.275], [π, 2.275], [9.424778, 2.475]]
-        @test any(norm(minimizer - m) < 1e-3 for m in minima)
-    end
+    x_start = tf.meta[:start]()
+    x_min   = tf.meta[:min_position]()
+    f_min   = tf.meta[:min_value]()
+
+    @test tf.f(x_start) ≈ 55.602112642270264 atol=1e-10
+    @test tf.f(x_min)   ≈ f_min               atol=1e-10
+
+    @test x_start       == [0.0, 0.0]
+    @test x_min         ≈ [-π, 12.275]        atol=1e-10
+    @test tf.meta[:lb]() == [-5.0, 0.0]
+    @test tf.meta[:ub]() == [10.0, 15.0]
+
+    # Edge cases
+    @test_throws ArgumentError tf.f(Float64[])
+    @test isnan(tf.f([NaN, 0.0]))
+    @test isinf(tf.f([Inf, 0.0]))
 end

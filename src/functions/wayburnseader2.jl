@@ -54,8 +54,8 @@ const WAYBURNSEADER2_FUNCTION = TestFunction(
         :description => "Wayburn Seader 2 function. Properties based on Jamil & Yang (2013, p. 63); multiple global minima at (0.2,1) and (0.425,1); originally from Wayburn & Seader (1987). Formula only uses first 2 variables; marked as scalable in source but adapted to fixed n=2 due to limited metadata for higher dimensions. Listed as unimodal in source despite multiple minima; added controversial.",
         :math => raw"""f(\mathbf{x}) = \left[ 1.613 - 4(x_1 - 0.3125)^2 - 4(x_2 - 1.625)^2 \right]^2 + (x_2 - 1)^2.""",
         :start => () -> [-5.0, -5.0],
-        :min_position => () -> [0.2, 1.0],  # One position; multiple in description
-        :min_value => () -> 0.0,
+  :min_position => () -> [0.200138974079519, 1.000000000083411],
+  :min_value => () -> 0.0,
         :properties => ["bounded", "continuous", "controversial", "differentiable", "non-separable", "unimodal"],
         :source => "Jamil & Yang (2013, p. 63)",
         :lb => () -> [-500.0, -500.0],

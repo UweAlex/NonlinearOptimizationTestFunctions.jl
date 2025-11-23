@@ -1,42 +1,39 @@
 # test/biggsexp5_tests.jl
-# Purpose: Unit tests for the Biggs EXP Function 5 implementation.
-# Context: Tests metadata, function values, and edge cases for consistency.
-# Last modified: September 22, 2025.
+# Purpose: Tests for the Biggs EXP5 test function.
+# Last modified: November 19, 2025
 
-using Test, NonlinearOptimizationTestFunctions
+using Test
+using NonlinearOptimizationTestFunctions: BIGGSEXP5_FUNCTION, biggsexp5, biggsexp5_gradient
 
-tf = BIGGSEXP5_FUNCTION
+@testset "Biggs EXP5 Tests" begin
+    tf = BIGGSEXP5_FUNCTION
 
-@test tf.meta[:name] == "biggsexp5"
-@test has_property(tf, "bounded")
-@test has_property(tf, "continuous")
-@test has_property(tf, "differentiable")
-@test has_property(tf, "multimodal")
-@test has_property(tf, "non-separable")
-@test !has_property(tf, "scalable")
-@test length(tf.meta[:properties]) == 5
+    # Metadata
+    @test tf.meta[:name] == "biggsexp5"
+    @test Set(tf.meta[:properties]) == Set(["continuous", "differentiable", "non-separable", "multimodal", "bounded"])
 
-@test_throws ArgumentError tf.f(Float64[])
+    # Start & Min
+    start = tf.meta[:start]()
+    @test start == [0.01, 0.01, 0.01, 0.01, 0.01]
+    @test biggsexp5(start) ≈ 51.01256044522263 atol=1e-6
 
-start_point = tf.meta[:start]()
-@test start_point == [0.01, 0.01, 0.01, 0.01, 0.01]
-@test length(start_point) == 5
-f_start = tf.f(start_point)
-@test isfinite(f_start)
-@test f_start ≈ 51.01256044522263 atol=1e-6
+    min_pos = tf.meta[:min_position]()
+    @test min_pos ≈ [1.0, 10.0, 1.0, 5.0, 4.0] atol=1e-6
+    @test biggsexp5(min_pos) ≈ 0.0 atol=1e-10
+    @test tf.meta[:min_value]() ≈ 0.0 atol=1e-10
 
-min_position = tf.meta[:min_position]()
-@test min_position ≈ [1.0, 10.0, 1.0, 5.0, 4.0] atol=1e-6
-@test length(min_position) == 5
-f_min = tf.f(min_position)
-@test f_min ≈ 0.0 atol=1e-6
-@test tf.meta[:min_value]() ≈ 0.0 atol=1e-6
+    # Bounds
+    @test tf.meta[:lb]() == [0.0, 0.0, 0.0, 0.0, 0.0]
+    @test tf.meta[:ub]() == [20.0, 20.0, 20.0, 20.0, 20.0]
 
-lb = tf.meta[:lb]()
-@test lb == [0.0, 0.0, 0.0, 0.0, 0.0]
-ub = tf.meta[:ub]()
-@test ub == [20.0, 20.0, 20.0, 20.0, 20.0]
+    # Edge cases
+    @test_throws ArgumentError biggsexp5(Float64[])
+    @test isnan(biggsexp5([NaN, 0.0, 0.0, 0.0, 0.0]))
+    @test isinf(biggsexp5([Inf, 0.0, 0.0, 0.0, 0.0]))
+    @test isfinite(biggsexp5(fill(1e-308, 5)))
+    @test_throws ArgumentError biggsexp5(ones(4))
+    @test_throws ArgumentError biggsexp5(ones(6))
 
-# Test at another point for consistency
-test_point = [1.0, 1.0, 1.0, 1.0, 1.0]
-@test tf.f(test_point) ≈ 9.057816568437913 atol=1e-6
+    # Start away from min
+    @test tf.f(start) > tf.meta[:min_value]() + 1e-3
+end

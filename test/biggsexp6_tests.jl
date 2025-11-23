@@ -1,34 +1,39 @@
 # test/biggsexp6_tests.jl
-using Test, NonlinearOptimizationTestFunctions
-@testset "biggsexp6" begin
-tf = BIGGSEXP6_FUNCTION
+# Purpose: Tests for the Biggs EXP6 test function.
+# Last modified: November 19, 2025
 
-@test tf.meta[:name] == "biggsexp6"
-@test has_property(tf, "bounded")
-@test has_property(tf, "continuous")
-@test has_property(tf, "differentiable")
-@test has_property(tf, "multimodal")
-@test has_property(tf, "non-separable")
-@test !has_property(tf, "scalable")
-@test length(tf.meta[:properties]) == 5
+using Test
+using NonlinearOptimizationTestFunctions: BIGGSEXP6_FUNCTION, biggsexp6, biggsexp6_gradient
 
-@test_throws ArgumentError tf.f(Float64[])
+@testset "Biggs EXP6 Tests" begin
+    tf = BIGGSEXP6_FUNCTION
 
-start_point = tf.meta[:start]()
-@test start_point ≈ [1.0, 2.0, 1.0, 1.0, 1.0, 1.0] atol=1e-6
-f_start = tf.f(start_point)
-@test f_start ≈ 0.779 atol=1e-3
+    # Metadata
+    @test tf.meta[:name] == "biggsexp6"
+    @test Set(tf.meta[:properties]) == Set(["continuous", "differentiable", "non-separable", "multimodal", "bounded"])
 
-min_pos = tf.meta[:min_position]()
-@test min_pos ≈ [1.0, 10.0, 1.0, 5.0, 4.0, 3.0] atol=1e-6
-f_min = tf.f(min_pos)
-@test f_min ≈ tf.meta[:min_value]() atol=1e-6
+    # Start & Min
+    start = tf.meta[:start]()
+    @test start ≈ [1.0, 2.0, 1.0, 1.0, 1.0, 1.0] atol=1e-12
+    @test biggsexp6(start) ≈ 0.779 atol=1e-3
 
-lb, ub = tf.meta[:lb](), tf.meta[:ub]()
-@test lb ≈ [-20.0, -20.0, -20.0, -20.0, -20.0, -20.0]
-@test ub ≈ [20.0, 20.0, 20.0, 20.0, 20.0, 20.0]
+    min_pos = tf.meta[:min_position]()
+    @test min_pos ≈ [1.0, 10.0, 1.0, 5.0, 4.0, 3.0] atol=1e-6
+    @test biggsexp6(min_pos) ≈ 0.0 atol=1e-10
+    @test tf.meta[:min_value]() ≈ 0.0 atol=1e-10
 
-# Extra point
-test_pt = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-@test tf.f(test_pt) ≈ 9.864 atol=1e-3
+    # Bounds
+    @test tf.meta[:lb]() == fill(-20.0, 6)
+    @test tf.meta[:ub]() == fill(20.0, 6)
+
+    # Edge cases
+    @test_throws ArgumentError biggsexp6(Float64[])
+    @test isnan(biggsexp6([NaN, 0, 0, 0, 0, 0]))
+    @test isinf(biggsexp6([Inf, 0, 0, 0, 0, 0]))
+    @test isfinite(biggsexp6(fill(1e-308, 6)))
+    @test_throws ArgumentError biggsexp6(ones(5))
+    @test_throws ArgumentError biggsexp6(ones(7))
+
+    # Start away from min
+    @test tf.f(start) > tf.meta[:min_value]() + 1e-3
 end

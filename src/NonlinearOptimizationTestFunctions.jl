@@ -122,7 +122,7 @@ function access_metadata(tf::TestFunction, key::Symbol, n::Union{Int, Nothing}=n
         end
     else
         if !isnothing(n)
-            @warn "Dimension n=$n ignored for non-scalable function $(tf.name)"  # Warn if n is provided
+           # @warn "Dimension n=$n ignored for non-scalable function $(tf.name)"  # Warn if n is provided
         end
         if isa(meta_func, Function)
             try

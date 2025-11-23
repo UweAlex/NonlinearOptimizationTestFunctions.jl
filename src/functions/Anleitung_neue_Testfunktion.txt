@@ -408,6 +408,12 @@ grad = tf.gradient([1.0, 2.0])  # ❌ Fehler!
 
 Finale Validierung: Alle MUST-Regeln erfüllt? Benchmark mit @btime tf.f(rand(tf.meta[:default_n])) <1μs.  Führe manuell: julia> tf = <UPPER>_FUNCTION; n = tf.meta[:default_n]; min_pos = tf.meta[:min_position](n); für Noise: multiple tf.f(min_pos) in [0,1); sonst @test tf.f(min_pos) ≈ tf.meta[:min_value](n) atol=1e-8 – passe Signatur an, falls Error. Überprüche :source auf direkte Übernahme mit Stelle.  Prüfe lokale Hilfsfunktionen: Kein Kollision (z.B. grep -r "function rastrigin" src/functions/ | grep -v "_.*_rastrigin"); Edge-Cases: `@test isinf(_<name>_helper([Inf]))`. Neu: @test tf.f(BigFloat.(min_pos)) ≈ BigFloat(tf.meta[:min_value](n)) atol=BigFloat("1e-15").
 
+[NEW RULE_GRADIENT_SYMPY_VERIFICATION] MUST für alle Funktionen mit analytischem Gradient:
+Bevor eine neue Testfunktion als "fertig" markiert wird, MUSS der analytische Gradient mit SymPy (oder einem anderen symbolischen Differentiations-Tool) verifiziert werden.
+
+**Begründung**:  
+Numerische Tests (ForwardDiff/FiniteDiff) sind wertvoll, aber ein einziger Vorzeichenfehler, falscher Faktor oder vergessener Term führt zu systematischen Abweichungen, die in numerischen Tests oft erst bei großen Werten auffallen. Symbolische Differentiation liefert in < 0,01 Sekunden die exakte Wahrheit.
+
 # KI-Anleitung: Testfunktion implementieren (v3.1)
 
 **Ziel**: Maschinenlesbare Struktur für KI-Assistenten. Parse nach `[RULE_ID]`-Tags. Priorisiere MUST > SHOULD > MAY (RFC-2119). Jede Regel hat Code-Beispiel + Validierung.
