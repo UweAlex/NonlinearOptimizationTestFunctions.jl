@@ -10,6 +10,7 @@ module NonlinearOptimizationTestFunctions
 using LinearAlgebra  # Used for matrix operations in test functions
 using ForwardDiff   # Used for automatic differentiation compatibility
 
+
 # Define valid properties for test functions
 # Purpose: Specifies the allowed properties that can be assigned to test functions in meta[:properties].
 # Context: Ensures metadata consistency and validation during TestFunction construction.
@@ -90,6 +91,7 @@ struct TestFunction
         new(f_wrapped, grad_wrapped, gradient_wrapped!, meta, name, f_count, grad_count)
     end
 end
+
 
 # Helper function: access_metadata
 # Purpose: Internal function to access metadata with automatic or specified dimension handling for scalable functions.
@@ -377,5 +379,5 @@ end
 # Export public interface
 # Purpose: Exports module-level functions and constants for external use.
 export TEST_FUNCTIONS, filter_testfunctions, TestFunction, use_testfunction, has_property, add_property, dim, get_f_count, get_grad_count, reset_counts!, set_default_n!, start, min_position, min_value, lb, ub, property, bounded, scalable, differentiable, multimodal, separable, finite_at_inf
-
+include("l1_penalty_wrapper.jl")
 end

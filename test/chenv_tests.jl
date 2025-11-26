@@ -11,16 +11,16 @@ using Test, NonlinearOptimizationTestFunctions
     @test has_property(tf, "multimodal")
     @test has_property(tf, "bounded")
     @test !has_property(tf, "scalable")
-    @test length(tf.meta[:properties]) == 5
+    @test length(tf.meta[:properties]) == 6
 
     @test_throws ArgumentError tf.f(Float64[])
     @test_throws ArgumentError tf.f([1.0])  # Wrong dimension
     @test_throws ArgumentError tf.f([1.0, 2.0, 3.0])  # Wrong dimension
 
     start_point = tf.meta[:start]()
-    @test start_point ≈ [0.0, 0.0] atol=1e-6
+    @test start_point ≈ [400.0, 400.0]  atol=1e-6
     f_start = tf.f(start_point)
-    @test f_start ≈  -1000.0049999830002 atol=1e-3  # Computed via REPL: chenv([0.0, 0.0])
+    @test f_start ≈   -1000.0000000000001 atol=1e-3  # Computed via REPL: chenv([0.0, 0.0])
 
     min_pos = tf.meta[:min_position]()
     @test min_pos ≈   [0.500000000004, 0.500000000004]  atol=1e-6

@@ -1,6 +1,6 @@
 # Alphabetical List of Benchmark Functions
 
-Generated from package metadata on 2025-11-15. Functions are listed alphabetically with their details.
+Generated from package metadata on 2025-11-25. Functions are listed alphabetically with their details.
 
 ### ackley
 - **Description**: Ackley function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Standard bounds are [-32.768, 32.768]^n as per Molga & Smutnicki (2005). Alternative bounds [-5, 5]^n are available.
@@ -19,51 +19,51 @@ Generated from package metadata on 2025-11-15. Functions are listed alphabetical
 
 
 ### ackley4
-- **Description**: Modified Ackley Function with multiple local minima for n=2. The provided local minimum is corrected from literature (which had errors in value and position). The global minimum approaches -6 near boundaries, but tests focus on this local minimum near the origin. Implemented as non-scalable with fixed dimension 2, as metadata for other dimensions is unavailable.
-- **Formula**: \sum_{i=1}^{D-1} \left[ e^{-0.2 \sqrt{x_i^2 + x_{i+1}^2}} + 3 (\cos(2x_i) + \sin(2x_{i+1})) \right]
+- **Description**: Modified Ackley Function (Ackley 4). Properties adapted from Jamil & Yang (2013, p. 5) for variant with √(x_i² + x_{i+1}²) in exponential and no x_i² term; originally from Rónkkónen (2009). Highly multimodal with local minimum near origin; global minimum approaches -6 near boundaries. Implemented as fixed n=2 due to limited metadata for higher dimensions.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{1} \left[ e^{-0.2 \sqrt{x_i^2 + x_{i+1}^2}} + 3 (\cos(2x_i) + \sin(2x_{i+1})) \right].
 - **Bounds/Minimum**: Bounds: [-35.0, -35.0]; Min: -5.297009385988958 at [-1.5812643986108843, -0.7906319137820829]
 - **Properties**: controversial, non-separable, bounded, differentiable, highly multimodal, continuous
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 5)
 
 
 ### adjiman
-- **Description**: Adjiman function: Multimodal, non-convex, non-separable, differentiable, bounded test function with a single global minimum at (2.0, 0.10578347).
-- **Formula**: \cos(x_1) \sin(x_2) - \frac{x_1}{x_2^2 + 1}
+- **Description**: Properties based on Jamil & Yang (2013, p. 3); Multimodal, non-convex, non-separable, differentiable, bounded test function with a single global minimum.
+- **Formula**: f(\mathbf{x}) = \cos x_1 \sin x_2 - \frac{x_1}{x_2^2 + 1}.
 - **Bounds/Minimum**: Bounds: [-1.0, -1.0]; Min: -2.021806783359787 at [2.0, 0.10578347]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 3)
 
 
 ### alpinen1
-- **Description**: AlpineN1 function: Multimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: 0 at (0, ..., 0) and other points where xi * sin(xi) + 0.1 * xi = 0.
-- **Formula**: \sum_{i=1}^n |x_i \sin(x_i) + 0.1 x_i|
+- **Description**: Properties based on Jamil & Yang (2013, p. 5); Contains absolute value terms leading to non-differentiability at certain points (gradient returns NaN there).
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n |x_i \sin x_i + 0.1 x_i|.
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [0.0, 0.0]
 - **Properties**: multimodal, separable, bounded, partially differentiable, scalable, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 5)
 
 
 ### alpinen2
-- **Description**: AlpineN2 function: Multimodal, non-convex, separable, partially differentiable, scalable, bounded. Minimum: - (2.8081311800070053)^n at (7.917052698245946, ..., 7.917052698245946). Note: Negated product for minimization. Defined for all inputs, with bounds [0,10]^n enforced by the optimizer.
-- **Formula**: - \prod_{i=1}^n \sqrt{x_i} \sin(x_i)
+- **Description**: Properties based on Jamil & Yang (2013, p. 5); Fully differentiable on [0,10]^n.
+- **Formula**: f(\mathbf{x}) = -\prod_{i=1}^n \sqrt{x_i} \sin x_i \quad (x_i \geq 0).
 - **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: -7.885600724127536 at [7.917052698245946, 7.917052698245946]
-- **Properties**: multimodal, separable, bounded, partially differentiable, scalable, non-convex
-- **Reference**: Unknown
+- **Properties**: multimodal, separable, bounded, differentiable, scalable, non-convex
+- **Reference**: Jamil & Yang (2013, p. 5)
 
 
 ### axisparallelhyperellipsoid
-- **Description**: Axis Parallel Hyper-Ellipsoid function: Convex, differentiable, separable, scalable, continuous test function with a global minimum of 0.0 at x = [0, ..., 0] for any n ≥ 1. Typically tested with bounds [-5.12, 5.12]^n, making it bounded for practical purposes. See [Jamil & Yang (2013)] for details.
-- **Formula**: \sum_{i=1}^n i x_i^2
+- **Description**: Properties based on Jamil & Yang (2013, p. 4); Convex, quadratic function.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n i x_i^2.
 - **Bounds/Minimum**: Bounds: [-5.12, -5.12]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: separable, convex, bounded, differentiable, scalable, continuous
-- **Reference**: Unknown
+- **Properties**: separable, convex, differentiable, scalable, continuous
+- **Reference**: Jamil & Yang (2013, p. 4)
 
 
 ### bartelsconn
-- **Description**: Bartels Conn function: Multimodal, non-convex, non-separable, partially differentiable, bounded test function with a global minimum at (0.0, 0.0). The subgradient is not well-defined at points where abs arguments are zero.
-- **Formula**: |x_1^2 + x_2^2 + x_1 x_2| + |\sin(x_1)| + |\cos(x_2)|
+- **Description**: Properties based on Jamil & Yang (2013, p. 6); Contains absolute value terms leading to non-differentiability at certain points (gradient returns NaN there).
+- **Formula**: f(\mathbf{x}) = |x_1^2 + x_2^2 + x_1 x_2| + |\sin(x_1)| + |\cos(x_2)|.
 - **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 1.0 at [0.0, 0.0]
 - **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 6)
 
 
 ### beale
@@ -83,90 +83,75 @@ Generated from package metadata on 2025-11-15. Functions are listed alphabetical
 
 
 ### biggsexp2
-- **Description**: Biggs EXP2 Function, a sum-of-squares function with exact global minimum 0 at [1,10] for n=2. Implemented as non-scalable with fixed dimension 2.
-- **Formula**: \sum_{i=1}^{10} \left( e^{-t_i x_1} - 5 e^{-t_i x_2} - y_i \right)^2 \quad t_i=0.1i, \, y_i = e^{-t_i} - 5 e^{-10 t_i}
+- **Description**: Properties based on Jamil & Yang (2013, p. 12); Sum-of-squares function with exact global minimum 0 at [1,10] for n=2.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left( e^{-t_i x_1} - 5 e^{-t_i x_2} - y_i \right)^2, \quad t_i=0.1i, \ y_i = e^{-t_i} - 5 e^{-10 t_i}.
 - **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: 0.0 at [1.0, 10.0]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 12)
 
 
 ### biggsexp3
-- **Description**: Biggs EXP Function 3 (Biggs, 1971), as described in Jamil & Yang (2013).
-This is a multimodal function with fixed dimension n=3.
-It models an exponential fitting problem.
-
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left( e^{-t_i x_1} - x_3 e^{-t_i x_2} - y_i \right)^2,
-\quad t_i = 0.1 i, \quad y_i = e^{-t_i} - 5 e^{-10 t_i}
-
+- **Description**: Properties based on Jamil & Yang (2013, p. 12); Multimodal sum-of-squares function with exact global minimum 0 at [1,10,5] for n=3.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left( e^{-t_i x_1} - x_3 e^{-t_i x_2} - y_i \right)^2, \quad t_i=0.1i, \ y_i = e^{-t_i} - 5 e^{-10 t_i}.
 - **Bounds/Minimum**: Bounds: [0.0, 0.0, 0.0]; Min: 0.0 at [1.0, 10.0, 5.0]
-- **Properties**: multimodal, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 12)
 
 
 ### biggsexp4
-- **Description**: Biggs EXP Function 4 (Biggs, 1971), as described in Jamil & Yang (2013).
-This is a multimodal function with fixed dimension n=4.
-It models an exponential fitting problem.
-
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} - y_i \right)^2,
-\quad t_i = 0.1 i, \quad y_i = e^{-t_i} - 5 e^{-10 t_i}
-
+- **Description**: Properties based on Jamil & Yang (2013, p. 12); Multimodal sum-of-squares function with exact global minimum 0 at [1,10,1,5] for n=4.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{10} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} - y_i \right)^2, \quad t_i=0.1i, \ y_i = e^{-t_i} - 5 e^{-10 t_i}.
 - **Bounds/Minimum**: Bounds: [0.0, 0.0, 0.0, 0.0]; Min: 0.0 at [1.0, 10.0, 1.0, 5.0]
-- **Properties**: multimodal, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 12)
 
 
 ### biggsexp5
-- **Description**: Biggs EXP Function 5 (Biggs, 1971), as described in Jamil & Yang (2013).
-This is a multimodal function with fixed dimension n=5.
-It models an exponential fitting problem.
-
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{11} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} + 3 e^{-t_i x_5} - y_i \right)^2,
-\quad t_i = 0.1 i, \quad y_i = e^{-t_i} - 5 e^{-10 t_i} + 3 e^{-4 t_i}
-
+- **Description**: Properties based on Jamil & Yang (2013, p. 12); Multimodal sum-of-squares function with exact global minimum 0 at [1,10,1,5,4] for n=5.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{11} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} + 3 e^{-t_i x_5} - y_i \right)^2, \quad t_i = 0.1i, \ y_i = e^{-t_i} - 5 e^{-10 t_i} + 3 e^{-4 t_i}.
 - **Bounds/Minimum**: Bounds: [0.0, 0.0, 0.0, 0.0, 0.0]; Min: 0.0 at [1.0, 10.0, 1.0, 5.0, 4.0]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 12)
 
 
 ### biggsexp6
-- **Description**: Biggs EXP Function 6 (Biggs, 1971): A multimodal, non-separable test function for nonlinear optimization.
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{13} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} + x_6 e^{-t_i x_5} - y_i \right)^2, \quad t_i = 0.1 i, \quad y_i = e^{-t_i} - 5 e^{-10 t_i} + 3 e^{-4 t_i}.
+- **Description**: Properties based on Jamil & Yang (2013, p. 12); Multimodal sum-of-squares function with exact global minimum 0 at [1,10,1,5,4,3] for n=6.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{13} \left( x_3 e^{-t_i x_1} - x_4 e^{-t_i x_2} + x_6 e^{-t_i x_5} - y_i \right)^2, \quad t_i=0.1i, \ y_i = e^{-t_i} - 5 e^{-10 t_i} + 3 e^{-4 t_i}.
 - **Bounds/Minimum**: Bounds: [-20.0, -20.0, -20.0, -20.0, -20.0, -20.0]; Min: 0.0 at [1.0, 10.0, 1.0, 5.0, 4.0, 3.0]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 12)
 
 
 ### bird
-- **Description**: Bird function: Multimodal, non-convex, non-separable, differentiable, fixed.
-- **Formula**: \sin(x_1) \exp\left((1 - \cos(x_2))^2\right) + \cos(x_2) \exp\left((1 - \sin(x_1))^2\right) + (x_1 - x_2)^2
-- **Bounds/Minimum**: Bounds: [-6.283185307179586, -6.283185307179586]; Min: -106.76453674926465 at [4.701043130195973, 3.1529385037484228]
+- **Description**: Properties based on Jamil & Yang (2013, p. 9); Highly multimodal with two symmetric global minima. The reported minima are high-precision numerical approximations obtained via global optimization; they are not critical points (∇f ≠ 0) and the exact analytical positions are unknown. Gradient norm at reported minima ≈ 4.95.
+- **Formula**: f(\mathbf{x}) = \sin x_1 \exp\left((1 - \cos x_2)^2\right) + \cos x_2 \exp\left((1 - \sin x_1)^2\right) + (x_1 - x_2)^2.
+- **Bounds/Minimum**: Bounds: [-6.283185307179586, -6.283185307179586]; Min: -106.76453674926468 at [4.701043130240078, 3.152938503721135]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 9)
 
 
 ### bohachevsky1
-- **Description**: Bohachevsky Function 1 (Bohachevsky et al., 1986): A scalable, separable, multimodal test function for nonlinear optimization.
+- **Description**: Bohachevsky 1 function. Scalable, separable, multimodal test function with global minimum 0 at the origin. Properties based on Jamil & Yang (2013, p. 10).
 - **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[ x_i^2 + 2 x_{i+1}^2 - 0.3 \cos(3 \pi x_i) - 0.4 \cos(4 \pi x_{i+1}) + 0.7 \right].
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
 - **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 10)
 
 
 ### bohachevsky2
-- **Description**: Bohachevsky 2 function: Multimodal, non-convex, non-separable, differentiable, bounded. Minimum: 0 at (0, 0). Bounds: [-100, 100]^2.
-- **Formula**: f(x) = x_1^2 + 2x_2^2 - 0.3\cos(3\pi x_1)\cos(4\pi x_2) + 0.3
+- **Description**: Bohachevsky 2 function. Non-scalable (n=2), non-separable, multimodal test function with global minimum 0 at the origin. Properties based on Jamil & Yang (2013, p. 11).
+- **Formula**: f(\mathbf{x}) = x_1^2 + 2 x_2^2 - 0.3 \cos(3 \pi x_1) \cos(4 \pi x_2) + 0.3.
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: multimodal, non-separable, bounded, differentiable, non-convex
-- **Reference**: Unknown
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Jamil & Yang (2013, p. 11)
 
 
 ### bohachevsky3
-- **Description**: Bohachevsky 3 function from Bohachevsky et al. (1986), f19 in Jamil & Yang (2013): Multimodal, differentiable, non-separable test function with a global minimum at (0, 0).
-- **Formula**: f(\mathbf{x}) = x_1^2 + 2x_2^2 - 0.3 \cos(3\pi x_1 + 4\pi x_2) + 0.3.
+- **Description**: Bohachevsky 3 function (Bohachevsky et al., 1986). Non-scalable (n=2), non-separable, multimodal test function with global minimum 0 at the origin. Properties based on Jamil & Yang (2013, p. 11).
+- **Formula**: f(\mathbf{x}) = x_1^2 + 2 x_2^2 - 0.3 \cos(3 \pi x_1 + 4 \pi x__2) + 0.3.
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 11)
 
 
 ### booth
@@ -186,27 +171,30 @@ It models an exponential fitting problem.
 
 
 ### brad
-- **Description**: Brad Function (Brad, 1970): A multimodal, non-separable test function for nonlinear optimization.
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{15} \left( y_i - x_1 - \frac{u_i}{v_i x_2 + w_i x_3} \right)^2, \quad u_i = i, \ v_i = 16 - i, \ w_i = \min(u_i, v_i), \ \mathbf{y} = [0.14, 0.18, 0.22, 0.25, 0.29, 0.32, 0.35, 0.39, 0.37, 0.58, 0.73, 0.96, 1.34, 2.10, 4.39]^\top.
-- **Bounds/Minimum**: Bounds: [-0.25, 0.01, 0.01]; Min: 0.008214877306578994 at [0.0824105597447766, 1.1330360919212203, 2.343695178745316]
-- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Description**: Brad function (Brad, 1970). Non-scalable (n=3), continuous, differentiable, non-separable, multimodal least-squares problem from exponential fitting.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{15} \left( y_i - x_1 - \frac{i}{(16-i)x_2 + \min(i,16-i)x_3} \right)^2
+- **Bounds/Minimum**: Bounds: [-0.25, 0.01, 0.01]; Min: 0.008214877306578994 at [0.08241056, 1.13303609, 2.34369518]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Brad (1970); data from Moré et al. (1981)
 
 
 ### branin
-- **Description**: Branin function: A multimodal, non-convex function with three global minima at [-π, 12.275], [π, 2.275], [9.424778, 2.475]. Only defined for n=2.
-- **Formula**: f(x) = a (x_2 - b x_1^2 + c x_1 - r)^2 + s (1 - t) \cos(x_1) + s, a=1, b=5.1/(4\pi^2), c=5/\pi, r=6, s=10, t=1/(8\pi)
+- **Description**: Classic Branin function with three global minima. Properties based on Jamil & Yang (2013, p. 9).
+- **Formula**: f(\mathbf{x}) = a(x_2 - b x_1^2 + c x_1 - r)^2 + s(1-t)\cos(x_1) + s
+\quad\text{with}\quad
+a=1,\; b=\frac{5.1}{4\pi^2},\; c=\frac{5}{\pi},\; r=6,\; s=10,\; t=\frac{1}{8\pi}
+
 - **Bounds/Minimum**: Bounds: [-5.0, 0.0]; Min: 0.39788735772973816 at [-3.141592653589793, 12.275]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 9)
 
 
 ### braninrcos2
-- **Description**: Branin RCOS Function 2 (Muntenau and Lazarescu, 1998): A multimodal, non-separable test function for nonlinear optimization. Note: Paper reports min=5.559 at [-3.2, 12.53], but computation yields -39.196 at ≈[-3.172, 12.586] – likely paper transcription error; validated via optimization.
-- **Formula**: f(\mathbf{x}) = \left( x_2 - \frac{5.1 x_1^2}{4\pi^2} + \frac{5 x_1}{\pi} - 6 \right)^2 + 10 \left( 1 - \frac{1}{8\pi} \right) \cos(x_1) \cos(x_2) \ln(x_1^2 + x_2^2 + 1) + 10.
+- **Description**: Branin RCOS 2 function (Muntenau & Lazarescu, 1998). Multimodal, non-separable test function with a deep global minimum. The original paper reports an incorrect minimum of ≈5.56 – numerical verification yields ≈-39.196.
+- **Formula**: f(x_1,x_2) = \left(x_2 - \frac{5.1 x_1^2}{4\pi^2} + \frac{5 x_1}{\pi} - 6\right)^2 + 10\left(1 - \frac{1}{8\pi}\right)\cos(x_1)\cos(x_2)\ln(x_1^2 + x_2^2 + 1) + 10
 - **Bounds/Minimum**: Bounds: [-5.0, -5.0]; Min: -39.19565391797774 at [-3.1721041516027824, 12.58567479697034]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Reference**: Muntenau & Lazarescu (1998, p. 27)
 
 
 ### brent
@@ -226,27 +214,27 @@ It models an exponential fitting problem.
 
 
 ### bukin2
-- **Description**: Bukin 2 function: Continuous, differentiable, non-separable, non-scalable, multimodal. Minimum: 0.0 at (-10.0, 0.0). Bounds: x1 in [-15, -5], x2 in [-3, 3]. Note: Formula corrected with ^2 to match minimum per Jamil & Yang (2013) due to original definition inconsistency.
-- **Formula**: f(x) = 100 (x_2 - 0.01 x_1^2 + 1)^2 + 0.01 (x_1 + 10)^2
-- **Bounds/Minimum**: Bounds: [-15.0, -3.0]; Min: 0.0 at [-10.0, 0.0]
-- **Properties**: multimodal, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Description**: Bukin Function N.2. Highly multimodal with a narrow curving ridge. Contains absolute value → not differentiable at x₁ = -10. Global minimum = 0 at (-10, 1).
+- **Formula**: f(\mathbf{x}) = 100 (x_2 - 0.01 x_1^2)^2 + 0.01 |x_1 + 10|
+- **Bounds/Minimum**: Bounds: [-15.0, -3.0]; Min: 0.0 at [-10.0, 1.0]
+- **Properties**: multimodal, non-separable, bounded, continuous
+- **Reference**: Jamil & Yang (2013, p. 34)
 
 
 ### bukin4
-- **Description**: Bukin 4 function: Multimodal, non-convex, separable, partially differentiable, bounded, continuous. Has a deep valley along x1 = -10.
-- **Formula**: f(\mathbf{x}) = 100 x_2^2 + 0.01 |x_1 + 10|
+- **Description**: Properties based on Jamil & Yang (2013, p. 10); Contains absolute value terms leading to non-differentiability at x1=-10 (gradient returns NaN there).
+- **Formula**: f(\mathbf{x}) = 100 x_2^2 + 0.01 |x_1 + 10|.
 - **Bounds/Minimum**: Bounds: [-15.0, -3.0]; Min: 0.0 at [-10.0, 0.0]
 - **Properties**: multimodal, separable, bounded, partially differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 10)
 
 
 ### bukin6
-- **Description**: Bukin function N.6: Multimodal, partially differentiable, non-convex function with global minimum at zero, defined for 2 dimensions.
-- **Formula**: 100 \sqrt{|x_2 - 0.01 x_1^2|} + 0.01 |x_1 + 10|
+- **Description**: Properties based on Jamil & Yang (2013, p. 10); Contains absolute value and sqrt(abs) terms leading to non-differentiability at certain points (gradient returns NaN there).
+- **Formula**: f(\mathbf{x}) = 100 \sqrt{|x_2 - 0.01 x_1^2|} + 0.01 |x_1 + 10|.
 - **Bounds/Minimum**: Bounds: [-15.0, -3.0]; Min: 0.0 at [-10.0, 1.0]
 - **Properties**: multimodal, bounded, partially differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 10)
 
 
 ### carromtable
@@ -265,12 +253,20 @@ It models an exponential fitting problem.
 - **Reference**: Unknown
 
 
+### chenbird
+- **Description**: Chen V function – Jamil & Yang (2013, f32). The version used in >95% of all papers. Three radial terms. Global minimum ≈ -2000.004. This is NOT the original Chen (2003) function!
+- **Formula**: f(\mathbf{x}) = -\left[ \frac{0.001}{(0.001)^2 + (x_1^2 + x_2^2 - 1)^2} + \frac{0.001}{(0.001)^2 + (x_1^2 + x_2^2 - 0.5)^2} + \frac{0.001}{(0.001)^2 + (x_1^2 - x_2^2)^2} \right]
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: -2000.0039999840003 at [0.5, 0.5]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Jamil & Yang (2013, p. 47)
+
+
 ### chenv
-- **Description**: Chen V function from Chen (2003). Continuous, differentiable, non-separable, multimodal with three overlapping terms creating complex landscape.
-- **Formula**: f(\mathbf{x}) = -\frac{0.001}{(0.001)^2 + (x_1^2 + x_2^2 - 1)^2} - \frac{0.001}{(0.001)^2 + (x_1^2 + x_2^2 - 0.5)^2} - \frac{0.001}{(0.001)^2 + (x_1^2 - x_2^2)^2}
-- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: -2000.0039999840005 at [0.500000000004, 0.500000000004]
-- **Properties**: multimodal, non-separable, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Description**: Original Chen V function (Chen, 2003). Three radial/hyperbolic terms. Eight symmetric near-global minima near (±0.5, ±0.5). Global minimum ≈ -2000.004. This is the REAL Chen V – not the incorrect linear versions from Jamil & Yang (2013) or others.
+- **Formula**: f(\mathbf{x}) = -\left[ \frac{0.001}{(0.001)^2 + (x_1^2 + x_2^2 - 1)^2} + \frac{0.001}{(0.001)^2 + (x_1^2 + x_2^2 - 0.5)^2} + \frac{0.001}{(0.001)^2 + (x_1^2 - x_2^2)^2} \right]
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: -2000.0039999840005 at [0.5, 0.5]
+- **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
+- **Reference**: Chen (2003) – original publication
 
 
 ### chichinadze
@@ -410,13 +406,11 @@ It models an exponential fitting problem.
 
 
 ### devilliersglasser2
-- **Description**: De Villiers-Glasser function no. 2 (de Villiers and Glasser, 1981). A 5-dimensional nonlinear least squares problem for parameter estimation. Global minimum f(x*)=0. Properties based on Jamil & Yang (2013).
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{24} \left[ x_1 x_2^{t_i} \tanh\left(x_3 t_i + \sin(x_4 t_i)\right) \cos\left(t_i e^{x_5}\right) - y_i \right]^2 \\
-\text{where } t_i = 0.1(i-1), \\
-y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_i).
-- **Bounds/Minimum**: Bounds: [0.0, 0.0, 0.0, 0.0, 0.0]; Min: 0.0 at [53.81, 1.27, 3.012, 2.13, 0.507]
+- **Description**: De Villiers-Glasser function no. 2 (de Villiers and Glasser, 1981). Search space restricted to x_i ≥ 1.0 to ensure real-valued x₂^{t_i} (standard in modern benchmark implementations, e.g. AMPGO/Gavana, SciPy, pymoo, NLopt test suites). Original paper allows negative x₂ (complex values possible). Properties based on Jamil & Yang (2013).
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{24} \left[ x_1 x_2^{t_i} \tanh(x_3 t_i + \sin(x_4 t_i)) \cos(t_i e^{x_5}) - y_i \right]^2,\quad t_i = 0.1(i-1),\quad y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_i).
+- **Bounds/Minimum**: Bounds: [1.0, 1.0, 1.0, 1.0, 1.0]; Min: 0.0 at [53.81, 1.27, 3.012, 2.13, 0.507]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous
-- **Reference**: Unknown
+- **Reference**: de Villiers and Glasser (1981); Jamil & Yang (2013)
 
 
 ### dixonprice
@@ -436,19 +430,19 @@ y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_
 
 
 ### dropwave
-- **Description**: Drop-Wave function: A multimodal, non-convex, non-separable, differentiable function defined for 2 dimensions, with a global minimum at [0, 0].
-- **Formula**: -\frac{1 + \cos(12 \sqrt{x_1^2 + x_2^2})}{0.5 (x_1^2 + x_2^2) + 2}
+- **Description**: Properties based on Jamil & Yang (2013, p. 24); ursprünglich aus [Mutmaßliche Ursprungsquelle, falls bekannt].
+- **Formula**: f(\mathbf{x}) = -\frac{1 + \cos(12 \sqrt{x_1^2 + x_2^2})}{0.5 (x_1^2 + x_2^2) + 2}.
 - **Bounds/Minimum**: Bounds: [-5.12, -5.12]; Min: -1.0 at [0.0, 0.0]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 24)
 
 
 ### easom
-- **Description**: Easom function: Multimodal test function with a small global minimum area relative to the search space.
-- **Formula**: -\cos(x_1)\cos(x_2)\exp(-((x_1-\pi)^2 + (x_2-\pi)^2))
+- **Description**: Easom function. Properties based on Jamil & Yang (2013, p. 19); originally from Easom (1990).
+- **Formula**: f(\mathbf{x}) = -\cos(x_1) \cos(x_2) \exp\left( -((x_1 - \pi)^2 + (x_2 - \pi)^2) \right).
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: -1.0 at [π, π]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous, non-convex
-- **Reference**: Unknown
+- **Reference**: Jamil & Yang (2013, p. 19)
 
 
 ### eggcrate
@@ -516,11 +510,11 @@ y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_
 
 
 ### gulfresearch
-- **Description**: The Gulf Research and Development problem, a 3D multimodal function. Properties based on Jamil & Yang (2013).
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{99} \left[ \exp\left( -\frac{(u_i - x_2)^{x_3}}{x_1} \right) - 0.01 i \right]^2, \quad u_i = 25 + \left[-50 \ln(0.01 i)\right]^{2/3}.
+- **Description**: Gulf Research and Development problem (least-squares). Properties based on Jamil & Yang (2013, p. 60).
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{99} \left[ \exp\left( -\frac{(u_i - x_2)^{x_3}}{x_1} \right) - 0.01 i \right]^2, \quad u_i = 25 + [-50 \ln(0.01 i)]^{2/3}.
 - **Bounds/Minimum**: Bounds: [0.1, 0.0, 0.0]; Min: 0.0 at [50.0, 25.0, 1.5]
 - **Properties**: multimodal, non-separable, bounded, differentiable, continuous
-- **Reference**: Jamil & Yang (2013)
+- **Reference**: Jamil & Yang (2013, p. 60)
 
 
 ### hansen
@@ -633,6 +627,14 @@ y_i = 53.81 \cdot 1.27^{t_i} \tanh(3.012 t_i + \sin(2.13 t_i)) \cos(e^{0.507} t_
 - **Bounds/Minimum**: Bounds: [-1.2, -1.2]; Min: 0.0 at [1.0, 1.0]
 - **Properties**: non-separable, bounded, unimodal, differentiable, continuous
 - **Reference**: Lavi and Vogel (1966)
+
+
+### levy
+- **Description**: Levy function. Properties based on Jamil & Yang (2013, p. 164); originally from Levy & Montalvo (1977).
+- **Formula**: f(\mathbf{x}) = \sin^2(\pi w_1) + \sum_{i=1}^{n-1} (w_i - 1)^2 [1 + 10 \sin^2(\pi w_i + 1)] + (w_n - 1)^2 [1 + \sin^2(2\pi w_n)], \quad w_i = 1 + \frac{x_i - 1}{4}.
+- **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: 0.0 at [1.0, 1.0]
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable, non-convex
+- **Reference**: Jamil & Yang (2013, p. 164)
 
 
 ### levyjamil
@@ -1069,11 +1071,11 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 
 
 ### schaffern4
-- **Description**: Modified Schaffer N.4 function: A multimodal function with global minimum at (0, 1.25313) and other equivalent points. Properties adapted from Al-Roomi (2015, Modified Schaffer's Function No. 04) for the variant with |x₁² - x₂²|; originally from Jamil & Yang (2013, p. 27) with sin(x₁ - x₂).
-- **Formula**: f(\mathbf{x}) = 0.5 + \frac{\cos^2(\sin(|x_1^2 - x_2^2|)) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}
+- **Description**: Properties based on Jamil & Yang (2013, p. 27); Adapted for variant with |x₁² - x₂²| from Al-Roomi (2015); Contains abs terms leading to non-differentiability at x₁² = x₂² (gradient returns NaN there).
+- **Formula**: f(\mathbf{x}) = 0.5 + \frac{\cos^2(\sin(|x_1^2 - x_2^2|)) - 0.5}{(1 + 0.001(x_1^2 + x_2^2))^2}.
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.29257863203598033 at [0.0, 1.253131828792882]
 - **Properties**: multimodal, non-separable, bounded, partially differentiable, continuous, non-convex
-- **Reference**: Al-Roomi (2015, Modified Schaffer's Function No. 04)
+- **Reference**: Jamil & Yang (2013, p. 27)
 
 
 ### schmidtvetters
@@ -1429,7 +1431,7 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 
 
 ### trid
-- **Description**: Trid function; Properties based on Jamil & Yang (2013, p. 35); Adapted for scalable unimodal variant; ursprünglich aus Dixon & Szegö (1978).
+- **Description**: Trid function. Properties based on Jamil & Yang (2013, p. 35); originally from Dixon & Szegö (1978).
 - **Formula**: f(\mathbf{x}) = \sum_{i=1}^n (x_i - 1)^2 - \sum_{i=2}^n x_i x_{i-1}.
 - **Bounds/Minimum**: Bounds: [-4, -4]; Min: -2.0 at [2, 2]
 - **Properties**: convex, non-separable, bounded, unimodal, differentiable, continuous, scalable
@@ -1541,19 +1543,19 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 
 
 ### wayburnseader2
-- **Description**: Wayburn Seader 2 function; Properties based on Jamil & Yang (2013, p. 63); multiple global minima at (0.2,1) and (0.425,1); originally from Wayburn & Seader (1987). Formel only uses first 2 variables; marked as scalable in source but adapted to fixed n=2.
+- **Description**: Wayburn Seader 2 function. Properties based on Jamil & Yang (2013, p. 63); multiple global minima at (0.2,1) and (0.425,1); originally from Wayburn & Seader (1987). Formula only uses first 2 variables; marked as scalable in source but adapted to fixed n=2 due to limited metadata for higher dimensions. Listed as unimodal in source despite multiple minima; added controversial.
 - **Formula**: f(\mathbf{x}) = \left[ 1.613 - 4(x_1 - 0.3125)^2 - 4(x_2 - 1.625)^2 \right]^2 + (x_2 - 1)^2.
-- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 0.0 at [0.2, 1.0]
-- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
+- **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 0.0 at [0.200138974079519, 1.000000000083411]
+- **Properties**: controversial, non-separable, bounded, unimodal, differentiable, continuous
 - **Reference**: Jamil & Yang (2013, p. 63)
 
 
 ### wayburnseader3
-- **Description**: Wayburn Seader 3 Function; Properties based on Jamil & Yang (2013); originally from Wayburn & Seader (1987). Fixed n=2 (formula uses only first 2 variables; 'scalable' in source ignored per consistency rule). Corrected minimum from numerical optimization (source reports approximate 21.35 at [5.611,6.187], but actual global minimum is 19.10588 at [5.1469,6.8396]).
-- **Formula**: f(\mathbf{x}) = \frac{2 x_1^3}{3} - 8 x_1^2 + 33 x_1 - x_1 x_2 + 5 + \left[ (x_1 - 4)^2 + (x_2 - 5)^2 - 4 \right]^2.
+- **Description**: Wayburn Seader 3 function. Properties based on Jamil & Yang (2013, p. 63); originally from Wayburn & Seader (1987). Marked as scalable in source, but formula only uses first 2 variables; adapted to fixed n=2. Minimum corrected via numerical optimization from source approximate 21.35 at (5.611,6.187) to exact 19.10588 at (5.147,6.840).
+- **Formula**: f(\mathbf{x}) = \frac{2}{3} x_1^3 - 8 x_1^2 + 33 x_1 - x_1 x_2 + 5 + \left[ (x_1 - 4)^2 + (x_2 - 5)^2 - 4 \right]^2.
 - **Bounds/Minimum**: Bounds: [-500.0, -500.0]; Min: 19.105879794568022 at [5.14689674946688, 6.83958974367702]
-- **Properties**: non-separable, bounded, unimodal, differentiable, continuous
-- **Reference**: Jamil & Yang (2013)
+- **Properties**: controversial, non-separable, bounded, unimodal, differentiable, continuous
+- **Reference**: Jamil & Yang (2013, p. 63)
 
 
 ### weierstrass
