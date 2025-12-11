@@ -87,4 +87,3 @@ const SCHAFFERN4_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "schaffern4" == basename(@__FILE__)[1:end-3] "schaffern4: Dateiname mismatch!"

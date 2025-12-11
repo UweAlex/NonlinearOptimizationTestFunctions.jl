@@ -7,9 +7,8 @@ export SHUBERT_ADDITIVE_SINE_FUNCTION, shubert_additive_sine, shubert_additive_s
 
 function shubert_additive_sine(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shubert_additive_sine" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 2 && throw(ArgumentError("shubert_additive_sine requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -26,9 +25,8 @@ end
 
 function shubert_additive_sine_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))
+    n < 2 && throw(ArgumentError("shubert_additive_sine requires at least 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -47,7 +45,7 @@ const SHUBERT_ADDITIVE_SINE_FUNCTION = TestFunction(
     shubert_additive_sine,
     shubert_additive_sine_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # "shubert_additive_sine" [RULE_NAME_CONSISTENCY]
+        :name => "shubert_additive_sine",  # "shubert_additive_sine" [RULE_NAME_CONSISTENCY]
         :description => "Additive sine Shubert function (Shubert 3); separable and asymmetric with ≈400 local minima in 2D; properties based on Jamil & Yang (2013, p. 55, f134); originally from Yao (1999).",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^n \sum_{j=1}^5 j \sin((j+1)x_i + j).""",
         :start => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); zeros(n) end,
@@ -60,3 +58,4 @@ const SHUBERT_ADDITIVE_SINE_FUNCTION = TestFunction(
         :ub => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); fill(10.0, n) end,
     )
 )
+

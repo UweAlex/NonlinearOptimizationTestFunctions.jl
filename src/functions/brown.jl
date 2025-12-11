@@ -1,7 +1,7 @@
 # src/functions/brown.jl
 # Purpose: Implements the Brown test function with its gradient for nonlinear optimization.
 # Context: Part of NonlinearOptimizationTestFunctions.
-# Last modified: October 22, 2025
+# Last modified: 27. November 2025
 
 export BROWN_FUNCTION, brown, brown_gradient
 
@@ -15,9 +15,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function brown(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))
+    n < 2 && throw(ArgumentError("brown requires at least 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     sum = zero(T)
@@ -34,9 +33,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function brown_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))
+    n < 2 && throw(ArgumentError("brown requires at least 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     grad = zeros(T, n)
@@ -62,14 +60,14 @@ const BROWN_FUNCTION = TestFunction(
     brown,
     brown_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
-        :start => (n::Int) -> begin n < 2 && throw(ArgumentError("$(basename(@__FILE__)[1:end-3]) requires at least 2 dimensions")); fill(1.0, n) end,
-        :min_position => (n::Int) -> begin n < 2 && throw(ArgumentError("$(basename(@__FILE__)[1:end-3]) requires at least 2 dimensions")); zeros(n) end,
-        :min_value => (n::Int) -> begin n < 2 && throw(ArgumentError("$(basename(@__FILE__)[1:end-3]) requires at least 2 dimensions")); 0.0 end,
+        :name => "brown",
+        :start => (n::Int) -> (n < 2 && throw(ArgumentError("brown requires at least 2 dimensions")); fill(1.0, n)),
+        :min_position => (n::Int) -> (n < 2 && throw(ArgumentError("brown requires at least 2 dimensions")); zeros(n)),
+        :min_value => (n::Int) -> (n < 2 && throw(ArgumentError("brown requires at least 2 dimensions")); 0.0),
         :default_n => 2,
         :properties => ["unimodal", "non-separable", "differentiable", "scalable", "continuous", "bounded"],
-        :lb => (n::Int) -> begin n < 2 && throw(ArgumentError("$(basename(@__FILE__)[1:end-3]) requires at least 2 dimensions")); fill(-1.0, n) end,
-        :ub => (n::Int) -> begin n < 2 && throw(ArgumentError("$(basename(@__FILE__)[1:end-3]) requires at least 2 dimensions")); fill(4.0, n) end,
+        :lb => (n::Int) -> (n < 2 && throw(ArgumentError("brown requires at least 2 dimensions")); fill(-1.0, n)),
+        :ub => (n::Int) -> (n < 2 && throw(ArgumentError("brown requires at least 2 dimensions")); fill(4.0, n)),
         :description => "Brown function: Unimodal, non-separable, differentiable, scalable, continuous, bounded. Highly sensitive to changes in variables due to exponential terms. Properties based on [Jamil & Yang (2013, p. 5)]; originally from [Brown (1966)].",
         :math => raw"\sum_{i=1}^{n-1} \left[ (x_i^2)^{(x_{i+1}^2 + 1)} + (x_{i+1}^2)^{(x_i^2 + 1)} \right]",
         :source => "Jamil & Yang (2013, p. 5)"

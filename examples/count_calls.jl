@@ -11,9 +11,8 @@
 
 using NonlinearOptimizationTestFunctions
 using Optim
-
 function run_count_calls_example()
-    
+
 
     # Select the Rosenbrock test function
     tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
@@ -36,7 +35,7 @@ function run_count_calls_example()
     println("Gradient calls after evaluation: ", get_grad_count(tf))  # Should print 1
 
     # Perform optimization with L-BFGS
-    result = optimize(tf.f, tf.gradient!, x, LBFGS(), Optim.Options(f_reltol=1e-6))
+    result = Optim.optimize(tf.f, tf.gradient!, x, Optim.LBFGS(), Optim.Options(f_reltol=1e-6))
     println("Optimization result - Minimizer: ", Optim.minimizer(result))
     println("Optimization result - Minimum: ", Optim.minimum(result))
     println("Function calls after optimization: ", get_f_count(tf))  # Prints total function calls

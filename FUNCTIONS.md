@@ -1,13 +1,13 @@
 # Alphabetical List of Benchmark Functions
 
-Generated from package metadata on 2025-11-25. Functions are listed alphabetically with their details.
+Generated from package metadata on 2025-12-10. Functions are listed alphabetically with their details.
 
 ### ackley
-- **Description**: Ackley function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Standard bounds are [-32.768, 32.768]^n as per Molga & Smutnicki (2005). Alternative bounds [-5, 5]^n are available.
-- **Formula**: f(x) = -20 \exp\left(-0.2 \sqrt{\frac{1}{n} \sum_{i=1}^n x_i^2}\right) - \exp\left(\frac{1}{n} \sum_{i=1}^n \cos(2\pi x_i)\right) + 20 + e
-- **Bounds/Minimum**: Bounds: [-32.768, -32.768]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: multimodal, non-separable, bounded, differentiable, scalable, continuous, non-convex
-- **Reference**: Molga & Smutnicki (2005): 2.9
+- **Description**: Ackley function – one of the most famous deceptive multimodal benchmarks. Nearly flat outer region with a deep central hole and countless cosine-induced local minima. Systematically misleads gradient-based and local optimizers away from the global minimum at zero.
+- **Formula**: f(\mathbf{x}) = -20\exp\!\left(-0.2\sqrt{\frac{1}{n}\sum x_i^2}\right) - \exp\!\left(\frac{1}{n}\sum\cos(2\pi x_i)\right) + 20 + e
+- **Bounds/Minimum**: Bounds: [-32.768, -32.768, -32.768, -32.768, -32.768, -32.768, -32.768, -32.768, -32.768, -32.768]; Min: 0.0 at [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+- **Properties**: multimodal, deceptive, non-separable, bounded, differentiable, scalable, continuous, non-convex
+- **Reference**: Ackley (1987); Molga & Smutnicki (2005); Jamil & Yang (2013); Lehman & Stanley (2011, arXiv:1106.2128) – classic deceptive function
 
 
 ### ackley2
@@ -502,11 +502,11 @@ a=1,\; b=\frac{5.1}{4\pi^2},\; c=\frac{5}{\pi},\; r=6,\; s=10,\; t=\frac{1}{8\pi
 
 
 ### griewank
-- **Description**: Griewank function: A scalable, multimodal, non-convex, non-separable, differentiable, continuous, bounded test function with a global minimum at (0, ..., 0) with value 0.0. References: Jamil & Yang (2013), al-roomi.org.
-- **Formula**: f(x) = \sum_{i=1}^n \frac{x_i^2}{4000} - \prod_{i=1}^n \cos\left(\frac{x_i}{\sqrt{i}}\right) + 1
-- **Bounds/Minimum**: Bounds: [-600.0, -600.0]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: multimodal, non-separable, bounded, differentiable, scalable, continuous, non-convex
-- **Reference**: Unknown
+- **Description**: Griewank function – one of the most deceptive multimodal benchmarks in global optimization. The oscillating product term creates countless local minima that become increasingly misleading with higher dimensions. Gradient-based methods are systematically trapped far from the global minimum.
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^n \frac{x_i^2}{4000} - \prod_{i=1}^n \cos\!\left(\frac{x_i}{\sqrt{i}}\right) + 1
+- **Bounds/Minimum**: Bounds: [-600.0, -600.0, -600.0, -600.0, -600.0, -600.0, -600.0, -600.0, -600.0, -600.0]; Min: 0.0 at [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+- **Properties**: multimodal, deceptive, non-separable, bounded, differentiable, scalable, continuous, non-convex
+- **Reference**: Griewank (1981); Molga & Smutnicki (2005, p. 19); Jamil & Yang (2013, p. 57); Lehman & Stanley (2011, arXiv:1106.2128) – classic deceptive benchmark; Locatelli & Schoen (2013) – deception increases with dimension
 
 
 ### gulfresearch
@@ -943,11 +943,11 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 
 
 ### rastrigin
-- **Description**: Rastrigin function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Bounds are [-5.12, 5.12].
-- **Formula**: f(x) = 10n + \sum_{i=1}^n [x_i^2 - 10 \cos(2\pi x_i)]
-- **Bounds/Minimum**: Bounds: [-5.12, -5.12]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: multimodal, separable, bounded, differentiable, scalable, continuous, non-convex
-- **Reference**: Unknown
+- **Description**: Rastrigin function – highly multimodal and strongly deceptive. The regular arrangement of deep local minima systematically misleads gradient-based and local search methods away from the global minimum at zero. Classic example of a deceptive function in global optimization literature.
+- **Formula**: f(\mathbf{x}) = 10n + \sum_{i=1}^n \left[ x_i^2 - 10 \cos(2\pi x_i) \right]
+- **Bounds/Minimum**: Bounds: [-5.12, -5.12, -5.12, -5.12, -5.12, -5.12, -5.12, -5.12, -5.12, -5.12]; Min: 0.0 at [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+- **Properties**: multimodal, separable, deceptive, bounded, differentiable, scalable, continuous, non-convex
+- **Reference**: Molga & Smutnicki (2005), p. 24; Goldberg (1989) – classic deceptive benchmark; Jamil & Yang (2013), p. 88
 
 
 ### ripple1

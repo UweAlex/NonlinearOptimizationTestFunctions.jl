@@ -7,9 +7,8 @@ export SPHERE_ROTATED_FUNCTION, sphere_rotated, sphere_rotated_gradient
 
 function sphere_rotated(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "sphere_rotated"
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("sphere_rotated requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -24,9 +23,8 @@ end
 
 function sphere_rotated_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("sphere_rotated requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -41,7 +39,7 @@ const SPHERE_ROTATED_FUNCTION = TestFunction(
     sphere_rotated,
     sphere_rotated_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "sphere_rotated",
         :description => "Rotated Sphere benchmark function; Properties based on CEC 2005 Problem Definitions and BBOB-Suiten.",
         :math => raw"""f(\mathbf{x}) = \| Q \mathbf{x} \|^2.""",
         :start => (n::Int) -> zeros(n),
@@ -54,3 +52,4 @@ const SPHERE_ROTATED_FUNCTION = TestFunction(
         :ub => (n::Int) -> fill(100.0, n),
     )
 )
+

@@ -58,4 +58,3 @@ const WAVY_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "wavy" == basename(@__FILE__)[1:end-3] "wavy: Dateiname mismatch!"

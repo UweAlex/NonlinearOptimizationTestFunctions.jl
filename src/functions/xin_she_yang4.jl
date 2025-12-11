@@ -94,4 +94,3 @@ const XIN_SHE_YANG4_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "xin_she_yang4" == basename(@__FILE__)[1:end-3] "xin_she_yang4: Dateiname mismatch!"

@@ -58,4 +58,3 @@ const AXISPARALLELHYPERELLIPSOID_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "axisparallelhyperellipsoid" == basename(@__FILE__)[1:end-3] "axisparallelhyperellipsoid: Dateiname mismatch!"

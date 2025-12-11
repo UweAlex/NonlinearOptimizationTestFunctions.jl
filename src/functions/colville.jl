@@ -15,9 +15,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function colville(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 4 && throw(ArgumentError("$(func_name) requires exactly 4 dimensions"))
+    n != 4 && throw(ArgumentError("colville requires exactly 4 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -39,9 +38,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function colville_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 4 && throw(ArgumentError("$(func_name) requires exactly 4 dimensions"))
+    n != 4 && throw(ArgumentError("colville requires exactly 4 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 4)
     any(isinf.(x)) && return fill(T(Inf), 4)
     
@@ -59,7 +57,7 @@ const COLVILLE_FUNCTION = TestFunction(
     colville,
     colville_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "colville",
         :start => () -> [0.0, 0.0, 0.0, 0.0],
         :min_position => () -> [1.0, 1.0, 1.0, 1.0],
         :min_value => () -> 0.0,

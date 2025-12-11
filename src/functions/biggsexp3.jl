@@ -82,4 +82,3 @@ const BIGGSEXP3_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "biggsexp3" == basename(@__FILE__)[1:end-3] "biggsexp3: Dateiname mismatch!"

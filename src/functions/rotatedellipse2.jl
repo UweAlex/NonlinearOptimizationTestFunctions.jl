@@ -17,9 +17,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function rotatedellipse2(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("rotatedellipse2 requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -35,9 +34,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function rotatedellipse2_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("rotatedellipse2 requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
     any(isinf.(x)) && return fill(T(Inf), 2)
     
@@ -53,7 +51,7 @@ const ROTATEDELLIPSE2_FUNCTION = TestFunction(
     rotatedellipse2,
     rotatedellipse2_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "rotatedellipse2",
         :description => "Rotated Ellipse N.2 function: A variant of the Rotated Ellipse, convex quadratic with elliptical contours rotated by cross-term. Properties based on [Jamil & Yang (2013, Entry 107)].",
         :math => raw"""f(\mathbf{x}) = 7x_1^2 - 6\sqrt{3}x_1x_2 + 13x_2^2.""",
         :start => () -> [1.0, 1.0],

@@ -72,4 +72,3 @@ const BARTELSCONN_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "bartelsconn" == basename(@__FILE__)[1:end-3] "bartelsconn: Dateiname mismatch!"

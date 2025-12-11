@@ -17,11 +17,10 @@ end
 
 function shubert_constrained(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # [RULE_NAME_CONSISTENCY]
     
     # [RULE_ERROR_HANDLING]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("shubert_constrained requires at least 1 dimension"))  # [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -37,11 +36,10 @@ end
 
 function shubert_constrained_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     
     # [RULE_ERROR_HANDLING]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("shubert_constrained requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -69,7 +67,7 @@ const SHUBERT_CONSTRAINED_FUNCTION = TestFunction(  # [RULE_TESTFUNCTION_FIELDS]
     shubert_constrained,
     shubert_constrained_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # [RULE_NAME_CONSISTENCY]
+        :name => "shubert_constrained",  # [RULE_NAME_CONSISTENCY]
         :description => "Constrained Shubert function based on classical Shubert (f133) with linear constraint sum(x_i) ≤ 0. Deterministic minimum is -186.7309 at feasible points, e.g., [-7.0835, 4.8580] for n=2. Properties based on Jamil & Yang (2013, p. 55).",
         :math => raw"""f(\mathbf{x}) = \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)x_i + j), \quad \text{s.t.} \quad \sum_{i=1}^n x_i \leq 0.""",
         :start => (n::Int) -> begin
@@ -95,3 +93,4 @@ const SHUBERT_CONSTRAINED_FUNCTION = TestFunction(  # [RULE_TESTFUNCTION_FIELDS]
         :constraints => (x::AbstractVector) -> sum(x) <= 0  # [RULE_CONSTRAINED]
     )
 )
+

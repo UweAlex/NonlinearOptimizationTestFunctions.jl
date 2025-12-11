@@ -7,9 +7,8 @@ export SHUBERT_GENERALIZED_FUNCTION, shubert_generalized, shubert_generalized_gr
 
 function shubert_generalized(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shubert_generalized" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("shubert_generalized requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -31,9 +30,8 @@ end
 
 function shubert_generalized_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("shubert_generalized requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -57,7 +55,7 @@ const SHUBERT_GENERALIZED_FUNCTION = TestFunction(
     shubert_generalized,
     shubert_generalized_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # "shubert_generalized" [RULE_NAME_CONSISTENCY]
+        :name => "shubert_generalized",  # "shubert_generalized" [RULE_NAME_CONSISTENCY]
         :description => "Generalized Shubert function (parametric additive cosine); separable with ≈400 local minima in 2D; standard params (a_j=j, b_j=j+1, c_j=j) identical to Shubert 2; properties based on Jamil & Yang (2013, p. 56, f135-Generalized); CEC 2008–2013.",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^n \sum_{j=1}^5 a_j \cos(b_j x_i + c_j).""",
         :start => (n::Int) -> begin n < 1 && throw(ArgumentError("At least 1 dimension")); zeros(n) end,
@@ -70,3 +68,4 @@ const SHUBERT_GENERALIZED_FUNCTION = TestFunction(
         :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("At least 1 dimension")); fill(10.0, n) end,
     )
 )
+

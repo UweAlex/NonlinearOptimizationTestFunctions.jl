@@ -7,9 +7,8 @@ export SPHERE_NOISY_FUNCTION, sphere_noisy, sphere_noisy_gradient
 
 function sphere_noisy(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("sphere_noisy requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -22,9 +21,8 @@ end
 
 function sphere_noisy_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("sphere_noisy requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -39,7 +37,7 @@ const SPHERE_NOISY_FUNCTION = TestFunction(
     sphere_noisy,
     sphere_noisy_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "sphere_noisy",
         :description => "Noisy Sphere benchmark function with additive uniform [0,1) noise; Properties based on BBOB f101 / Nevergrad 'NoisySphere'. Additive uniform [0,1) noise.",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^n x_i^2 + \epsilon, \epsilon \sim U[0,1].""",
         :start => (n::Int) -> zeros(n),

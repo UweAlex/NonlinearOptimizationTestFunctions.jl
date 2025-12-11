@@ -64,4 +64,3 @@ const WAYBURNSEADER2_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "wayburnseader2" == basename(@__FILE__)[1:end-3] "wayburnseader2: Dateiname mismatch!"

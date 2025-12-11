@@ -1,0 +1,666 @@
+```
+# Erweiterte Anleitung: Hinzufügen einer neuen Testfunktion (mit Templates, Properties-Liste und strengen Regeln)
+
+Diese Anleitung basiert auf der ursprünglichen Version und ist verbessert durch Integration von maschinenlesbaren Regeln (RFC-2119-Keywords: MUST, SHOULD, MAY), Tags für Suchbarkeit, thematische Gruppierung, Beispiele und Automatisierungs-Hinweise. Redundanz ist beabsichtigt für Klarheit. Die Regeln fördern Konsistenz, reduzieren Fehler und machen die Anleitung KI-freundlich. Wichtige Regeln werden wiederholt. Neu: Ergänzungen zu häufigen Syntax-Pitfalls in Meta-Funktionen und Tests, basierend auf realen Fehlern (z.B. Signatur-Mismatches bei :min_value und Vektor-Vergleichen).  Für skalierbare Funktionen: Integriere :default_n als Meta-Feld, um eine Standarddimension für Tests und Dokumentation zu definieren.  Noise-Handling: Für Funktionen mit "has_noise" (z.B. Quartic), passe Validierungen an, um stochastische Effekte zu berücksichtigen – exakte Gleichheit ist unmöglich; verwende Range-Checks statt atol.  [RULE_SOURCE_FORMULA_CONSISTENCY] MUST: Die Quellen für :properties MÜSSEN die exakt gleiche Funktionsformel verwenden wie die implementierte Version (z.B. gleiche Reihenfolge der trigonometrischen Funktionen, exakte Denominator-Struktur). Wenn keine exakte Übereinstimmung verfügbar, adaptiere Properties nur aus der nächstverwandten Quelle und notiere die Abweichung explizit in :description (z.B. "Properties adapted from [Quelle] for variant without absolute value"). Suche bei Bedarf weitere Quellen, die die präzise Formel abdecken, aber priorisiere Konsistenz über Vollständigkeit.
+
+## Grundprinzipien
+ - Verwende RFC-2119-Keywords: MUST (verpflichtend), SHOULD (empfohlen), MAY (optional).
+ - Suche nach Tags wie [RULE_SIGNATURE] für schnelle Referenz.
+ - Automatisierte Checks: Führe vor jedem Commit CI-Skripte aus (z.B. Syntax-Check mit julia --project=. -e 'include("src/functions/<name>.jl")' + Namens-Check: julia --project=. -e 'tf = <UPPER>_FUNCTION; @test tf.meta[:name] == "<name>"').
+ - Wiederhole kritische Regeln: z.B. Vermeide globale Konstanten [RULE_NO_CONST_ARRAYS].
+ - Assume gute Absicht: Keine moralisierenden Kommentare; fokussiere auf Fakten.
+ - [RULE_META_CONSISTENCY] MUST: Alle Meta-Funktionen (:start, :min_position, :min_value, :lb, :ub) müssen konsistente Signaturen haben. Für skalierbare Funktionen: Wenn der Wert von n unabhängig ist (z.B. konstantes Minimum), verwende (n::Int) -> value (ignoriere n intern). Wenn abhängig (z.B. Position sqrt.(1:n)), verwende (n::Int) -> ... . Teste im REPL: tf.meta[:min_value](2) – muss funktionieren; tf.meta[:min_value]() darf MethodError werfen, da runtests.jl für scalable n aufruft.  Für konstante Werte in skalierbaren Funktionen (z.B. min_value=0.0 unabhängig von n): Verwende (n::Int) -> value, um MethodError in runtests.jl zu vermeiden (Aufruf mit n bei ()-Signatur).
+ - [RULE_DEFAULT_N] MUST für skalierbare Funktionen: Setze :default_n => Integer im Meta-Dict. Der Wert MUST >= 2 sein und das kleinste mögliche n > 1 für die Funktion darstellen (z.B. 4 für Funktionen, die in Blöcken von 4 skaliert werden, wie PowellSingular2; 2 für allgemein skalierbare wie Ackley). Verwende es in Tests und Dokumentation (z.B. print_function_properties.jl) als Standard-n für Anzeigen und Validierungen. SHOULD: Validiere im Test, dass tf.f mit n=default_n type-stable ist (@code_warntype tf.f(rand(n))).
+ - [NEW RULE_NOISE_HANDLING] MUST: Für Funktionen mit "has_noise" in :properties (z.B. Quartic mit uniform [0,1)-Noise): In runtests.jl und funktionsspezifischen Tests Range-Checks verwenden (z.B. f(min_pos) >= 0 && <1) statt f(min_pos) ≈ 0 atol=1e-8. Dokumentiere Noise-Details in :description (z.B. "Additive uniform [0,1) noise"). Gradient bleibt deterministisch (nur f betroffen).
+
+## Recherche und Validierung
+Ziel: Sammle genaue Daten zu Minima, Werten, Schranken und Properties aus zuverlässigen Quellen. Vermeide Rundungen.
+
+ - [RULE_PROPERTIES_SOURCE] MUST: Notiere :source im Meta-Dict immer als die **direkte Quelle**, aus der die spezifischen Details (Formel, Minimum, Bounds, Properties) tatsächlich übernommen wurden (z.B. "Jamil & Yang (2013, p. 27)" für die Sargan-Funktion). Priorisiere umfassende Quellen wie Jamil & Yang ( https://arxiv.org/pdf/1308.4008 ) für Modality/Separability. Validiere Properties gegen diese Quelle; bei Abweichungen notiere in :description ("Adapted from [Quelle]").  Gib immer eine spezifische Stelle an (z.B. "p. 27" oder "Section 3.2"), um die Übernahme nachvollziehbar zu machen. Vermeide mutmaßliche Ursprungsquellen (z.B. Dixon & Szegö (1978) für Sargan) als primäre :source – erwähne sie nur in :description als historischen Kontext.  [RULE_SOURCE_FORMULA_CONSISTENCY] Wiederholung: Properties-Quellen MÜSSEN die exakt gleiche Formel verwenden; bei Varianten (z.B. mit/ohne Absolutwert) notiere "Adapted for [spezifische Abweichung]" und suche ggf. alternative Quellen.
+ - SHOULD: Prüfe ill-conditioning mit cond(ForwardDiff.hessian(tf.f, min_pos)) < 1e6; bei hoher Kondition füge "ill-conditioned" zu Properties hinzu.  Für noisy Funktionen: Ignoriere Noise in Hessian-Check (z.B. setze rand()=0 temporär).
+ - MAY: Für komplexe Funktionen (z.B. Cola) erstelle Validierungs-Skripte (z.B. build_xy testen).
+ - [RULE_RULE_MIN_VALUE_INDEPENDENT] SHOULD: Für skalierbare Funktionen mit konstantem globalem Minimum (z.B. Qing: immer 0.0), setze :min_value = (n::Int) -> 0.0, auch wenn :min_position (n::Int) -> ... ist (ignoriere n). Beispiel: In Jamil & Yang ( https://arxiv.org/pdf/1308.4008 , p. 29) ist Qing multimodal, aber Minimum konstant – keine n-Abhängigkeit.  Für noisy konstante Minima (z.B. Quartic: deterministisch 0, plus Noise): Verwende (n::Int) -> 0.0 als deterministischen Wert; validiere in Tests mit Noise-Range.
+ -  Für :default_n: Bestimme basierend auf der Funktion (z.B. kleinste n>1, bei der die Funktion definiert ist und Properties gelten; >=2). Validiere: tf.meta[:min_position](default_n) muss funktionieren ohne Error. Für block-skalierbare (z.B. n%4==0): Setze default_n=4.
+
+Quellen-Liste (erweitert):
+ - Jamil & Yang (2013): https://arxiv.org/abs/1308.4008 (primär für Properties; zitiere immer mit spezifischer Seite, z.B. "Jamil & Yang (2013, p. 27)").
+ - Al-Roomi (2015): https://www.al-roomi.org/benchmarks/unconstrained.
+ - Weitere: sfu.ca/~ssurjano, geatbx.com, MVF-Library (Adorio & Diliman, 2005).
+
+Häufige Fehler (konsolidiert mit Beispielen):
+- Meta-Typ-Scope-Fehler: Verwendung von T() in Meta-Funktionen (z. B. fill(T(1.0), n) in :start) führt zu UndefVarError(:T), da Meta-Funktionen außerhalb des where-Kontexts definiert sind. Lösung: Verwende immer Float64-Literale (z. B. fill(1.0, n), zeros(n)). Julia konvertiert bei Bedarf in tf.f(tf.meta[:start](n)). Beispiel: In skalierbaren Funktionen: :start => (n::Int) -> fill(1.0, n). Validiere im REPL: tf.meta[:start](2) – muss Vector{Float64} ohne Error zurückgeben.
+- Automatisierbar: CI-Check: julia --project=. -e 'include("src/functions/<name>.jl"); tf = <UPPER>_FUNCTION; @test eltype(tf.meta[:start](2)) == Float64'.
+ - Ungenaue Minima: Berechne exakt via REPL (z.B. tf.f(min_pos) ≈ min_value atol=1e-8).  Für Noise: Verwende multiple Runs und Mittelwert; vermeide atol in runtests.jl.
+ - Namenskonflikte: Vermeide T als Konstante (kollidiert mit Typ T).
+ - Globale Constants: [RULE_NO_CONST_ARRAYS] MUST – Keine globalen const-Arrays; lokale let-Blöcke verwenden. Beispiel: Bei multi-include (devilliersglasser1/2) überschreiben sich Werte.
+ -  Meta-Signatur-Mismatch: Falsche Signatur für :min_value in skalierbaren Funktionen führt zu MethodError (z.B. Aufruf mit n bei ()-Signatur). Lösung: Überprüfe mit REPL: julia> using NonlinearOptimizationTestFunctions; tf = QING_FUNCTION; tf.meta[:min_value](2).
+ -  Test-Syntax-Fehler: all(vec .≈ 0, atol=1e-8) schlägt fehl, da all() kein atol akzeptiert. Verwende all(isapprox.(vec, 0, atol=1e-8)).
+ -  Noise-Validation-Fehler: In runtests.jl schlägt f(min_pos) ≈ 0 atol=1e-6 fehl durch rand() (z.B. Quartic). Lösung: Füge if "has_noise" in properties: @test f_val >=0 && f_val <1 (für [0,1)-Noise).
+ -  Dynamik in AD-Pfad: basename(@__FILE__) in f/grad oder Meta führt zu Zygote.CompileError bei Hessian-Tests (QuoteNode-Assertion). Lösung: Hartkodierte Strings (z.B. "sphere requires..."); basename nur in CI/Assert.
+ -  Name-Inkonsistenz bei hartkodiert: Tippfehler in "sphere" vs. Datei "shpere.jl" – Lösung: Optional @assert "<name>" == basename(@__FILE__)[1:end-3] + CI-Regex-Check ('sphere requires' in sphere.jl).
+ -  Redundante T()-Konvertierungen: `T(0.5)` in Formeln führt zu leichten Instabilitäten. Lösung: Entferne sie; Julia inferiert automatisch. Beispiel: In Schaffer1: `T(0.5) + numerator / denominator` → `0.5 + numerator / denominator`.
+ -  Inkonsistente Quellen: Properties aus Quelle mit abweichender Formel (z.B. sin^2(cos) vs. cos^2(sin)) – Lösung: Suche exakte Matches oder notiere Adaption in :description per [RULE_SOURCE_FORMULA_CONSISTENCY].
+ -  Namenskonflikte in lokalen Hilfsfunktionen: Lokale `rastrigin`-Funktion überschreibt globale → Lösung: Präfix `_shubert_hybrid_rastrigin_rastrigin_component`. Prüfe mit `grep -r "function rastrigin" src/` vor Commit.
+
+## Erlaubte Properties (VALID_PROPERTIES)
+MUST: Nur aus dieser Liste verwenden. Erweitere Set und Readme bei Bedarf (PR mit Quelle).
+SHOULD: Für separable: "separable" (z.B. Bohachevsky1). Ergänze :source.
+
+Tabelle (mit Beschreibungen und Beispielen):
+
+| Property                  | Beschreibung                                                                 | Beispiele (Funktionen)          |
+|---------------------------|-----------------------------------------------------------------------------|---------------------------------|
+| bounded                  | Hat definierte Schranken (:lb, :ub).                                        | Branin, Bohachevsky2            |
+| continuous               | Kontinuierlich überall.                                                     | Ackley, Rosenbrock              |
+| controversial            | Minimum umstritten (z. B. mehrere Quellen).                                 | Langermann                      |
+| convex                   | Konvex (globales Minimum = einziges).                                       | Sphere                          |
+| deceptive                | Täuscht lokale Optima vor.                                                  | -                               |
+| differentiable           | Differenzierbar überall.                                                    | Rosenbrock                      |
+| finite_at_inf            | Endlicher Wert bei ±∞.                                                      | -                               |
+| fully non-separable      | Vollständig nicht-separabel.                                                | -                               |
+| has_constraints          | Hat Nebenbedingungen.                                                       | -                               |
+| has_noise                | Stochastisch/noisy.                                                         | Quartic                         |
+| highly multimodal        | Stark multimodal (viele Local Minima).                                      | Rastrigin                       |
+| multimodal               | Mehrere Local Minima.                                                       | Branin                          |
+| non-convex               | Nicht-konvex.                                                               | Ackley                          |
+| non-separable            | Nicht-separabel (Variablen gekoppelt).                                      | Rosenbrock                      |
+| partially differentiable | Teilweise differenzierbar.                                                  | BartelsConn                     |
+| partially separable      | Teilweise separabel.                                                        | -                               |
+| quasi-convex             | Quasi-konvex.                                                               | -                               |
+| scalable                 | Skalierbar (beliebige n).                                                   | Ackley, Rastrigin               |
+| separable                | Separabel (unabhängige Variablen).                                          | Sphere, Bohachevsky1            |
+| strongly convex          | Stark konvex.                                                               | Quadratic                       |
+| unimodal                 | Unimodal (ein Global Minimum).                                              | Sphere                          |
+| ill-conditioned          | Schlecht konditioniert (hohe Cond-Number).                                  | Rosenbrock                      |
+
+## Umgang mit fehlenden Properties
+
+[RULE_MISSING_PROPERTIES]: Wenn Jamil & Yang eine Property nennt, die nicht in VALID_PROPERTIES ist:
+1. Verwende nur die Properties, die in VALID_PROPERTIES existieren
+2. Dokumentiere fehlende Properties in :description (z.B. "Contains absolute value terms" statt "non-differentiable")
+3. Erstelle KEINE neuen Properties ohne vorherige Erweiterung von VALID_PROPERTIES
+4.  Stelle sicher, dass die Formel in der Quelle exakt passt [RULE_SOURCE_FORMULA_CONSISTENCY]; bei Varianten suche alternative Quellen.
+
+Beispiel: Price Function 1 ist laut Jamil & Yang (2013, p. 32) "non-differentiable, separable, non-scalable"
+→ Verwende: ["continuous", "separable", "multimodal"]
+→ In :description erwähnen: "Contains absolute value terms"
+
+## Code-Struktur und Implementierung
+Ziel: Erstelle <name>.jl mit konsistenter Signatur, ohne externe Deps.
+
+### [RULE_PROPERTIES_CONSISTENCY] MUST – Höchste Priorität des Projekts
+
+Das Feld `:properties` ist das **wissenschaftliche Vertrauenskapital** dieser Bibliothek.  
+Jede neue Testfunktion gilt erst dann als fertig und merge-fähig, wenn **alle** folgenden Bedingungen erfüllt sind:
+
+1. **Vollständigkeit**  
+   Alle relevanten Eigenschaften aus den Quellen (Jamil & Yang, al-roomi, BBOB, CEC, etc.) sind übernommen.
+
+2. **Widerspruchsfreiheit**  
+   Keine logischen Konflikte, z. B.:  
+   - `convex` + `multimodal` / `non-convex` / `deceptive`  
+   - `differentiable` + `partially differentiable`  
+   - `differentiable` + `has_noise`  
+   - `unimodal` + `multimodal`  
+   - `bounded` + `finite_at_inf` (redundant)
+
+3. **Konformität mit der Community-Konvention**  
+   Die Properties entsprechen exakt der in BBOB, CEC, CUTEst, Jamil & Yang 2013, al-roomi.org usw. verwendeten Bedeutung – auch wenn sie teilweise von der strengen mathematischen Definition abweichen (z. B. `partially differentiable` als „fast überall differenzierbar“).
+
+**Automatisierte Prüfung**  
+Der Test `@testset "Property Consistency Checks"` in `test/runtests.jl` prüft dies **automatisch und symmetrisch**.  
+Ein einziger Verstoß führt zum **sofortigen Scheitern der gesamten Test-Suite** und blockiert den Merge (CI fail).
+
+**Fazit**  
+Der Property-Consistency-Test ist der **strengste Test** dieses Projekts.  
+Er darf **niemals** rot sein – auch nicht bei nur einem Verstoß.
+
+
+### [RULE_NAME_CONSISTENCY] MUST (aktualisiert 28.11.2025)
+Der Funktionsname MUSS exakt dem Dateinamen (ohne .jl) entsprechen.
+Beispiele:
+  Datei:   rosenbrock.jl     → Name: "rosenbrock"
+  Datei:   venter_sobiezcczanski_sobieski.jl → Name: "venter_sobiezcczanski_sobieski"
+
+→ NICHT mehr erlaubt:
+  - basename(@__FILE__)[1:end-3]
+  - func_name = ...
+  - $(func_name) in Strings
+
+Stattdessen:
+  - Hartkodierter Name im Meta-Dict:   :name => "rosenbrock",
+  - In Fehlermeldungen direkt:         "rosenbrock requires ..."
+  - Oder (optional):                   "$(tf.meta[:name]) requires ..."
+
+### [RULE_NO_BASENAME] MUST (neu seit 28.11.2025)
+Der Aufruf `basename(@__FILE__)` ist **verboten** – in jeder Form.
+Grund: Verhindert Precompilation, erzeugt Cache-Geister, unsauber.
+→ Lösche jede Zeile, die `basename(@__FILE__)` enthält.
+
+### [RULE_NO_FUNC_NAME] MUST (neu seit 28.11.2025)
+Die Hilfsvariable `func_name = ...` ist **verboten**.
+Grund: Redundant, unsauber, war nur ein Workaround für basename.
+→ Lösche alle `func_name = ...`-Zeilen.
+→ Ersetze `$(func_name)` durch den hartkodierten Namen oder `tf.meta[:name]`.
+
+### [RULE_PRECOMPILE_TRUE] MUST (neu seit 28.11.2025)
+Das Paket muss mit `__precompile__(true)` laufen.
+→ Wenn Precompilation fehlschlägt → Code ist falsch.
+→ Keine Ausreden mehr mit `__precompile__(false)`.
+
+### [RULE_GRADIENT_ACCURACY_TEST] SHOULD (empfohlen)
+Wenn der Gradient-Accuracy-Test bei einer Funktion **systematisch** scheitert
+(z. B. `mishra9`, `venter_sobiezcczanski_sobieski`), weil numerische Ableitung
+bei großen Werten versagt:
+→ Füge im Test eine Ausnahme hinzu:
+```julia
+if tf.name in ["mishra9", "venter_sobiezcczanski_sobieski"]
+    continue
+end
+
+## Schritt 2: Implementierung
+
+## 📝 [RULE_CONST_TYPE_CAST] MUST: Konstanten-Typisierung
+
+Um **Präzisionsverlust** bei höherer Rechengenauigkeit (z.B. `BigFloat`) zu vermeiden und die volle Generizität zu gewährleisten, **MÜSSEN** alle numerischen Konstanten (wie `20.0`, `0.2`, `2*π`, `exp(1)` etc.) im Funktionskörper **explizit** in den generischen Elementtyp `T` gecastet werden.
+
+### ❌ Anti-Pattern (FALSCH)
+
+function ackley(x::AbstractVector)
+    T = eltype(x)
+    a = 20.0       # ❌ Float64 Literal, verliert Genauigkeit bei BigFloat
+    b = 0.2
+    c = 2 * π
+    # ...
+    return ... + a + exp(1) # ❌ exp(1) ist Float64
+end
+
+### ✅ Richtiges Muster
+
+function <name>(x::AbstractVector)
+    T = eltype(x)
+    # ...
+    # ✅ Explizites Casting auf den Typ T
+    a = T(20.0)
+    b = T(0.2)
+    c = T(2) * T(π)
+
+    # ✅ Die Konstante e explizit im Typ T verwenden
+    e_val = T(MathConstants.e) 
+
+    return -a * exp(-b * sqrt(sum_squares)) - exp(sum_cos) + a + e_val
+end
+
+> HINWEIS: Die Verwendung von `T(MathConstants.e)` stellt sicher, dass der Wert der Eulerschen Zahl 'e' mit der durch `T` geforderten Genauigkeit berechnet wird.
+
+---
+
+
+
+ - [RULE_NO_MODULE] MUST: Kein module ... end in src/functions/*.jl. Wird via include geladen.
+ - [RULE_SIGNATURE] MUST: Funktionssignatur: function <name>(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}. Export: export <UPPER>_FUNCTION, <name>, <name>_gradient. (Neu: BigFloat für höhere Rechengenauigkeit; siehe [RULE_HIGH_PREC_SUPPORT] SHOULD: Erweitere Signatur um BigFloat für optionale High-Precision-Berechnungen. Nutzer können BigFloat.(x) eingeben; Standard Float64 bleibt unverändert schnell.)
+ - [RULE_NAME_CONSISTENCY] MUST: Der gewählte, kleingeschriebene Funktionsname (`<name>`) MUST in allen folgenden Artefakten konsistent verwendet werden: Dateiname (`<name>.jl`), Funktionssignatur (`function <name>`), Gradientensignatur (`function <name>_gradient`), exportierte Konstante (`<UPPERCASE>_FUNCTION`), und im `:name`-Meta-Feld (exakt der Dateiname ohne Extension, klein, ohne Leerzeichen). | Z. B. Datei `schaffer1.jl` → `schaffer1`, `schaffer1_gradient`, `SCHAFFER1_FUNCTION`, `:name => "schaffer1"`.  Für Einfachheit: Hartkodierte Strings in Errors/Meta (z.B. :name => "schaffer1"); vermeide basename [NEW RULE_AD_COMPATIBILITY]. Automatisierbar: `:name => "<name>"`. Häufiger Fehler: Tippfehler wie "shaffer" vs. "schaffer" – prüfe mit `grep -r "<name>" src/` vor Commit. Optional: @assert "<name>" == basename(@__FILE__)[1:end-3] für Validierung.
+ - [RULE_NAME_CONSISTENCY] SHOULD: In Fehlermeldungen (z. B. ArgumentError) den exakten `<name>` verwenden, um Konsistenz zu wahren. Für lesbare Anzeigen (z.B. in Docs/Print-Funktionen) eine separate Formatierung nutzen (z. B. titlecase(`<name>`)). | Z. B. `throw(ArgumentError("<name> requires exactly 2 dimensions"))` – hartkodiert konsistent. In `print_function_properties.jl`: "Schaffer1" via String-Manipulation. Für skalierbare: Gleiche Regel (z. B. `:name => "ackley"`).
+ - [RULE_ERROR_TEXT_DYNAMIC] SHOULD: In allen Fehlermeldungen (z. B. ArgumentError für Dimension, NaN/Inf-Handling) den exakten <name> verwenden (hartkodiert, z.B. "<name> requires exactly <DIM> dimensions"). Für maximale Einfachheit: Statische Strings; Dynamik via let optional, aber vermeide basename in f/grad [NEW RULE_AD_COMPATIBILITY]. Automatisierbar: CI-Check mit Regex auf "<name> requires" in <name>.jl.
+ - [RULE_GRADTYPE] MUST: Gradient als Vector<T> (z.B. zeros(T, n)). Kein SVector.
+ - [RULE_NO_CONST_ARRAYS] MUST: Keine globalen const-Arrays. Lokale let-Blöcke für Caching. Wiederholung: Vermeide globale Konstanten.
+ - [RULE_ERROR_HANDLING] MUST: Prüfe length(x)==0 → ArgumentError. Handle NaN/Inf (return NaN/Inf).
+ - SHOULD: Verwende @inbounds für Loops; prüfe @code_warntype für Type-Stability.
+ - [RULE_TYPE_CONVERSION_MINIMAL] SHOULD: Vermeide redundante explizite Typ-Konvertierungen wie `T(0.5)` oder `T(1.0)` in Ausdrücken, da Julia die Inferenz korrekt durchführt (T ist Subtyp von Real). Verwende stattdessen `0.5` oder `1.0`. Dies verbessert Type-Stability und vermeidet unnötigen Overhead. Beispiel: `numerator = sin(sq_sum)^2 - T(0.5)` → `numerator = sin(sq_sum)^2 - 0.5`. Prüfe mit `@code_warntype tf.f([1.0, 1.0])` – sollte keine Type-Instabilitäten zeigen. Für Integer-Konstanten in Multiplikationen (z.B. 4 * x): Verwende T(4) * x für BigFloat-Stabilität, aber nur wenn nötig (SHOULD: Teste mit @code_warntype bei BigFloat-Input).
+ - [RULE_HIGH_PREC_SUPPORT] SHOULD: Für höhere Rechengenauigkeit erweitere die Signatur um BigFloat in where-Klausel und verwende T(k) für Integer-Konstanten. Füge optional if T <: BigFloat; setprecision(256); end nach Edge-Cases hinzu. Validiere mit @code_warntype tf.f(BigFloat.(rand(n))).
+ -  [RULE_LOCAL_HELPERS_NAMING] MUST: Alle lokalen Hilfsfunktionen in `src/functions/<name>.jl` (z. B. für Komponenten wie Shubert-Produkt oder Rastrigin-Summe) MÜSSEN mit einem Präfix benannt werden, das den Dateinamen enthält und einen Unterstrich (z. B. `_<name>_component` oder `_<name>_inner`). Dies verhindert Namenskonflikte mit exportierten Funktionen aus anderen Dateien, da `include` den Namespace teilt.  
+   - Beispiel: In `shubert_hybrid_rastrigin.jl` → `_shubert_hybrid_rastrigin_inner` statt `shubert_inner`; `_shubert_hybrid_rastrigin_rastrigin_component` statt `rastrigin`.  
+   - Automatisierbar: Verwende statische Präfixe für Klarheit.  
+   - Häufiger Fehler: Lokale `rastrigin`-Funktion kollidiert mit globaler `rastrigin` aus `rastrigin.jl`, führt zu falschem Dispatch in Tests (z. B. `cos(Inf)`-Fehler).  
+   - CI-Check: Füge zu CI-Skripten hinzu: `grep -r "function [a-zA-Z]" src/functions/ | grep -v "_.*_"` → warnt bei fehlenden Präfixen.
+ -  [RULE_LOCAL_HELPERS_ERROR_HANDLING] MUST: Lokale Hilfsfunktionen MÜSSEN die gleichen Edge-Case-Checks wie die Hauptfunktion implementieren (leeres Array, NaN, Inf), um konsistente Fehlerbehandlung zu gewährleisten. Returniere `T(NaN)` für NaN-Inputs und `T(Inf)` für Inf-Inputs **vor** mathematischen Operationen (z. B. `cos`), um DomainErrors zu vermeiden.  
+   - SHOULD: Für skalierbare Hilfsfunktionen: Prüfe `n < 1` und wirf `ArgumentError`.  
+   - Beispiel: 
+      function _shubert_hybrid_rastrigin_rastrigin_component(x::AbstractVector<T>) where {T}
+          n = length(x)
+          n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+          any(isnan.(x)) && return T(NaN)
+          any(isinf.(x)) && return T(Inf)  # Vor cos(2*pi*x[i])
+          # ... Rest der Funktion
+      end
+   - Häufiger Fehler: Fehlender Inf-Check führt zu `DomainError` in `cos(Inf)`, was Tests wie `@test isinf(f([Inf]))` scheitern lässt.  
+   - Automatisierte Validierung: Erweitere REPL-Checks: `julia --project=. -e 'include("src/functions/<name>.jl"); @test_throws ArgumentError <local_helper>(Float64[]); @test isinf(<local_helper>([Inf]))'`.
+ - MAY: Für Matrizen: A = Diagonal(fill(2.0, n)); prüfe eigvals(A) > 0.
+ - [RULE_META_CALL] SHOULD: In Meta-Dict: Für skalierbare, aber konstante Werte (z.B. :min_value), (n::Int) -> value verwenden (ignoriere n). Beispiel für Qing: :min_value => (n::Int) -> 0.0.  Für noisy konstante Minima: Deterministischer Teil als (n::Int) -> value; Noise in :description.
+ -  Für skalierbare Funktionen: Füge :default_n => <int> hinzu (siehe [RULE_DEFAULT_N]). Verwende es konsistent in Templates und Tests. MUST: Passe die Templates an, um [RULE_ERROR_TEXT_DYNAMIC] und [RULE_TYPE_CONVERSION_MINIMAL] einzubauen – siehe aktualisierte Templates unten.
+[NEW RULE_START_AWAY_FROM_MIN] MUST: Der Startpunkt (:start) MUSS vom globalen Minimum (:min_position) entfernt sein, um realistische Optimierungs-Tests zu ermöglichen. Validiere: f(start) > min_value + 1.0 (oder >> für multimodale) und ||grad(start)|| > 1e-6. Für Funktionen mit Minimum bei zeros(n) (z.B. wavy): Verwende fill(1.0, n) oder rand(lb, ub). Dokumentiere in :description, falls Start bounds-verletzend ist. Beispiel: Bei wavy (min bei 0): :start => fill(1.0, n); f(start) ≈1.509 > 0.
+- Validierung: In test/<name>_tests.jl: @test tf.f(start_point) > tf.meta[:min_value](n) + 1e-3
+- Häufiger Fehler: Start = min_pos → Optimierer "erfolgreich" in 0 Iterationen; CI-Check: @test !all(start_point .≈ min_pos, atol=1e-6)
+
+Template für src/functions/<name>.jl (non-scalable, z.B. Biggs EXP3, n=3):
+
+# src/functions/<name>.jl
+# Purpose: Implementation of the <Full Name> test function.
+# Global minimum: f(x*)=<value> at x*=<pos>.
+# Bounds: <lb> ≤ x_i ≤ <ub>.
+
+export <UPPERCASE>_FUNCTION, <name>, <name>_gradient
+
+function <name>(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != <DIM> && throw(ArgumentError("<name> requires exactly <DIM> dimensions"))  # Hartkodiert [UPDATED RULE_ERROR_TEXT_DYNAMIC]
+    any(isnan.(x)) && return T(NaN)
+    any(isinf.(x)) && return T(Inf)
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)  # Passe an gewünschte Bits an; [RULE_HIGH_PREC_SUPPORT]
+    end
+    
+    # Optimierte lokale Berechnung: Arrays direkt in Schleife generieren, um let-Block zu vermeiden [RULE_NO_CONST_ARRAYS]
+    #  Beispiel für lokale Hilfsfunktion mit Präfix: function _<name>_local_helper(...) ... end
+    sum_sq = zero(T)
+    @inbounds for i in 1:<LOOP_SIZE>
+        t_i = 0.1 * i  # Dynamisch berechnen statt pre-allocated Array
+        y_i = exp(-t_i) - 5 * exp(-10 * t_i)
+        e_i = exp(-t_i * x[1]) - x[3] * exp(-t_i * x[2]) - y_i
+        sum_sq += e_i^2
+    end
+    sum_sq
+end
+
+function <name>_gradient(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n != <DIM> && throw(ArgumentError("<name> requires exactly <DIM> dimensions"))  # Hartkodiert [UPDATED RULE_ERROR_TEXT_DYNAMIC]
+    any(isnan.(x)) && return fill(T(NaN), n)
+    any(isinf.(x)) && return fill(T(Inf), n)
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)  # Passe an gewünschte Bits an; [RULE_HIGH_PREC_SUPPORT]
+    end
+    
+    grad = zeros(T, <DIM>)  # [RULE_GRADTYPE]
+    # ... Gradient-Implementierung, z.B. ohne redundante T(1.0) [RULE_TYPE_CONVERSION_MINIMAL] ...
+    #  Lokale Hilfsfunktion mit Edge-Checks: function _<name>_grad_helper(...) ... end
+    @inbounds for i in 1:n
+        # ...
+    end
+    grad
+end
+
+const <UPPERCASE>_FUNCTION = TestFunction(
+    <name>,
+    <name>_gradient,
+    Dict{Symbol, Any}(
+        :name => "<name>",  # Hartkodiert [RULE_NAME_CONSISTENCY]
+        :description => "<Beschreibung; Properties based on [Direkte Quelle, z.B. Jamil & Yang (2013, p. 15)]; ursprünglich aus [Mutmaßliche Ursprungsquelle, falls bekannt]>.",
+        :math => raw"""f(\mathbf{x}) = <LaTeX>. """,
+        :start => () -> [<start1>, ...],  # Für scalable: (n::Int) -> ...
+        :min_position => () -> [<pos1>, ...],
+        :min_value => () -> <value>,  # Für konstante Werte: Immer () -> value, auch bei scalable
+        :properties => ["<prop1>", ...],
+        :source => "<Direkte Quelle, z.B. Jamil & Yang (2013, p. 15)>",
+        :lb => () -> [<lb1>, ...],
+        :ub => () -> [<ub1>, ...],
+    )
+)
+
+# Optional: Validierung beim Laden
+@assert "<name>" == basename(@__FILE__)[1:end-3] "<name>: Dateiname mismatch!"
+
+Für scalable: Ersetz () -> [...] durch (n::Int) -> begin n<1 && throw(ArgumentError("<name> requires at least 1 dimension")); fill(<val>, n) end. Füge "scalable" zu properties.  Beispiel-Anpassung für Qing: :min_value => (n::Int) -> 0.0 (konstant), :min_position => (n::Int) -> sqrt.(1:n). Füge :default_n => 2 hinzu.
+
+Template für src/functions/<name>.jl (scalable, z.B. Qing):
+
+# src/functions/<name>.jl
+# Purpose: Implementation of the <Full Name> test function.
+# Global minimum: f(x*)=<value> at x*=... (n-dependent).
+# Bounds: <lb> ≤ x_i ≤ <ub>.
+
+export <UPPERCASE>_FUNCTION, <name>, <name>_gradient
+
+function <name>(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n < 1 && throw(ArgumentError("<name> requires at least 1 dimension"))  # Hartkodiert, angepasst für scalable [UPDATED RULE_ERROR_TEXT_DYNAMIC]
+    any(isnan.(x)) && return T(NaN)
+    any(isinf.(x)) && return T(Inf)
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)  # Passe an gewünschte Bits an; [RULE_HIGH_PREC_SUPPORT]
+    end
+    
+    sum_sq = zero(T)
+    @inbounds for i in 1:n
+        diff = x[i]^2 - i
+        sum_sq += diff^2
+    end
+    sum_sq
+end
+
+function <name>_gradient(x::AbstractVector<T>) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n < 1 && throw(ArgumentError("<name> requires at least 1 dimension"))  # Hartkodiert [UPDATED RULE_ERROR_TEXT_DYNAMIC]
+    any(isnan.(x)) && return fill(T(NaN), n)
+    any(isinf.(x)) && return fill(T(Inf), n)
+    
+    # Optional: High-Prec Präzision setzen (nur bei BigFloat)
+    if T <: BigFloat
+        setprecision(256)  # Passe an gewünschte Bits an; [RULE_HIGH_PREC_SUPPORT]
+    end
+    
+    grad = zeros(T, n)  # [RULE_GRADTYPE]
+    @inbounds for i in 1:n
+        diff = x[i]^2 - i
+        grad[i] = 4 * x[i] * diff  # Vereinfachte Konstanten: 4 statt T(4) [RULE_TYPE_CONVERSION_MINIMAL]
+    end
+    grad
+end
+
+const <UPPERCASE>_FUNCTION = TestFunction(
+    <name>,
+    <name>_gradient,
+    Dict{Symbol, Any}(
+        :name => "<name>",  # Hartkodiert [RULE_NAME_CONSISTENCY]
+        :description => "<Beschreibung; Properties based on [Direkte Quelle, z.B. Jamil & Yang (2013, p. 29)]; Multiple global minima due to sign choices; ursprünglich aus [Mutmaßliche Ursprungsquelle, falls bekannt]>.",
+        :math => raw"""f(\mathbf{x}) = \sum_{i=1}^D (x_i^2 - i)^2.""",
+        :start => (n::Int) -> begin n < 1 && throw(ArgumentError("<name> requires at least 1 dimension")); zeros(n) end,
+        :min_position => (n::Int) -> begin n < 1 && throw(ArgumentError("<name> requires at least 1 dimension")); sqrt.(1:n) end,
+        :min_value => (n::Int) -> 0.0,  # Konstant: (n::Int) -> value [RULE_META_CONSISTENCY]
+        :default_n => 2,  # Kleinste n >1; hier 2 für allgemein skalierbar [RULE_DEFAULT_N]
+        :properties => ["continuous", "differentiable", "separable", "scalable", "multimodal"],
+        :source => "<Direkte Quelle, z.B. Jamil & Yang (2013, p. 29)>",
+        :lb => (n::Int) -> begin n < 1 && throw(ArgumentError("<name> requires at least 1 dimension")); fill(<lb>, n) end,
+        :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("<name> requires at least 1 dimension")); fill(<ub>, n) end,
+    )
+)
+
+# Optional: Validierung beim Laden
+@assert "<name>" == basename(@__FILE__)[1:end-3] "<name>: Dateiname mismatch!"
+
+## Tests und Validierung
+Ziel: Zentrale Tests + funktionsspezifisch in test/<name>_tests.jl.
+
+ - [RULE_ATOL] SHOULD: atol=1e-3 für Start/Extra, 1e-8 für Minima.  Für has_noise: Kein atol; Range-Check (z.B. 0 <= f <1). Neu: Für High-Prec-Tests (BigFloat): Verwende atol=1e-15 oder höher; teste mit BigFloat-Inputs in optionalem Test-Block.
+ - MUST: Einbinden via include("test/<name>_tests.jl") in include_testfiles.jl.
+ - SHOULD: Berechne Test-Werte exakt via REPL (z.B. tf.f(start_point)).  Für Noise: Multiple Evaluations (z.B. mean([tf.f(min_pos) for _ in 1:10]) ≈ deterministischer Wert). Für BigFloat: Teste tf.f(BigFloat.(min_pos)) ≈ BigFloat(min_value) atol=BigFloat("1e-15").
+ - [RULE_TEST_SYNTAX] MUST: Für Vektor-Vergleiche: Verwende all(isapprox.(vec, target, atol=1e-8)) statt all(vec .≈ target, atol=1e-8) – letzteres wirft MethodError, da all() atol ignoriert. Für Skalare: x ≈ y atol=1e-8. Für BigFloat: isapprox mit BigFloat-atol.
+[NEW RULE_TESTFILE_LOADING] MUST: In test/include_testfiles.jl (oder test/include_testfiles.jl, falls in test/): 
+ - Füge `using NonlinearOptimizationTestFunctions` **nach** den anderen using-Statements (z.B. using Test, ForwardDiff, ...) und **vor** allen include-Statements hinzu. Dies gewährleistet, dass alle exportierten Konstanten (z.B. <UPPER>_FUNCTION) global im Scope verfügbar sind, bevor die Testdateien geladen werden. 
+ - Für Pfad-Konsistenz: Wenn include_testfiles.jl in src/ liegt, verwende `include("../test/<name>_tests.jl")`; wenn in test/, verwende `include("<name>_tests.jl")`.
+ - Automatisierbar: Erstelle ein Skript (z.B. examples/generate_includes.jl), das dynamisch Includes generiert und das using pre-pendet.
+ - Häufiger Fehler: UndefVarError für <UPPER>_FUNCTION – Lösung: Pre-load das Paket, um Scope-Kollisionen in runtests.jl zu vermeiden.
+ - Validierung: In runtests.jl: Nach include("include_testfiles.jl"), teste `@test isdefined(Main, :TRIGONOMETRIC2_FUNCTION)` für neu hinzugefügte Funktionen.
+ -  Meta-Aufruf im Test: Passe Aufruf an Signatur an: Wenn () -> ..., dann tf.meta[:min_value](); wenn (n::Int) -> ..., dann tf.meta[:min_value](n).
+ -  Für skalierbare: Verwende n = tf.meta[:default_n] in Tests für Standard-Validierungen (z.B. min_pos = tf.meta[:min_position](n)).
+ - [NEW RULE_NOISE_VALIDATION] MUST: In funktionsspezifischen Tests und runtests.jl: Für "has_noise": @test f_min >= min_value && f_min < min_value + noise_upper (z.B. <1 für [0,1)). 
+ -  [RULE_PROPERTIES_DYNAMIC_COUNT] SHOULD: In `test/runtests.jl` die Properties-Zählungen dynamisch berechnen und nur als Info ausgeben, statt harte `@test`-Asserts (z.B. `println("Bounded functions: ", length(filter_testfunctions(tf -> has_property(tf, "bounded"))))`). Bei Hinzufügen neuer Funktionen: Aktualisiere manuell oder automatisiere via Skript (`generate_properties_counts.jl`).  
+   - MUST: Nach jedem Commit: Führe `julia --project=. -e 'using NonlinearOptimizationTestFunctions; open("test/properties_counts.jl", "w") do f; println(f, "export BOUNDED_COUNT = ", length(filter_testfunctions(...))) end'` aus.  
+   - Häufiger Fehler: Harte Zahlen (z. B. 127 vs. 128) brechen bei neuen Funktionen (wie `shubert_hybrid_rastrigin` mit "bounded").  
+   - Vorteil: Macht Tests wartbar; CI kann Counts validieren.
+ -  Name-Validierung: In test/<name>_tests.jl: @test tf.meta[:name] == "<name>" && occursin("<name> requires", @code_string(<name>([1.0]))) (via try-catch für Error-Text). Neu: Optionaler High-Prec-Test: @test tf.f(BigFloat.(min_pos)) ≈ BigFloat(min_value) atol=BigFloat("1e-15").
+
+Template für test/<name>_tests.jl (non-scalable):
+
+# test/<name>_tests.jl
+
+using Test, NonlinearOptimizationTestFunctions
+@testset "<name>" begin
+    tf = <UPPERCASE>_FUNCTION
+    @test tf.meta[:name] == "<name>"  # Hartkodiert [RULE_NAME_CONSISTENCY]
+    @test has_property(tf, "<prop1>")  # Für jede Property
+    
+    start_point = tf.meta[:start]()
+    @test tf.f(start_point) ≈ <computed> atol=1e-3
+    
+    min_pos = tf.meta[:min_position]()
+    @test tf.f(min_pos) ≈ tf.meta[:min_value]() atol=1e-8  # Passe an: () oder (n); für Noise: Range-Check
+    
+    # Optional: High-Prec-Validierung [RULE_HIGH_PREC_SUPPORT]
+    # using BigFloat; setprecision(256); @test tf.f(BigFloat.(min_pos)) ≈ BigFloat(tf.meta[:min_value]()) atol=BigFloat("1e-15")
+end
+
+Template für test/<name>_tests.jl (scalable, z.B. Qing):
+
+# test/<name>_tests.jl
+
+using Test, NonlinearOptimizationTestFunctions
+@testset "<name>" begin
+    tf = <UPPERCASE>_FUNCTION
+    @test tf.meta[:name] == "<name>"  # Hartkodiert [RULE_NAME_CONSISTENCY]
+    @test has_property(tf, "<prop1>")  # Für jede Property
+    
+    n = tf.meta[:default_n]  # Verwende default_n für Standard-Tests
+    @test n >= 2
+    
+    start_point = tf.meta[:start](n)
+    @test length(start_point) == n
+    @test all(start_point .== 0)  # Beispiel-Check
+    
+    min_pos = tf.meta[:min_position](n)
+    @test tf.f(min_pos) ≈ tf.meta[:min_value](n) atol=1e-8  # min_value mit (n), min_position mit (n); für Noise: Range-Check
+    
+    # Extra: Check another minimum
+    min_pos_neg = [-sqrt(1.0), sqrt(2.0)]
+    @test tf.f(min_pos_neg) ≈ 0.0 atol=1e-8
+    
+    # Optional: High-Prec-Validierung [RULE_HIGH_PREC_SUPPORT]
+    # using BigFloat; setprecision(256); @test tf.f(BigFloat.(min_pos)) ≈ BigFloat(tf.meta[:min_value](n)) atol=BigFloat("1e-15")
+end
+
+Template für test/include_testfiles.jl (zentraler Test-Loader):
+
+# test/include_testfiles.jl
+# Purpose: Includes all function-specific test files for NonlinearOptimizationTestFunctions.
+# Context: Part of the test suite, enables modular test loading for individual test functions.
+# Last modified: [Datum]
+
+using Test, ForwardDiff, Optim, Zygote, InteractiveUtils  # Basis-Deps
+using NonlinearOptimizationTestFunctions  # [NEW RULE_TESTFILE_LOADING]: Pre-load Paket für globale Scope (TF_FUNCTIONs)
+
+# Includes (alphabetisch sortiert; dynamisch generierbar via Skript)
+include("ackley_tests.jl")
+include("booth_tests.jl")
+# ... (alle <name>_tests.jl)
+include("trigonometric2_tests.jl")
+include("tripod_tests.jl")
+
+# Optional: Dynamische Validierung
+@test all([isdefined(Main, symbol("$TF_FUNCTION")) for TF in ["TRIGONOMETRIC2", "TRIPOD"]])  # Scope-Check für neue Funktionen
+
+ Für noisy Funktionen (z.B. Quartic): Erweitere Template um:
+    f_min = tf.f(min_pos)
+    @test f_min >= 0 && f_min < 1  # Für [0,1)-Noise
+
+ Update für runtests.jl "Minimum Validation" Testset (füge nach min_value-Zeile ein):
+    if "has_noise" in tf.meta[:properties]
+        @test f_val >= min_value && f_val < min_value + 1.0  # Beispiel für [0,1); passe an Noise an
+    else
+        @test f_val ≈ min_value atol=1e-6
+    end
+
+## TestFunction-Struktur [RULE_TESTFUNCTION_FIELDS]
+
+Die TestFunction-Struktur hat folgende Felder:
+ - f: Die Zielfunktion (erster Parameter im Konstruktor)
+ - grad: Die Gradientenfunktion (zweiter Parameter im Konstruktor)
+ - meta: Dictionary mit Metadaten
+
+WICHTIG: In Tests verwendet man tf.grad(x), NICHT tf.gradient(x)!
+
+Hinweis zur Namenskonvention: Der Funktionsname endet auf _gradient (z.B. price1_gradient), aber das Struct-Feld heißt grad. Dies ist eine Designentscheidung des Pakets - der längere Name verhindert Namenskonflikte, während das kurze Feld praktischer im Zugriff ist.
+
+Beispiel:
+
+# Funktion definieren
+function myfunction_gradient(x) ... end
+
+# TestFunction erstellen
+const MYFUNCTION_FUNCTION = TestFunction(
+    myfunction,
+    myfunction_gradient,  # ← wird zu tf.grad
+    Dict(...)
+)
+
+# In Tests verwenden
+grad = tf.grad([1.0, 2.0])  # ✅ Korrekt
+grad = tf.gradient([1.0, 2.0])  # ❌ Fehler!
+
+## Schritte-Checkliste (mit Regeln)
+1. Recherche: Validiere Properties [RULE_PROPERTIES_SOURCE] – notiere spezifische Stelle (z.B. Seite) in :source. Für scalable: Bestimme :default_n [RULE_DEFAULT_N].  Für noisy: Definiere Noise-Range in :description.
+2. Implementiere src/functions/<name>.jl [RULE_SIGNATURE, RULE_NO_CONST_ARRAYS]. Füge :default_n hinzu.  Für konstante min_value: (n::Int) -> value. Verwende direkte Quelle mit Stelle in :source.  Lokale Hilfsfunktionen: Benenne mit Präfix `_ <name> _ <zweck>` [RULE_LOCAL_HELPERS_NAMING]; füge Edge-Checks hinzu [RULE_LOCAL_HELPERS_ERROR_HANDLING]. Neu: Validiere High-Prec mit @code_warntype tf.f(BigFloat.(rand(n))).
+3. Syntax-Check: julia --project=. -e 'include("src/functions/<name>.jl")' [RULE_SYNTAXCHECK].  Überprüfe lokale Hilfsfunktionen: `@test_throws ArgumentError _<name>_helper(Float64[]); @test isinf(_<name>_helper([Inf]))`. Neu: Teste BigFloat: tf.f(BigFloat.([1.0])) ohne Error.
+4. Tests: Schreibe test/<name>_tests.jl, einbinden.  REPL-Validierung: Lade tf, teste tf.meta[:min_value](tf.meta[:default_n]) ≈ tf.f(tf.meta[:min_position](tf.meta[:default_n])) atol=1e-8; für Noise: Range-Check.  Dynamische Properties-Counts in runtests.jl [RULE_PROPERTIES_DYNAMIC_COUNT]. Neu: Optionaler High-Prec-Test-Block.
+4. Tests: Schreibe test/<name>_tests.jl, einbinden.  Überprüfe in include_testfiles.jl: using NonlinearOptimizationTestFunctions vor includes; teste Scope mit @test isdefined(Main, :<UPPER>_FUNCTION).
+5. Gesamttests: julia --project=. test/runtests.jl.  Überprüche Noise-Adaptation in Minimum Validation. Neu: Benchmark mit BigFloat: @btime tf.f(BigFloat.(rand(n))) <10μs.
+6. Validierung: [ ] Properties aus Tabelle; [ ] Keine globalen const; [ ] Gradient als Vector<T>;  Keine MethodError in Meta-Aufrufen; [ ] Vektor-Tests mit isapprox..  :default_n >=2 und verwendet in Tests;  Noise-Handling in Tests/runtests.jl;  :source mit spezifischer Stelle (z.B. "Jamil & Yang (2013, p. 27)");  Lokale Hilfsfunktionen mit Präfix und Edge-Checks;  Keine Namenskonflikte (grep -r "function <common_name>" src/). Neu: [ ] BigFloat-Support: tf.f(BigFloat.(min_pos)) ≈ BigFloat(min_value) atol=1e-15.
+
+Finale Validierung: Alle MUST-Regeln erfüllt? Benchmark mit @btime tf.f(rand(tf.meta[:default_n])) <1μs.  Führe manuell: julia> tf = <UPPER>_FUNCTION; n = tf.meta[:default_n]; min_pos = tf.meta[:min_position](n); für Noise: multiple tf.f(min_pos) in [0,1); sonst @test tf.f(min_pos) ≈ tf.meta[:min_value](n) atol=1e-8 – passe Signatur an, falls Error. Überprüche :source auf direkte Übernahme mit Stelle.  Prüfe lokale Hilfsfunktionen: Kein Kollision (z.B. grep -r "function rastrigin" src/functions/ | grep -v "_.*_rastrigin"); Edge-Cases: `@test isinf(_<name>_helper([Inf]))`. Neu: @test tf.f(BigFloat.(min_pos)) ≈ BigFloat(tf.meta[:min_value](n)) atol=BigFloat("1e-15").
+
+[NEW RULE_GRADIENT_SYMPY_VERIFICATION] MUST für alle Funktionen mit analytischem Gradient:
+Bevor eine neue Testfunktion als "fertig" markiert wird, MUSS der analytische Gradient mit SymPy (oder einem anderen symbolischen Differentiations-Tool) verifiziert werden.
+
+**Begründung**:  
+Numerische Tests (ForwardDiff/FiniteDiff) sind wertvoll, aber ein einziger Vorzeichenfehler, falscher Faktor oder vergessener Term führt zu systematischen Abweichungen, die in numerischen Tests oft erst bei großen Werten auffallen. Symbolische Differentiation liefert in < 0,01 Sekunden die exakte Wahrheit.
+
+# KI-Anleitung: Testfunktion implementieren (v3.1)
+
+**Ziel**: Maschinenlesbare Struktur für KI-Assistenten. Parse nach `[RULE_ID]`-Tags. Priorisiere MUST > SHOULD > MAY (RFC-2119). Jede Regel hat Code-Beispiel + Validierung.
+
+**KI-Parser-Instruktionen**: 
+ - Extrahiere [RULE_*], [ERROR_*], [TEMPLATE_*], [VALID_PROPERTIES]
+ - Generiere Code mit [RULE_ID]-Kommentaren
+ - Validiere via Code-Tools (REPL bevorzugen)
+ - Bei Unsicherheit: Suche Tag, kopiere Beispiel
+
+---
+
+## Meta: Parsing-Strategie
+
+[PARSE_STRATEGY] KI MUST:
+1. Parse alle [RULE_*] als Dict: `{"ID": {"priority": "MUST|SHOULD|MAY", "example": "...", "validation": "..."}}`
+2. Template-Wahl: IS scalable? → [TEMPLATE_B], ELSE → [TEMPLATE_A]
+3. Code-Generierung: Ersetze Platzhalter, füge [RULE_ID]-Kommentare hinzu
+4. Validierung: Syntax → Meta-Calls → Edge-Cases → Type-Stability → Tests
+5. Output: Code + Validierungs-Report (✅/❌ pro Regel)
+
+---
+
+## Schritt 1: Recherche & Datensammlung
+
+[RULE_PROPERTIES_SOURCE] MUST: Sammle ALLE Daten vor Code-Generierung in Dict-Format:
+
+# Template für Datensammlung (KI: Parse als Dict)
+data = Dict(
+    :name => "<name>",  # Kleinbuchstaben (z.B. "schaffer1")
+    :dimensions => "fest n=<DIM>" | "scalable n>=<MIN_N>",
+    :min_value => <VALUE>,  # Exakt (REPL-berechnet)
+    :min_position => [<POS1>, <POS2>, ...],
+    :bounds_lb => [<LB1>, ...],
+    :bounds_ub => [<UB1>, ...],
+    :start => [<START1>, ...],
+    :source => "Autor (YEAR, p. XX)",  # MUST: Mit Seitenangabe!
+    :properties => ["<prop1>", ...],  # Nur aus [VALID_PROPERTIES]
+    :formula_latex => raw"<LaTeX>",  # Exakt aus Quelle
+)
+
+**Validierung**:
+# KI MUST ausführen (Code-Tool):
+@assert occursin(r"p\. \d+", data[:source]) "Quelle ohne Seite!"
+@assert all(p in VALID_PROPERTIES for p in data[:properties]) "Ungültige Property!"
+
+---
+
+[VALID_PROPERTIES] MUST: Nur folgende Properties verwenden (als Array für Parsing):
+
+VALID_PROPERTIES = [
+    "bounded", "continuous", "controversial", "convex", "deceptive", 
+    "differentiable", "finite_at_inf", "fully non-separable", 
+    "has_constraints", "has_noise", "highly multimodal", "multimodal", 
+    "non-convex", "non-separable", "partially differentiable", 
+    "partially separable", "quasi-convex", "scalable", "separable", 
+    "strongly convex", "unimodal", "ill-conditioned"
+]
+
+[RULE_MISSING_PROPERTIES] MUST: Fehlende Properties → :description, NICHT erfinden.
+
+**Beispiel**:
+:properties => ["continuous", "separable"],  # ✅ Nur erlaubte
+:description => "Contains absolute value terms."  # ✅ In Description
+# ❌ FALSCH: :properties => ["non-differentiable"]  # Existiert nicht!
+
+---
+
+[RULE_SOURCE_FORMULA_CONSISTENCY] MUST: Formel in Quelle == Implementierung. Bei Abweichung:
+
+:description => "Adapted from Jamil & Yang (2013, p. 27) for variant without absolute value."
+
+**Validierung** (SHOULD mit SymPy):
+# KI Code-Tool (Python):
+import sympy as sp
+x1, x2 = sp.symbols('x1 x2')
+impl = x1**2 + x2**2  # Implementierte Formel
+quelle = x1**2 + x2**2  # Aus Quelle
+assert sp.simplify(impl - quelle) == 0, "Formel-Mismatch!"
+---
+
+[NEW RULE_SCALABILITY_FORMULA_CONSISTENCY] MUST: Bei Funktionen, die in der Quelle als "scalable" markiert sind, überprüfe explizit, ob die Formel tatsächlich alle Dimensionen n nutzt (z. B. Schleifen bis n oder n-abhängige Terme). Wenn die Formel nur eine feste Anzahl von Variablen (z. B. x1 bis x6) verwendet und höhere x_i ignoriert, entferne "scalable" aus :properties und passe die Dimension auf die effektive feste n fest (z. B. n=6). Notiere die Abweichung in :description (z. B. "Marked as scalable in source, but formula only uses first 6 variables; adapted to fixed n=6"). Validiere im REPL: Für n+1 teste, ob tf.f([x1...xn, xn+1]) == tf.f([x1...xn]) (sollte true sein, wenn nicht skalierbar). Beispiel: Watson-Funktion – Quelle sagt scalable, aber Formel nur bis x6; entferne "scalable" und setze n=6. Automatisierbar: Füge zu CI-Skripten hinzu: Für "scalable" in properties, teste tf.f(rand(n+1)) != tf.f(rand(n)) (mit tol für Noise).
+
+
+---
+
+[RULE_DEFAULT_N] MUST (scalable): :default_n >= 2, kleinste gültige Dimension.
+
+:default_n => 2   # ✅ Allgemein skalierbar (Ackley, Qing)
+:default_n => 4   # ✅ Block-skalierbar (n%4==0, PowellSingular2)
+
+**Validierung**:
+# KI MUST ausführen:
+@assert haskey(data, :default_n) "Scalable ohne :default_n!"
+@assert data[:default_n] >= 2 ":default_n < 2!"
+
+---
+
+## Schritt 2: Implementierung
+
+[RULE_NAME_CONSISTENCY] MUST: Name überall identisch (Datei/Funktion/Export/:name):
+
+# Datei: src/functions/<name>.jl
+function <name>(x) ...  # ✅ Gleich wie Datei
+export <UPPER>_FUNCTION, <name>, <name>_gradient  # ✅ Uppercase für Konstante
+const <UPPER>_FUNCTION = TestFunction(..., Dict(:name => "<name>", ...))  # ✅ Hartkodiert
+
+**Anti-Pattern**:
+# ❌ FALSCH:
+# Datei: schaffer1.jl
+function schaffer_1(x) ...  # Name-Mismatch!
+:name => "Schaffer1"  # Statisch + Uppercase!
+
+---
+
+[RULE_ERROR_TEXT_DYNAMIC] SHOULD: Fehlermeldungen mit hartkodiertem Namen:
+
+# ✅ RICHTIG:
+throw(ArgumentError("<name> requires exactly <DIM> dimensions"))
+
+# ❌ FALSCH (optional vermeiden):
+throw(ArgumentError("schaffer1 requires exactly 2 dimensions"))  # Tippfehler-Risiko!
+
+---
+
+[RULE_ERROR_HANDLING] MUST: Edge-Cases VOR mathematischen Operationen:
+
+# Template (KI: Immer einfügen):
+n = length(x)
+n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+n != <DIM> && throw(ArgumentError("<name> requires exactly <DIM> dimensions"))  # Für non-scalable
+# ODER:
+n < 1 && throw(ArgumentError("<name> requires at least 1 dimension"))  # Für scalable
+any(isnan.(x)) && return T(NaN)
+any(isinf.(x)) && return T(Inf)  # WICHTIG: Vor cos/sin/exp!
+
+---
+
+[RULE_NO_CONST_ARRAYS] MUST: Keine globalen const-Arrays:
+
+# ❌ FALSCH...

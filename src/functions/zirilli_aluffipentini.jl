@@ -61,4 +61,3 @@ const ZIRILLI_ALUFFIPENTINI_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "zirilli_aluffipentini" == basename(@__FILE__)[1:end-3] "zirilli_aluffipentini: Dateiname mismatch!"

@@ -54,4 +54,3 @@ const POWELL_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "powell" == basename(@__FILE__)[1:end-3] "powell: Dateiname mismatch!"

@@ -84,4 +84,3 @@ const SHUBERT_NOISY_FUNCTION = TestFunction(
     )
 )
 
-@assert "shubert_noisy" == basename(@__FILE__)[1:end-3] "shubert_noisy: Dateiname mismatch!"

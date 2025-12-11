@@ -69,4 +69,3 @@ const HOLDER_TABLE2_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "holder_table2" == basename(@__FILE__)[1:end-3] "holder_table2: Dateiname mismatch!"

@@ -7,9 +7,8 @@ export SCHWEFEL_FUNCTION, schwefel, schwefel_gradient
 
 function schwefel(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch, angepasst für scalable [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("schwefel requires at least 1 dimension"))  # Dynamisch, angepasst für scalable [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -22,9 +21,8 @@ end
 
 function schwefel_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel"
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("schwefel requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -44,7 +42,7 @@ const SCHWEFEL_FUNCTION = TestFunction(
     schwefel,
     schwefel_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schwefel" – exakt Dateiname [RULE_NAME_CONSISTENCY]
+        :name => "schwefel",  # Dynamisch: "schwefel" – exakt Dateiname [RULE_NAME_CONSISTENCY]
         :description => "The Schwefel Function [7] with α=2.0 (chosen for concrete unimodal variant; general α≥0 per source). Properties based on Jamil & Yang (2013, p. 118); originally from Schwefel (various works).",
         :math => raw"""f(\mathbf{x}) = \left( \sum_{i=1}^{D} x_i^2 \right)^2.""",
         :start => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); zeros(n) end,

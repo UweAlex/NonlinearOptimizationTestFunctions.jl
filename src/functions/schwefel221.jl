@@ -7,9 +7,8 @@ export SCHWEFEL221_FUNCTION, schwefel221, schwefel221_gradient
 
 function schwefel221(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel221" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("schwefel221 requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -22,9 +21,8 @@ end
 
 function schwefel221_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel221" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("schwefel221 requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -58,7 +56,7 @@ const SCHWEFEL221_FUNCTION = TestFunction(
     schwefel221,
     schwefel221_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schwefel221" [RULE_NAME_CONSISTENCY]
+        :name => "schwefel221",  # Dynamisch: "schwefel221" [RULE_NAME_CONSISTENCY]
         :description => "Schwefel's Problem 2.21 test function; Properties based on Jamil & Yang (2013, p. 123); originally from Schwefel (1977). Global minimum at the origin.",
         :math => raw"""f(\mathbf{x}) = \max_{1 \leq i \leq D} |x_i|.""",
         :start => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); zeros(n) end,

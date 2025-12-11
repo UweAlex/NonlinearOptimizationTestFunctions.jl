@@ -18,7 +18,7 @@ if isdefined(Main, :NLopt)
         end
         f
     end)
-    minf, minx, ret = optimize(opt, tf.meta[:start](n))
+    minf, minx, ret = NLopt.optimize(opt, tf.meta[:start](n))
     println("$(tf.meta[:name]): $minx, $minf")
 else
     println("NLopt.jl is not installed. Please install it to run this example.")

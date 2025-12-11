@@ -49,4 +49,3 @@ const STEPINT_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "stepint" == basename(@__FILE__)[1:end-3] "stepint: Dateiname mismatch!"

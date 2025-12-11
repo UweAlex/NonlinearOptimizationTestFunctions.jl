@@ -12,9 +12,8 @@ end
 
 function shubert_shifted(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shubert_shifted" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 2 && throw(ArgumentError("shubert_shifted requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -32,9 +31,8 @@ end
 
 function shubert_shifted_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))
+    n < 2 && throw(ArgumentError("shubert_shifted requires at least 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -64,7 +62,7 @@ const SHUBERT_SHIFTED_FUNCTION = TestFunction(
     shubert_shifted,
     shubert_shifted_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # "shubert_shifted" [RULE_NAME_CONSISTENCY]
+        :name => "shubert_shifted",  # "shubert_shifted" [RULE_NAME_CONSISTENCY]
         :description => "Shifted Shubert function; non-separable with 760 local minima in 2D; fixed o=0 for reproducibility (in CEC random o~U[-10,10]); properties based on Jamil & Yang (2013, p. 55, f133-Shifted); CEC 2013 F6.",
         :math => raw"""f(\mathbf{x}) = \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)(x_i - o_i) + j), \ o_i \sim U[-10,10].""",
         :start => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); zeros(n) end,
@@ -77,3 +75,4 @@ const SHUBERT_SHIFTED_FUNCTION = TestFunction(
         :ub => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); fill(10.0, n) end,
     )
 )
+

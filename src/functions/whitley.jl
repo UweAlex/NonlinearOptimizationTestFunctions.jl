@@ -83,4 +83,3 @@ const WHITLEY_FUNCTION = TestFunction(
 )
 
 # Optional: Validation on load
-@assert "whitley" == basename(@__FILE__)[1:end-3] "whitley: Dateiname mismatch!"

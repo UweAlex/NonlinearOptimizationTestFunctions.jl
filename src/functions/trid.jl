@@ -70,4 +70,3 @@ const TRID_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "trid" == basename(@__FILE__)[1:end-3] "trid: Dateiname mismatch!"

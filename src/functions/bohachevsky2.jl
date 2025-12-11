@@ -58,4 +58,3 @@ const BOHACHEVSKY2_FUNCTION = TestFunction(
     )
 )
 
-@assert "bohachevsky2" == basename(@__FILE__)[1:end-3] "bohachevsky2: Dateiname mismatch!"

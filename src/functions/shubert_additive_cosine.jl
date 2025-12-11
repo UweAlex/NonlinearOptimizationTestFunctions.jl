@@ -7,9 +7,8 @@ export SHUBERT_ADDITIVE_COSINE_FUNCTION, shubert_additive_cosine, shubert_additi
 
 function shubert_additive_cosine(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shubert_additive_cosine" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 2 && throw(ArgumentError("shubert_additive_cosine requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -26,9 +25,8 @@ end
 
 function shubert_additive_cosine_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))
+    n < 2 && throw(ArgumentError("shubert_additive_cosine requires at least 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -47,7 +45,7 @@ const SHUBERT_ADDITIVE_COSINE_FUNCTION = TestFunction(
     shubert_additive_cosine,
     shubert_additive_cosine_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # "shubert_additive_cosine" [RULE_NAME_CONSISTENCY]
+        :name => "shubert_additive_cosine",  # "shubert_additive_cosine" [RULE_NAME_CONSISTENCY]
         :description => "Additive cosine Shubert function (Shubert 2); separable with ≈400 local minima in 2D; properties based on Jamil & Yang (2013, p. 56, f135); originally from Yao (1999).",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^n \sum_{j=1}^5 j \cos((j+1)x_i + j).""",
         :start => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); zeros(n) end,
@@ -60,3 +58,4 @@ const SHUBERT_ADDITIVE_COSINE_FUNCTION = TestFunction(
         :ub => (n::Int) -> begin n < 2 && throw(ArgumentError("At least 2 dimensions")); fill(10.0, n) end,
     )
 )
+

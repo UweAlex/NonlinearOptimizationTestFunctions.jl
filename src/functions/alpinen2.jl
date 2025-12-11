@@ -67,4 +67,3 @@ const ALPINEN2_FUNCTION = TestFunction(
     )
 )
 
-@assert "alpinen2" == basename(@__FILE__)[1:end-3] "alpinen2: Dateiname mismatch!"

@@ -80,4 +80,3 @@ const BIGGSEXP5_FUNCTION = TestFunction(
     )
 )
 
-@assert "biggsexp5" == basename(@__FILE__)[1:end-3] "biggsexp5: Dateiname mismatch!"

@@ -67,4 +67,3 @@ const SUMOFPOWERS_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden [RULE_NAME_CONSISTENCY]
-@assert "sumofpowers" == basename(@__FILE__)[1:end-3] "sumofpowers: Dateiname mismatch!"

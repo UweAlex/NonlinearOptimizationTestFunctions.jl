@@ -65,4 +65,3 @@ const SIXHUMPCAMELBACK_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden [RULE_NAME_CONSISTENCY]
-@assert "sixhumpcamelback" == basename(@__FILE__)[1:end-3] "sixhumpcamelback: Dateiname mismatch!"

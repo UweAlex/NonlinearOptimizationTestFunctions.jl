@@ -7,9 +7,8 @@ export SCHWEFEL223_FUNCTION, schwefel223, schwefel223_gradient
 
 function schwefel223(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel223" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("schwefel223 requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -22,9 +21,8 @@ end
 
 function schwefel223_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel223" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("schwefel223 requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -39,7 +37,7 @@ const SCHWEFEL223_FUNCTION = TestFunction(
     schwefel223,
     schwefel223_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schwefel223" [RULE_NAME_CONSISTENCY]
+        :name => "schwefel223",  # Dynamisch: "schwefel223" [RULE_NAME_CONSISTENCY]
         :description => "Schwefel's Problem 2.23 test function; Properties based on Jamil & Yang (2013, p. 125) [adapted to 'separable' as function is additive]; originally from Schwefel (1977). Global minimum at the origin.",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{D} x_i^{10}.""",
         :start => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); zeros(n) end,

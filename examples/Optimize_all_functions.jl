@@ -5,7 +5,7 @@ using NonlinearOptimizationTestFunctions, Optim
 # and optimizes them using NelderMead (unbounded) or Fminbox(NelderMead) (bounded). Outputs the minimizer and minimum value.
 for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
     # Get dimension from metadata or use default_n for scalable functions
-    local dim = get_n(tf)
+    local dim = NonlinearOptimizationTestFunctions.dim(tf)
     local n = dim == -1 ? tf.meta[:default_n] : dim
 
     # Validate default_n for scalable functions
@@ -27,10 +27,10 @@ for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
     if has_property(tf, "bounded") && lb !== nothing && ub !== nothing
         # Bounded optimization using Fminbox(NelderMead)
         local clamped_start_point = clamp.(start_point, lb, ub)
-        local result = optimize(tf.f, lb, ub, clamped_start_point, Fminbox(NelderMead()), Optim.Options(f_reltol=1e-6))
+        local result = Optim.optimize(tf.f, lb, ub, clamped_start_point, Fminbox(NelderMead()), Optim.Options(f_reltol=1e-6))
     else
         # Unbounded optimization
-        local result = optimize(tf.f, start_point, NelderMead(), Optim.Options(f_reltol=1e-6))
+        local result = Optim.optimize(tf.f, start_point, NelderMead(), Optim.Options(f_reltol=1e-6))
     end
 
     # Print results

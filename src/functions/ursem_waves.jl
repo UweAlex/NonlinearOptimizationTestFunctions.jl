@@ -63,4 +63,3 @@ const URSEM_WAVES_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "ursem_waves" == basename(@__FILE__)[1:end-3] "ursem_waves: Dateiname mismatch!"

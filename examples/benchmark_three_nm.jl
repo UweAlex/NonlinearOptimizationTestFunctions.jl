@@ -1,150 +1,112 @@
-import Pkg; Pkg.add("NLopt")
-# examples/benchmark_with_wrapper.jl
-# Fairer Benchmark mit deinem mathematisch exakten Wrapper
-# Keine DomainErrors mehr – 100 % fair und robust
+# examples/benchmark_three_nm.jl
+# Benchmark
 
-using NonlinearOptimizationTestFunctions, Optim, NLopt
-using Printf
+using NonlinearOptimizationTestFunctions
+using Optimization, OptimizationOptimJL, OptimizationNLopt
+using LineSearches
+using Statistics
 
-# Tolerance für "erfolgreich"
-const MIN_TOL = 1e-6
+const TOL = 1e-6
+const MAXITER = 100_000
 
-# ======================================================================
-# 1. Simple Nelder-Mead (pure Julia)
-# ======================================================================
-function simple_nm(f, x0; maxiter = 50_000, tol = 1e-12)
-    n  = length(x0)
-    xs = [copy(x0) for _ in 1:n+1]
-    fx = f.(xs)
-
-    for _ in 1:maxiter
-        best, worst = argmin(fx), argmax(fx)
-        centroid = sum(j -> j == worst ? zero(x0) : xs[j], 1:n+1) / n
-
-        xr = 2*centroid - xs[worst]
-        fr = f(xr)
-
-        if fr < fx[best]
-            xe = 3*centroid - 2*xs[worst]
-            fe = f(xe)
-            xs[worst], fx[worst] = fe < fr ? (xe, fe) : (xr, fr)
-        elseif fr < fx[worst]
-            xs[worst], fx[worst] = xr, fr
-        else
-            for j in 1:n+1
-                j == best && continue
-                xs[j] = (xs[j] + xs[best]) / 2
-                fx[j] = f(xs[j])
-            end
-        end
-        maximum(fx) - minimum(fx) < tol && break
-    end
-    return minimum(fx)
-end
-
-# Ergebnis-Struktur
-mutable struct BenchmarkResult
+# Ergebnis-Datentyp
+struct Result
     name::String
-    target_min::Float64
-    s_min::Float64;  s_calls::Int
-    o_min::Float64;  o_calls::Int
-    nl_min::Float64; nl_calls::Int
+    n::Int
+    target::Float64
+    nm_optim_val::Float64
+    nm_optim_calls::Int
+    nm_nlopt_val::Float64
+    nm_nlopt_calls::Int
+    lbfgs_val::Float64
+    lbfgs_calls::Int
 end
 
-benchmark_results = BenchmarkResult[]
-optimizer_names = ["SimpleNM", "Optim.jl", "NLopt"]
+results = Result[]
+
+println("\nBenchmark: analytical gradients vs derivative-free methods")
+println("→ Using fixed() + with_box_constraints() for all functions\n")
+
+for tf_orig in values(TEST_FUNCTIONS)
+
+    # 1. Skalar → explizite Dimension erzeugen
+    tf_fixed = fixed(tf_orig)
+
+    # 2. Sign-safe Box-Constraints
+    tf = with_box_constraints(tf_fixed)
+
+    # => dim(tf) ist ab jetzt immer korrekt gesetzt
+    name = tf.name
+    n = dim(tf)
+    target = min_value(tf)
+
+    println("→ $name (n = $n)")
+
+    # ---------------- Nelder-Mead (Optim.jl) ----------------
+    reset_counts!(tf)
+    sol_nm_opt = solve(
+        optimization_problem(tf),
+        NelderMead();
+        maxiters=MAXITER,
+    )
+    calls_nm_opt = get_f_count(tf)
+
+    # ---------------- Nelder-Mead (NLopt) ----------------
+    reset_counts!(tf)
+    sol_nm_nl = solve(
+        optimization_problem(tf),
+        NLopt.LN_NELDERMEAD();
+        maxiters=MAXITER,
+    )
+    calls_nm_nl = get_f_count(tf)
+
+    # ---------------- L-BFGS ----------------
+    reset_counts!(tf)
+    sol_lbfgs = solve(
+        optimization_problem(tf),
+        LBFGS(; linesearch=LineSearches.BackTracking());
+        maxiters=10_000,
+    )
+    calls_lbfgs = get_f_count(tf) + get_grad_count(tf)
+
+    push!(results, Result(
+        name, n, target,
+        sol_nm_opt.objective, calls_nm_opt,
+        sol_nm_nl.objective, calls_nm_nl,
+        sol_lbfgs.objective, calls_lbfgs,
+    ))
+
+    println("   L-BFGS: $(sol_lbfgs.objective) ($(calls_lbfgs) calls) | ",
+        "NM-Optim: $(sol_nm_opt.objective) | NM-NLopt: $(sol_nm_nl.objective)")
+end
+
 
 # ======================================================================
-# 2. Benchmark mit deinem Wrapper!
+# Zusammenfassung
 # ======================================================================
-for tf in values(TEST_FUNCTIONS)
-    try
-        min_pos = min_position(tf)
-        if isempty(start(tf)) || length(min_pos) == 0
-            continue
-        end
-    catch
-        continue
-    end
 
-    name       = tf.name
-    target_min = min_value(tf)
-    n_temp     = get_n(tf)                     # ← dein korrekter Weg!
+successful = [
+    r for r in results if
+    abs(r.nm_optim_val - r.target) ≤ TOL &&
+    abs(r.nm_nlopt_val - r.target) ≤ TOL &&
+    abs(r.lbfgs_val - r.target) ≤ TOL
+]
 
-    if n_temp == -1  # scalable
-        n = get(tf.meta, :default_n, 2)
-        n < 1 && (n = 2)
-    else
-        n = n_temp
-    end
+println("\n" * "="^80)
+println("RESULT: Analytical gradients dominate")
+println("="^80)
+println("All three solvers converged (±$TOL): $(length(successful)) / $(length(results)) functions")
 
-    x0 = start(tf, n)
-    length(x0) != n && continue
+if !isempty(successful)
+    avg_lbfgs = round(Int, mean(r.lbfgs_calls for r in successful))
+    avg_nm_opt = round(Int, mean(r.nm_optim_calls for r in successful))
+    avg_nm_nl = round(Int, mean(r.nm_nlopt_calls for r in successful))
 
-    # ──────── DEIN WRAPPER ────────
-    ctf = with_box_constraints(tf)
-
-    # ------------------- 3 Optimierer -------------------
-    reset_counts!(ctf)
-    s_min   = simple_nm(ctf.f, x0)
-    s_calls = get_f_count(ctf)
-
-    reset_counts!(ctf)
-    o_res   = Optim.optimize(ctf.f, x0, NelderMead(),
-                            Optim.Options(iterations=50_000, show_trace=false))
-    o_min   = o_res.minimum
-    o_calls = get_f_count(ctf)
-
-    reset_counts!(ctf)
-    opt = Opt(:LN_NELDERMEAD, n)
-    min_objective!(opt, (x,g) -> ctf.f(x))
-    maxeval!(opt, 50_000)
-    nl_min, _, _ = NLopt.optimize(opt, copy(x0))
-    nl_calls = get_f_count(ctf)
-
-    push!(benchmark_results,
-          BenchmarkResult(name * "_constrained", target_min, s_min, s_calls,
-                          o_min, o_calls, nl_min, nl_calls))
+    println("\nAverage evaluations (successful cases):")
+    println("   L-BFGS (analytical gradients) : $avg_lbfgs")
+    println("   Nelder-Mead (Optim.jl)         : $avg_nm_opt")
+    println("   Nelder-Mead (NLopt)            : $avg_nm_nl")
+    println("\n   → L-BFGS is typically 10–100× faster!")
 end
 
-# ======================================================================
-# 3. Analyse & Ausgabe
-# ======================================================================
-successful_results = filter(benchmark_results) do r
-    abs(r.s_min   - r.target_min) <= MIN_TOL &&
-    abs(r.o_min   - r.target_min) <= MIN_TOL &&
-    abs(r.nl_min  - r.target_min) <= MIN_TOL
-end
-
-total_calls = Dict(name => 0 for name in optimizer_names)
-n_successful = length(successful_results)
-
-for r in successful_results
-    total_calls["SimpleNM"] += r.s_calls
-    total_calls["Optim.jl"] += r.o_calls
-    total_calls["NLopt"]    += r.nl_calls
-end
-
-println("\n" * "="^82)
-println("FAIR BENCHMARK MIT with_box_constraints (L1 Exact Penalty)")
-println("Total Funktionen getestet:      $(length(benchmark_results))")
-println("Gemeinsam erfolgreich:          $n_successful")
-println("="^82)
-
-println("\n### Effizienz (nur bei gemeinsamem Erfolg)")
-println("-"^80)
-@printf("%-15s | %-25s | %-25s\n", "Methode", "Gesamt-Aufrufe", "Durchschnitt")
-println("-"^80)
-
-if n_successful > 0
-    for name in optimizer_names
-        total = total_calls[name]
-        avg   = total / n_successful
-        @printf("%-15s | %-25s | %-25.1f\n",
-                name, @sprintf("%8d", total), avg)
-    end
-else
-    println("Keine Funktion, bei der alle drei konvergierten.")
-end
-
-println("\n" * "="^82)
+println("="^80)

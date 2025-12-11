@@ -7,9 +7,8 @@ export MVF_SHUBERT2_FUNCTION, mvf_shubert2, mvf_shubert2_gradient
 
 function mvf_shubert2(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "mvf_shubert2" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Fixed 2D [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("mvf_shubert2 requires exactly 2 dimensions"))  # Fixed 2D [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -24,9 +23,8 @@ end
 
 function mvf_shubert2_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("mvf_shubert2 requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -45,7 +43,7 @@ const MVF_SHUBERT2_FUNCTION = TestFunction(
     mvf_shubert2,
     mvf_shubert2_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # "mvf_shubert2" [RULE_NAME_CONSISTENCY]
+        :name => "mvf_shubert2",  # "mvf_shubert2" [RULE_NAME_CONSISTENCY]
         :description => "mvfShubert2 (Adorio variant, 2D fixed, additive cosine with index shift j=0..4); separable with ≈400 local minima; properties based on Adorio (2005, p. 13); similar to Shubert 2 but with offsets.",
         :math => raw"""f(\mathbf{x}) = \sum_{i=0}^{1}\sum_{j=0}^{4}(j+1)\cos((j+2)x_i+(j+1)).""",
         :start => () -> zeros(2),  # Fixed 2D
@@ -58,3 +56,4 @@ const MVF_SHUBERT2_FUNCTION = TestFunction(
         :ub => () -> [10.0, 10.0],
     )
 )
+

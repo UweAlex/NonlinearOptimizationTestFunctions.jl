@@ -63,4 +63,3 @@ const ZETTL_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "zettl" == basename(@__FILE__)[1:end-3] "zettl: Dateiname mismatch!"

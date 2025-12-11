@@ -1,57 +1,69 @@
 # src/functions/rastrigin.jl
-# Purpose: Implements the Rastrigin test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctions, used in optimization demos and tests.
-# Last modified: 16. Juli 2025, 07:19 AM CEST
+# Purpose: Implements the Rastrigin test function with its gradient.
+# Global minimum: f(x*) = 0 at x* = [0, ..., 0]
+# Bounds: -5.12 ≤ x_i ≤ 5.12 (standard)
+
+export RASTRIGIN_FUNCTION, rastrigin, rastrigin_gradient
 
 using LinearAlgebra
 using ForwardDiff
 
-"""
-    rastrigin(x::AbstractVector)
-Computes the Rastrigin function value at point `x`. Requires at least 1 dimension.
-Returns `NaN` for inputs containing `NaN`, and `Inf` for inputs containing `Inf`.
-"""
-function rastrigin(x::AbstractVector)
-    length(x) >= 1 || throw(ArgumentError("Rastrigin requires at least 1 dimension"))
-    T = eltype(x)
+function rastrigin(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n < 1 && throw(ArgumentError("Rastrigin requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
-    n = length(x)
-    return 10.0 * n + sum(x[i]^2 - 10.0 * cos(2 * π * x[i]) for i in 1:n)
-end #function
 
-"""
-    rastrigin_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-Computes the gradient of the Rastrigin function. Returns a vector of length n.
-"""
-function rastrigin_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
-    length(x) >= 1 || throw(ArgumentError("Rastrigin requires at least 1 dimension"))
-    any(isnan.(x)) && return fill(T(NaN), length(x))
-    any(isinf.(x)) && return fill(T(Inf), length(x))
+    if T <: BigFloat
+        setprecision(256)
+    end
+
+    sum = zero(T)
+    @inbounds for i in 1:n
+        sum += x[i]^2 - 10 * cos(2 * π * x[i])
+    end
+    10 * n + sum
+end
+
+function rastrigin_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
     n = length(x)
+    n == 0 && throw(ArgumentError("Input vector cannot be empty"))
+    n < 1 && throw(ArgumentError("Rastrigin requires at least 1 dimension"))
+    any(isnan.(x)) && return fill(T(NaN), n)
+    any(isinf.(x)) && return fill(T(Inf), n)
+
+    if T <: BigFloat
+        setprecision(256)
+    end
+
     grad = zeros(T, n)
     @inbounds for i in 1:n
-        grad[i] = 2.0 * x[i] + 20.0 * π * sin(2 * π * x[i])
+        grad[i] = 2 * x[i] + 20 * π * sin(2 * π * x[i])
     end
-    return grad
-end #function
+    grad
+end
 
 const RASTRIGIN_FUNCTION = TestFunction(
     rastrigin,
     rastrigin_gradient,
-    Dict(
-        :name => "rastrigin",
-        :start => (n::Int=1) -> fill(1.0, n),
-        :min_position => (n::Int=1) -> fill(0.0, n),
-        :min_value => (n::Int) -> 0.0,
-        :properties => Set(["multimodal", "non-convex", "separable", "differentiable", "scalable", "bounded", "continuous"]),
-        :default_n => 2,
-        :lb => (n::Int=1) -> fill(-5.12, n),
-        :ub => (n::Int=1) -> fill(5.12, n),
-        :description => "Rastrigin function: a multimodal, non-convex function with a global minimum at x = [0, ..., 0]. Bounds are [-5.12, 5.12].",
-        :math => "f(x) = 10n + \\sum_{i=1}^n [x_i^2 - 10 \\cos(2\\pi x_i)]"
+    Dict{Symbol, Any}(
+        :name         => "rastrigin",
+        :description  => "Rastrigin function – highly multimodal and strongly deceptive. " *
+                         "The regular arrangement of deep local minima systematically misleads " *
+                         "gradient-based and local search methods away from the global minimum at zero. " *
+                         "Classic example of a deceptive function in global optimization literature.",
+        :math         => raw"f(\mathbf{x}) = 10n + \sum_{i=1}^n \left[ x_i^2 - 10 \cos(2\pi x_i) \right]",
+        :start        => (n::Int) -> fill(2.0, n),           # weit weg vom Minimum
+        :min_position => (n::Int) -> zeros(n),
+        :min_value    => (n::Int) -> 0.0,
+        :properties   => ["multimodal", "non-convex", "separable", "differentiable",
+                           "scalable", "bounded", "continuous", "deceptive"],
+        :default_n    => 10,
+        :lb           => (n::Int) -> fill(-5.12, n),
+        :ub           => (n::Int) -> fill( 5.12, n),
+        :source       => "Molga & Smutnicki (2005), p. 24; " *
+                         "Goldberg (1989) – classic deceptive benchmark; " *
+                         "Jamil & Yang (2013), p. 88"
     )
 )
-
-# Export after defining all symbols
-export RASTRIGIN_FUNCTION, rastrigin, rastrigin_gradient

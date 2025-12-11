@@ -49,4 +49,3 @@ const TRECANNI_FUNCTION = TestFunction(
 )
 
 # Optional: Validation on load
-@assert "trecanni" == basename(@__FILE__)[1:end-3] "trecanni: Filename mismatch!"

@@ -19,9 +19,8 @@ using Random  # For randn
 # Reference: Schumer & Steiglitz (1968)
 function schumersteiglitz(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("schumersteiglitz requires at least 1 dimension"))
     
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
@@ -34,9 +33,8 @@ end #function
 # Throws `ArgumentError` if the input vector is empty.
 function schumersteiglitz_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("schumersteiglitz requires at least 1 dimension"))
     
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
@@ -48,7 +46,7 @@ const SCHUMERSTEIGLITZ_FUNCTION = TestFunction(
     schumersteiglitz,
     schumersteiglitz_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "schumersteiglitz",
         :start => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); randn(n) * 5.0 end,
         :min_position => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); zeros(n) end,
         :min_value => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); 0.0 end,

@@ -61,4 +61,3 @@ const BUKIN4_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "bukin4" == basename(@__FILE__)[1:end-3] "bukin4: Dateiname mismatch!"

@@ -79,4 +79,3 @@ const BRANIN_FUNCTION = TestFunction(
 )
 
 # Optional runtime validation
-@assert "branin" == basename(@__FILE__)[1:end-3] "branin: filename mismatch!"

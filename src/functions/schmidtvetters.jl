@@ -7,9 +7,8 @@ export SCHMIDTVETTERS_FUNCTION, schmidtvetters, schmidtvetters_gradient
 
 function schmidtvetters(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schmidtvetters" für Konsistenz [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 3 && throw(ArgumentError("$(func_name) requires exactly 3 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
+    n != 3 && throw(ArgumentError("schmidtvetters requires exactly 3 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     x[2] == zero(T) && return T(Inf)  # Avoid division by zero in term3 (intentional singularity)
@@ -24,9 +23,8 @@ end
 
 function schmidtvetters_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schmidtvetters" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 3 && throw(ArgumentError("$(func_name) requires exactly 3 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n != 3 && throw(ArgumentError("schmidtvetters requires exactly 3 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     x[2] == zero(T) && return fill(T(Inf), n)  # Avoid division by zero
@@ -57,7 +55,7 @@ const SCHMIDTVETTERS_FUNCTION = TestFunction(
     schmidtvetters,
     schmidtvetters_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schmidtvetters" – exakt Dateiname [RULE_NAME_CONSISTENCY]
+        :name => "schmidtvetters",  # Dynamisch: "schmidtvetters" – exakt Dateiname [RULE_NAME_CONSISTENCY]
         :description => "Schmidt Vetters Function; Properties based on Jamil & Yang (2013, p. 116); Local minimum reported in source (rounded to 3, computed 2.998); global lower at boundary in wide bounds; partially differentiable due to singularity at x2=0; ursprünglich aus Schmidt & Vetter (1980).",
         :math => raw"""f(\mathbf{x}) = \frac{1}{1 + (x_1 - x_2)^2} + \sin\left( \frac{\pi x_2 + x_3}{2} \right) + e^{\left( \frac{x_1 + x_2}{x_2} - 2 \right)^2}. """,
         :start => () -> [1.0, 1.0, 1.0],

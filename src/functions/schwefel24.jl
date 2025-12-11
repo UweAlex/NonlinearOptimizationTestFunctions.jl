@@ -7,9 +7,8 @@ export SCHWEFEL24_FUNCTION, schwefel24, schwefel24_gradient
 
 function schwefel24(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel24" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("schwefel24 requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -30,9 +29,8 @@ end
 
 function schwefel24_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel24" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("schwefel24 requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -59,7 +57,7 @@ const SCHWEFEL24_FUNCTION = TestFunction(
     schwefel24,
     schwefel24_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schwefel24" [RULE_NAME_CONSISTENCY]
+        :name => "schwefel24",  # Dynamisch: "schwefel24" [RULE_NAME_CONSISTENCY]
         :description => "Schwefel's Problem 2.4 test function; Properties based on Jamil & Yang (2013, p. 30); originally from Schwefel (1977).",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^{2} (x_i - 1)^2 + (x_1 - x_i^2)^2.""",
         :start => () -> [5.0, 5.0],

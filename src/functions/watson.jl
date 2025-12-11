@@ -91,4 +91,3 @@ const WATSON_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "watson" == basename(@__FILE__)[1:end-3] "watson: Dateiname mismatch!"

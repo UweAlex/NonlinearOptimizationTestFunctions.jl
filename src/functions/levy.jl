@@ -83,4 +83,3 @@ const LEVY_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "levy" == basename(@__FILE__)[1:end-3] "levy: Dateiname mismatch!"

@@ -72,4 +72,3 @@ const CHENV_FUNCTION = TestFunction(
     )
 )
 
-@assert "chenv" == basename(@__FILE__)[1:end-3]

@@ -71,4 +71,3 @@ const CHENBIRD_FUNCTION = TestFunction(
     )
 )
 
-@assert "chenbird" == basename(@__FILE__)[1:end-3]

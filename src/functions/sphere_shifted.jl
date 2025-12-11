@@ -7,9 +7,8 @@ export SPHERE_SHIFTED_FUNCTION, sphere_shifted, sphere_shifted_gradient
 
 function sphere_shifted(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("sphere_shifted requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -24,9 +23,8 @@ end
 
 function sphere_shifted_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("sphere_shifted requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -42,7 +40,7 @@ const SPHERE_SHIFTED_FUNCTION = TestFunction(
     sphere_shifted,
     sphere_shifted_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "sphere_shifted",
         :description => "Shifted Sphere benchmark function; Properties based on CEC 2005 Special Session.",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^n (x_i - o_i)^2.""",
         :start => (n::Int) -> zeros(n),

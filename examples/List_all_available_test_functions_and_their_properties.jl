@@ -1,9 +1,9 @@
-# examples/List_all_available_test_functions_and_their_properties.jl
-# Purpose: Lists all test functions with their start points, minima, and properties.
-# Context: Part of NonlinearOptimizationTestFunctions, enabling inspection of function characteristics.
-# Last modified: 11. Juli 2025, 14:10 PM CEST
 using NonlinearOptimizationTestFunctions
-n = 2
-for tf in values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)
-    println("$(tf.meta[:name]): Start at $(tf.meta[:start](n)), Minimum at $(tf.meta[:min_position](n)), Value $(tf.meta[:min_value]), Properties: $(join(tf.meta[:properties], ", "))")
+
+sorted_tfs = sort(collect(values(TEST_FUNCTIONS)); by=tf -> tf.meta[:name])
+
+for tf_orig in sorted_tfs
+    tf = fixed(tf_orig)
+    props = join(tf.meta[:properties], ", ")
+    println("$(tf.meta[:name]): Start at $(start(tf)), Minimum at $(min_position(tf)), Value $(min_value(tf)), Properties: $props")
 end

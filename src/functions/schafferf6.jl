@@ -7,9 +7,8 @@ export SCHAFFERF6_FUNCTION, schafferf6, schafferf6_gradient
 
 function schafferf6(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schafferf6" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 2 && throw(ArgumentError("schafferf6 requires at least 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -27,9 +26,8 @@ end
 
 function schafferf6_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 2 && throw(ArgumentError("$(func_name) requires at least 2 dimensions"))
+    n < 2 && throw(ArgumentError("schafferf6 requires at least 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -76,7 +74,7 @@ const SCHAFFERF6_FUNCTION = TestFunction(
     schafferf6,
     schafferf6_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schafferf6" [RULE_NAME_CONSISTENCY]
+        :name => "schafferf6",  # Dynamisch: "schafferf6" [RULE_NAME_CONSISTENCY]
         :description => "Schaffer F6 function; multimodal with cyclic dependency; properties based on Jamil & Yang (2013, p. 32, f136); originally from Schaffer et al. (1989).",
         :math => raw"""f(\mathbf{x}) = \sum_{i=1}^n \frac{\sin^2 \sqrt{x_i^2 + x_{i+1}^2}}{(1 + 0.001 (x_i^2 + x_{i+1}^2))^2}, \quad x_{n+1} = x_1.""",
         :start => (n::Int) -> begin n < 2 && throw(ArgumentError("Dimension must be at least 2")); zeros(n) end,
@@ -89,3 +87,4 @@ const SCHAFFERF6_FUNCTION = TestFunction(
         :ub => (n::Int) -> begin n < 2 && throw(ArgumentError("Dimension must be at least 2")); fill(100.0, n) end,
     )
 )
+

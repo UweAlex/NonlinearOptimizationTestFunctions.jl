@@ -8,9 +8,8 @@ export STEP_ELLIPSOIDAL_FUNCTION, step_ellipsoidal, step_ellipsoidal_gradient
 
 function step_ellipsoidal(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("step_ellipsoidal requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -32,9 +31,8 @@ end
 
 function step_ellipsoidal_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("step_ellipsoidal requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -73,7 +71,7 @@ const STEP_ELLIPSOIDAL_FUNCTION = TestFunction(
     step_ellipsoidal,
     step_ellipsoidal_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "step_ellipsoidal",
         :description => "Step Ellipsoidal (BBOB f7/f18) benchmark function with plateaus and discontinuities; Properties based on BBOB 2009 Noiseless Functions f7 (Step Ellipsoidal); gradient zero almost everywhere except near boundaries.",
         :math => raw"""f(\mathbf{z}) = 0.1 \max\left( \frac{|\tilde{z}_1|}{10^4}, \sum_{i=1}^D 10^{2(i-1)/(D-1)} \tilde{z}_i^2 \right) + f_\mathrm{pen}(x) + f_\mathrm{opt}.""",
         :start => (n::Int) -> begin n < 1 && throw(ArgumentError("Dimension must be at least 1")); zeros(n) end,

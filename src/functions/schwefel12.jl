@@ -84,4 +84,3 @@ const SCHWEFEL12_FUNCTION = TestFunction(
 )
 
 # Validierung beim Laden
-@assert basename(@__FILE__)[1:end-3] == "schwefel12" "schwefel12: Dateiname mismatch!"

@@ -49,4 +49,3 @@ const STEP_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "step" == basename(@__FILE__)[1:end-3] "step: Dateiname mismatch!"

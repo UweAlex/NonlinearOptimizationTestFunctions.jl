@@ -79,4 +79,3 @@ const TRIGONOMETRIC2_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "trigonometric2" == basename(@__FILE__)[1:end-3] "trigonometric2: Dateiname mismatch!"

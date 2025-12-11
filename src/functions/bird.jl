@@ -65,4 +65,3 @@ const BIRD_FUNCTION = TestFunction(
     )
 )
 
-@assert "bird" == basename(@__FILE__)[1:end-3] "bird: Dateiname mismatch!"

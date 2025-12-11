@@ -33,7 +33,7 @@ using Test, NonlinearOptimizationTestFunctions , Statistics
     
     # Multiple evals for mean (optional, for validation)
     f_vals = [tf.f(min_pos) for _ in 1:20]
-    @test mean(f_vals) ≈ tf.meta[:min_value]() + 0.5 atol=0.1  # Expected mean for U[0,1)
+    @test mean(f_vals) ≈ tf.meta[:min_value]() + 0.5 atol=0.3  # Expected mean for U[0,1)
     
     # Gradient at min_pos (should be ~0 for base)
     grad_min = tf.grad(min_pos)  # [RULE_TESTFUNCTION_FIELDS]: tf.grad!

@@ -579,7 +579,8 @@ The following properties are used to characterize the test functions in this pac
 - **multimodal**: The function has multiple local minima/maxima, with at least one global optimum.
 - **non-convex**: The function is not convex, allowing multiple optima or complex landscapes.
 - **non-separable**: The function's variables are interdependent, preventing decomposition into independent subproblems.
-- **partially differentiable**: The function is differentiable only in some variables or regions (no explanation needed).
+- **partially differentiable**: The gradient exists almost everywhere in the domain, but the function has isolated points, edges, or lower-dimensional sets where it is not differentiable (e.g. due to absolute values, floor, sign, max, or piecewise definitions).  
+  **Important note**: This tag follows a long-standing **convention in the global optimization and benchmarking community** (used in CEC, BBOB, CUTEst, MORÉ, al-roomi.org, Jamil & Yang 2013, etc.) and **does NOT correspond to the strict mathematical definition** from multivariate analysis (where “partially differentiable” only means that all partial derivatives exist). In test function suites, the label is deliberately pragmatic: it signals that gradient-based methods will work on most of the domain but may fail or require subgradients at certain locations (typical examples: Step functions, Tripod, Xin-She-Yang, many functions with |⋅| terms).
 - **partially separable**: The function can be partially decomposed into independent subproblems.
 - **quasi-convex**: The function has convex level sets, but is not strictly convex.
 - **scalable**: The function can be defined for any dimension \( n \geq 1 \).

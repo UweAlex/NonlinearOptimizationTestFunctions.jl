@@ -7,9 +7,8 @@ export SCHAFFER3_FUNCTION, schaffer3, schaffer3_gradient
 
 function schaffer3(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schaffer3" für Konsistenz [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("schaffer3 requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -26,9 +25,8 @@ end
 
 function schaffer3_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schaffer3" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("schaffer3 requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -67,7 +65,7 @@ const SCHAFFER3_FUNCTION = TestFunction(
     schaffer3,
     schaffer3_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schaffer3" – exakt Dateiname [RULE_NAME_CONSISTENCY]
+        :name => "schaffer3",  # Dynamisch: "schaffer3" – exakt Dateiname [RULE_NAME_CONSISTENCY]
         :description => "Schaffer Function No. 3; Properties based on Jamil & Yang (2013, p. 28); ursprünglich aus Schaffer (1984). Note: Denominator interpreted as [1 + 0.001(x_1^2 + x_2^2)]^2 to match reported minimum.",
         :math => raw"""f(\mathbf{x}) = 0.5 + \sin^2(\cos |x_1^2 - x_2^2|) - \frac{0.5}{[1 + 0.001(x_1^2 + x_2^2)]^2}. """,
         :start => () -> [0.0, 0.0],

@@ -7,9 +7,8 @@ export MVF_SHUBERT3_FUNCTION, mvf_shubert3, mvf_shubert3_gradient
 
 function mvf_shubert3(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "mvf_shubert3" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n < 1 && throw(ArgumentError("mvf_shubert3 requires at least 1 dimension"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -24,9 +23,8 @@ end
 
 function mvf_shubert3_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("mvf_shubert3 requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -45,7 +43,7 @@ const MVF_SHUBERT3_FUNCTION = TestFunction(
     mvf_shubert3,
     mvf_shubert3_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # "mvf_shubert3" [RULE_NAME_CONSISTENCY]
+        :name => "mvf_shubert3",  # "mvf_shubert3" [RULE_NAME_CONSISTENCY]
         :description => "mvfShubert3 (Adorio nD generalization, additive sine with index shift j=0..4); separable with ≈400 local minima in 2D; properties based on Adorio (2005, p. 13); generalization of mvfShubert.",
         :math => raw"""f(\mathbf{x}) = -\sum_{i=0}^{n-1}\sum_{j=0}^{4}(j+1)\sin((j+2)x_i+(j+1)).""",
         :start => (n::Int) -> begin n < 1 && throw(ArgumentError("At least 1 dimension")); zeros(n) end,
@@ -58,3 +56,4 @@ const MVF_SHUBERT3_FUNCTION = TestFunction(
         :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("At least 1 dimension")); fill(10.0, n) end,
     )
 )
+

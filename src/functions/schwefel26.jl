@@ -7,9 +7,8 @@ export SCHWEFEL26_FUNCTION, schwefel26, schwefel26_gradient
 
 function schwefel26(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel26" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("schwefel26 requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -23,9 +22,8 @@ end
 
 function schwefel26_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schwefel26" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("schwefel26 requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -59,7 +57,7 @@ const SCHWEFEL26_FUNCTION = TestFunction(
     schwefel26,
     schwefel26_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schwefel26" [RULE_NAME_CONSISTENCY]
+        :name => "schwefel26",  # Dynamisch: "schwefel26" [RULE_NAME_CONSISTENCY]
         :description => "Schwefel's Problem 2.6 test function (piecewise linear); Properties based on Jamil & Yang (2013, p. 31); originally from Schwefel (1981). Global minimum where both arguments are zero.",
         :math => raw"""f(\mathbf{x}) = \max(|x_1 + 2x_2 - 7|, |2x_1 + x_2 - 5|).""",
         :start => () -> [0.0, 0.0],

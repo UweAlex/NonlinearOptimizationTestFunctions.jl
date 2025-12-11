@@ -17,9 +17,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function cube(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("cube requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -35,9 +34,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function cube_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("cube requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
     any(isinf.(x)) && return fill(T(Inf), 2)
     
@@ -52,7 +50,7 @@ const CUBE_FUNCTION = TestFunction(
     cube,
     cube_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "cube",
         :description => "Cube function (continuous, differentiable, non-separable, unimodal). Source: Vogel (1966). Global minimum f(x*)=0 at x*=(1,1). Properties based on [Jamil & Yang (2013, Entry 41)].",
         :math => raw"""f(\mathbf{x}) = 100 (x_2 - x_1^3)^2 + (1 - x_1)^2""",
         :start => () -> [0.0, 0.0],

@@ -38,9 +38,8 @@ end
 
 function shubert_hybrid_rastrigin(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("shubert_hybrid_rastrigin requires exactly 2 dimensions"))  # [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -58,9 +57,8 @@ end
 
 function shubert_hybrid_rastrigin_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("shubert_hybrid_rastrigin requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -95,7 +93,7 @@ const SHUBERT_HYBRID_RASTRIGIN_FUNCTION = TestFunction(
     shubert_hybrid_rastrigin,
     shubert_hybrid_rastrigin_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # [RULE_NAME_CONSISTENCY]
+        :name => "shubert_hybrid_rastrigin",  # [RULE_NAME_CONSISTENCY]
         :description => "Hybrid Shubert-Rastrigin composition (weights 0.5/0.5, n=2); non-separable multimodal hybrid; properties based on Jamil & Yang (2013, p. 56, Hybrid-Variante); CEC 2020 F10.",
         :math => raw"""f(\mathbf{x}) = 0.5 \cdot \text{Shubert}(\mathbf{x}) + 0.5 \cdot \text{Rastrigin}(\mathbf{x}).""",
         :start => () -> [0.0, 0.0],
@@ -108,3 +106,4 @@ const SHUBERT_HYBRID_RASTRIGIN_FUNCTION = TestFunction(
         :ub => () -> [10.0, 10.0],
     )
 )
+

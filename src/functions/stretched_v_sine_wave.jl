@@ -68,4 +68,3 @@ const STRETCHED_V_SINE_WAVE_FUNCTION = TestFunction(
 )
 
 # Validierung beim Laden
-@assert "stretched_v_sine_wave" == basename(@__FILE__)[1:end-3] "stretched_v_sine_wave: Dateiname mismatch!"

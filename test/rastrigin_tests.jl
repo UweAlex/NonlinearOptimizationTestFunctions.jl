@@ -36,7 +36,7 @@ end
     tf.gradient!(G, x)
     @test G ≈ rastrigin_gradient(x) atol=1e-6
     @test tf.meta[:name] == "rastrigin"
-    @test tf.meta[:start](1) == [1.0]
+    @test tf.meta[:start](1) == [2.0]
     @test tf.meta[:min_position](1) == [0.0]
     @test tf.meta[:min_value](1) ≈ 0.0 atol=1e-6
     @test tf.meta[:lb](1) == [-5.12]

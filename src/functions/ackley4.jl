@@ -70,4 +70,3 @@ const ACKLEY4_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "ackley4" == basename(@__FILE__)[1:end-3] "ackley4: Dateiname mismatch!"

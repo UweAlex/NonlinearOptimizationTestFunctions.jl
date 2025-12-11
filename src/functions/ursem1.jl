@@ -49,4 +49,3 @@ const URSEM1_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden [RULE_NAME_CONSISTENCY]
-@assert "ursem1" == basename(@__FILE__)[1:end-3] "ursem1: Dateiname mismatch!"

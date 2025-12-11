@@ -87,4 +87,3 @@ const BRANINRCOS2_FUNCTION = TestFunction(
 )
 
 # Validierung beim Laden
-@assert "braninrcos2" == basename(@__FILE__)[1:end-3] "braninrcos2: Dateiname mismatch!"

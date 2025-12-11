@@ -7,9 +7,8 @@ export SHEKEL5_FUNCTION, shekel5, shekel5_gradient
 
 function shekel5(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shekel5" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 4 && throw(ArgumentError("$(func_name) requires exactly 4 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
+    n != 4 && throw(ArgumentError("shekel5 requires exactly 4 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -35,9 +34,8 @@ end
 
 function shekel5_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shekel5" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 4 && throw(ArgumentError("$(func_name) requires exactly 4 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n != 4 && throw(ArgumentError("shekel5 requires exactly 4 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -70,7 +68,7 @@ const SHEKEL5_FUNCTION = TestFunction(
     shekel5,
     shekel5_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "shekel5" [RULE_NAME_CONSISTENCY]
+        :name => "shekel5",  # Dynamisch: "shekel5" [RULE_NAME_CONSISTENCY]
         :description => "Shekel 5 test function; Properties based on Jamil & Yang (2013, p. 130) [minimum controversial: source -10.1532 (rounded) and pos [4,4,4,4], precise -10.15319967905822 at ≈[4.00003715, 4.00013327, 4.00003715, 4.00013327]]; originally from Box (1966).",
         :math => raw"""f(\mathbf{x}) = -\sum_{i=1}^{5} \frac{1}{\sum_{j=1}^{4} (x_j - a_{ij})^2 + c_i}, \quad \mathbf{a}_i \in A = \begin{bmatrix} 4 & 4 & 4 & 4 \\ 1 & 1 & 1 & 1 \\ 8 & 8 & 8 & 8 \\ 6 & 6 & 6 & 6 \\ 3 & 7 & 3 & 7 \end{bmatrix}, \quad \mathbf{c} = [0.1, 0.2, 0.2, 0.4, 0.4].""",
         :start => () -> [1.0, 1.0, 1.0, 1.0],

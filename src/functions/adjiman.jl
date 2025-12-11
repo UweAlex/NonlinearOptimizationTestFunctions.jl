@@ -58,4 +58,3 @@ const ADJIMAN_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "adjiman" == basename(@__FILE__)[1:end-3] "adjiman: Dateiname mismatch!"

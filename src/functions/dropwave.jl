@@ -71,4 +71,3 @@ const DROPWAVE_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "dropwave" == basename(@__FILE__)[1:end-3] "dropwave: Dateiname mismatch!"

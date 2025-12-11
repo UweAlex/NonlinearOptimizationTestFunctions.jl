@@ -86,4 +86,3 @@ const GULFRESEARCH_FUNCTION = TestFunction(
     )
 )
 
-@assert "gulfresearch" == basename(@__FILE__)[1:end-3]

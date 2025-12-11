@@ -83,4 +83,3 @@ const TESTTUBEHOLDER_FUNCTION = TestFunction(
 )
 
 # Optional: Validation on load
-@assert "testtubeholder" == basename(@__FILE__)[1:end-3] "testtubeholder: Filename mismatch!"

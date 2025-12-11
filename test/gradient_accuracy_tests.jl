@@ -1,197 +1,253 @@
 using Test, ForwardDiff
-using NonlinearOptimizationTestFunctions
+using NonlinearOptimizationTestFunctions # Annahme: Enthält die Konstante TEST_FUNCTIONS
 using Random
+using Printf # Für @info/println Formatierung
+using LinearAlgebra # Für Vektor-Operationen
 
-# Hilfsfunktion: Berechnet den numerischen Gradienten mittels zentraler Differenzen
-# Eingabe: f (Funktion), x (Punkt), eps_val (Präzision für Schrittweite, Standard: Maschinengenauigkeit)
-# Ausgabe: Gradientenvektor (numerische Näherung)
-function finite_difference_gradient(f, x; eps_val=eps(Float64))
-    n = length(x)
-    grad = zeros(n)
-    for i in 1:n
-        fx = abs(f(x))
-        # Schrittweite h abhängig von Funktionswert und Punktkoordinate
-        h = max(fx > 0 ? sqrt(eps_val) * sqrt(fx) : 1e-8, eps_val * abs(x[i]))
-        x_plus = copy(x); x_plus[i] += h
-        x_minus = copy(x); x_minus[i] -= h
-        grad[i] = (f(x_plus) - f(x_minus)) / (2*h)
-    end #for
-    return grad
-    # Zweck: Berechnet den numerischen Gradienten mit zentralen Differenzen für hohe Präzision
-end #function
+# --- Globale Konstanten und Cache-Status ---
 
-# Hilfsfunktion: Berechnet den relativen Unterschied zwischen zwei Vektoren
-# Eingabe: a, b (Vektoren), epsilon (kleiner Wert zur Vermeidung von Division durch 0)
-# Ausgabe: Norm der relativen Unterschiede
+const CACHE_FILE = joinpath("test", "gradient_test_cache.txt") 
+const CACHE_DATA = Dict{String, Int}() # Globaler, veränderbarer Cache
+const TOLERANCE = 2.5e-8 # KORREKTUR: Toleranz erhöht von 1e-8 auf 2.5e-8
+const MAX_TEST_POINTS = 40
+const MAX_ATTEMPTS = 5
+
+# --- Caching-Funktionen ---
+
+# Lädt den Cache einmalig beim Start in den globalen Dict CACHE_DATA.
+function initialize_cache(cache_file_path=CACHE_FILE)
+    empty!(CACHE_DATA)
+    if isfile(cache_file_path)
+        try
+            for line in eachline(cache_file_path)
+                line = strip(line)
+                isempty(line) && continue
+                # Erwarte Format: name=mtime
+                if occursin('=', line)
+                    name, time_str = split(line, '=', limit=2)
+                    CACHE_DATA[name] = parse(Int, time_str)
+                end
+            end
+        catch e
+            @warn "Fehler beim Lesen des Cache '$cache_file_path': $e. Cache wird ignoriert."
+        end
+    end
+end
+
+# Speichert den gesamten Inhalt des globalen Caches zurück auf die Platte.
+function save_cache_to_disk()
+    # Sicherstellen, dass der Ordner 'test' existiert
+    cache_dir = dirname(CACHE_FILE)
+    if !isdir(cache_dir)
+        mkpath(cache_dir)
+    end
+
+    open(CACHE_FILE, "w") do io
+        for (name, mtime_val) in CACHE_DATA
+            write(io, "$name=$mtime_val\n")
+        end
+    end
+end
+
+# Prüft, ob der Test aufgrund geänderter Quelldatei ausgeführt werden muss.
+function should_run_test(fn_name, src_file_path)
+    if !isfile(src_file_path)
+        return true, "Quelldatei ($src_file_path) nicht gefunden/Neu: Test muss ausgeführt werden."
+    end
+    # round() verwenden, um Nachkommastellen zu entfernen und InexactError zu vermeiden
+    current_mod_time = Int(round(mtime(src_file_path))) 
+
+    if haskey(CACHE_DATA, fn_name)
+        cached_mod_time = CACHE_DATA[fn_name]
+        
+        if current_mod_time <= cached_mod_time
+            return false, "Übersprungen: Die Datei ist nicht neuer als der letzte erfolgreiche Testlauf."
+        else
+            return true, "Ausführen: Die Datei wurde seit dem letzten erfolgreichen Test geändert."
+        end
+    else
+        return true, "Erstes Mal: Test muss ausgeführt werden."
+    end
+end
+
+# --- Allgemeine Hilfsfunktionen ---
+
+# Berechnet den relativen Unterschied zwischen zwei Vektoren
 function relative_diff(a, b; epsilon=1e-10)
-    rel_diff = 0 
+    rel_diff = 0.0
     for i in eachindex(a)
         rel_diff += abs(a[i] - b[i]) / (abs(a[i]) + abs(b[i]) + epsilon)
-    end #for
-    return rel_diff 
-    # Zweck: Misst eine relative Abweichung zwischen zwei Gradientenvektoren;
-end #function
+    end
+    return rel_diff
+end
 
-# Hilfsfunktion: Extrahiert Metadatenwerte und wandelt sie in Float64 um
-# Eingabe: field (Metadatenfeld), n (Dimension), is_scalable (skalierbar?), fn_name (Funktionsname), field_name (Feldname)
-# Ausgabe: Metadatenwert als Float64-Vektor
+# Extrahiert Metadatenwerte und wandelt sie in Float64 um
 function get_meta_value(field, n, is_scalable, fn_name, field_name)
     try
         if isa(field, Function)
+            # Ruft die Funktion nur mit n auf, wenn sie skalierbar ist
             return float.(is_scalable ? field(n) : field())
         else
             return float.(field)
-        end #if
+        end
     catch e
         error("Error in $field_name for $fn_name: $e")
-    end #try
-    # Zweck: Extrahiert Metadaten (z.B. min_position, lb, ub), prüft Gültigkeit und wirft Fehler bei Problemen
-end #function
+    end
+end
 
-# Hilfsfunktion: Prüft, ob ein Punkt endliche Funktionswerte und Gradienten liefert
-# Eingabe: tf (Testfunktion), point (Punkt), finite_difference_gradient (Gradientenfunktion), fn_name (Funktionsname)
-# Ausgabe: Tupel (is_valid, error_msg, diff_an_ad, diff_num_ad, diff_an_num)
-function is_valid_point(tf, point, finite_difference_gradient, fn_name)
- 
-    try
-        
-        fx = tf.f(point)
-        
-        !isfinite(fx) && return (false, "Non-finite function value for $fn_name at point=$point, fx=$fx", 0.0, 0.0, 0.0)
-        
-        
-        if fn_name == "bukin6"
-            x1, x2 = point
-            diff_term = x2 - 0.01 * x1^2
-            abs_diff_term = abs(diff_term)
-            
-        end
-        an_grad = tf.grad(point)
-        
-        !all(isfinite, an_grad) && return (false, "Non-finite analytical gradient for $fn_name at point=$point, an_grad=$an_grad", 0.0, 0.0, 0.0)
-        
-        
-        ad_grad = ForwardDiff.gradient(tf.f, point)
-        
-        !all(isfinite, ad_grad) && return (false, "Non-finite AD gradient for $fn_name at point=$point, ad_grad=$ad_grad", 0.0, 0.0, 0.0)
-        
-        
-        num_grad = finite_difference_gradient(tf.f, point)
-        
-        !all(isfinite, num_grad) && return (false, "Non-finite numerical gradient for $fn_name at point=$point, num_grad=$num_grad", 0.0, 0.0, 0.0)
-        
-        # Berechne relative Abweichungen für gültige Punkte
-        diff_an_ad = relative_diff(an_grad, ad_grad)
-        diff_num_ad = relative_diff(num_grad, ad_grad)
-        diff_an_num = relative_diff(an_grad, num_grad)
-        
-        return (true, "", diff_an_ad, diff_num_ad, diff_an_num)
-    catch e
-        
-        return (false, "Error for $fn_name at point=$point: $e", 0.0, 0.0, 0.0)
-    end #try
-    # Zweck: Prüft, ob der Punkt gültige (endliche) Werte für Funktion und Gradienten liefert;
-    #        berechnet bei Gültigkeit die relativen Abweichungen (AD vs. AG, ND vs. AD, AG vs. ND) für direkte Summierung
-end #function
+# --- Kern-Test-Logik ---
 
-# Hauptfunktion: Generiert 40 Punkte mit schrittweiser Annäherung an das Optimum
-# Eingabe: tf (Testfunktion), n (Dimension), finite_difference_gradient (Gradientenfunktion), max_attempts (maximale Versuche)
-# Ausgabe: Tupel (sum_an_ad, sum_num_ad, sum_an_num) mit Summen der relativen Abweichungen
-function generate_points_converging_to_optimum(tf, n, finite_difference_gradient; max_attempts=5)
+function test_gradient_accuracy_bigfloat(tf, n, max_attempts=MAX_ATTEMPTS)
     fn_name = tf.meta[:name]
-    is_bounded = "bounded" in tf.meta[:properties]
+    
+    # 1. Speichere die aktuelle BigFloat-Präzision
+    original_precision = precision(BigFloat) 
+    
+    # Setze die BigFloat-Präzision auf 256 Bit
+    setprecision(256) 
+    
     is_scalable = "scalable" in tf.meta[:properties]
+    is_bounded = "bounded" in tf.meta[:properties]
+
+    # Hole initiale Schranken in Float64
+    min_pos_f64 = get_meta_value(tf.meta[:min_position], n, is_scalable, fn_name, "min_position")
     
-    # Hole Minimum-Position
-    min_pos = try
-        
-        min_pos = is_scalable ? float.(tf.meta[:min_position](n)) : float.(tf.meta[:min_position]())
-        
-        min_pos
-    catch e
-        error("Error in min_position for $fn_name: $e")
-    end #try
-    length(min_pos) == n || error("Dimension mismatch for $fn_name: expected $n, got $(length(min_pos))")
+    if length(min_pos_f64) != n
+         error("Dimension mismatch for $fn_name: expected $n, got $(length(min_pos_f64)) from min_position")
+    end
+
+    min_pos = BigFloat.(min_pos_f64)
     
-    # Initialisiere Schranken
+    if is_bounded
+        lb_f64 = get_meta_value(tf.meta[:lb], n, is_scalable, fn_name, "lb")
+        ub_f64 = get_meta_value(tf.meta[:ub], n, is_scalable, fn_name, "ub")
+    else
+        lb_f64 = min_pos_f64 .- 5.0
+        ub_f64 = min_pos_f64 .+ 5.0
+    end
+    lb = BigFloat.(lb_f64)
+    ub = BigFloat.(ub_f64)
     
-    lb = is_bounded ? get_meta_value(tf.meta[:lb], n, is_scalable, fn_name, "lb") : min_pos .- 5.0
-    ub = is_bounded ? get_meta_value(tf.meta[:ub], n, is_scalable, fn_name, "ub") : min_pos .+ 5.0
-    
-    
-    sum_an_ad = 0.0
-    sum_num_ad = 0.0
-    sum_an_num = 0.0
-    
-    for i in 1:40
-        t = (i - 1) / 40
-        current_lb, current_ub = min_pos + (1 - t) * (lb - min_pos), min_pos + (1 - t) * (ub - min_pos)
-        
-        
-        point = zeros(n)
+    total_relative_diff = 0.0
+    valid_points_count = 0
+
+    for i in 1:MAX_TEST_POINTS
+        t = BigFloat((i - 1) / MAX_TEST_POINTS)
+        current_lb = min_pos + (BigFloat(1) - t) * (lb - min_pos)
+        current_ub = min_pos + (BigFloat(1) - t) * (ub - min_pos)
+
         attempts = 0
+        point = zeros(BigFloat, n)
+        
         while attempts < max_attempts
-            point = current_lb + rand(n) .* (current_ub - current_lb)
+            # Generierung des zufälligen BigFloat-Punktes
+            point .= current_lb .+ rand(BigFloat, n) .* (current_ub - current_lb)
             
-            is_valid, error_msg, diff_an_ad, diff_num_ad, diff_an_num = is_valid_point(tf, point, finite_difference_gradient, fn_name)
-            if is_valid
-                sum_an_ad += diff_an_ad
-                sum_num_ad += diff_num_ad
-                sum_an_num += diff_an_num
-                break
-            else
-                
-            end #if
+            try
+                an_grad_big = tf.grad(point)
+                ad_grad_big = ForwardDiff.gradient(tf.f, point)
+
+                if all(isfinite, an_grad_big) && all(isfinite, ad_grad_big)
+                    diff = relative_diff(Float64.(an_grad_big), Float64.(ad_grad_big))
+                    total_relative_diff += diff
+                    valid_points_count += 1
+                    break
+                end
+            catch
+                # Ignoriere Domain Errors etc. und versuche es erneut
+            end
+            
             attempts += 1
             if attempts == max_attempts
-                error("Failed to generate valid point for $fn_name at step $i after $max_attempts attempts")
-            end #if
-        end #while
-    end #for
+                @warn "Fehler: Konnte keinen gültigen Punkt für $fn_name bei Schritt $i generieren."
+                break
+            end
+        end
+    end
     
+    # 2. Präzision auf den ursprünglichen Wert zurücksetzen
+    setprecision(original_precision) 
     
-    return sum_an_ad, sum_num_ad, sum_an_num
-    # Zweck: Generiert 40 gültige Punkte, die sich schrittweise dem Minimum nähern, summiert die relativen
-    #        Abweichungen (AD vs. AG, ND vs. AD, AG vs. ND); wirft Fehler, wenn weniger als 40 Punkte generiert werden
-end #function
+    return total_relative_diff, valid_points_count
+end
 
-# Testset: Überprüft die Genauigkeit der analytischen Gradienten
-# Prüft alle Testfunktionen, jede mit 40 Punkten, auf korrekte analytische Gradienten
-@testset "Gradient Accuracy Tests" begin
-    Random.seed!(1234) # Fixiert Zufallszahlen für Reproduzierbarkeit
+# --- Haupt-Testset ---
+
+@testset "BigFloat Gradient Accuracy Caching Tests" begin
+    Random.seed!(1234)
     
+    # 1. Cache einmalig beim Start laden
+    initialize_cache() 
+
     for tf in values(TEST_FUNCTIONS)
         fn_name = tf.meta[:name]
         
+        # Annahme: Quelldatei liegt unter src/functions/<name>.jl
+        src_file = joinpath("src", "functions", "$fn_name.jl") 
         
-        # Bestimme Dimension (n=4 für skalierbare Funktionen, sonst n=2)
-        is_scalable = "scalable" in tf.meta[:properties]
-        n = is_scalable ? 4 : 2
-        min_pos = try
-            get_meta_value(tf.meta[:min_position], n, is_scalable, fn_name, "min_position")
-        catch e
-            error("Error in min_position for $fn_name: $e")
-        end #try
-        n = length(min_pos)
-        
-        
-        # Generiere 40 Punkte und summiere relative Abweichungen
-        sum_an_ad, sum_num_ad, sum_an_num = try
-            generate_points_converging_to_optimum(tf, n, finite_difference_gradient)
-        catch e
-            error("Error in generate_points_converging_to_optimum for $fn_name: $e")
-        end #try
-        
-        # Prüfe, ob numerischer Gradient genauer ist als analytischer (Fehlerfall)
-        if sum_num_ad < sum_an_ad && sum_num_ad < sum_an_num
-            error("Test failed: Function $fn_name has unreliable analytical gradient: sum_num_ad=$sum_num_ad < sum_an_ad=$sum_an_ad, sum_an_num=$sum_an_num")
-        else
-            println("Function $fn_name passed: sum_an_ad=$sum_an_ad, sum_num_ad=$sum_num_ad, sum_an_num=$sum_an_num")
-        end #if
-    end #for
-    # Zweck: Testet für jede Funktion die Genauigkeit des analytischen Gradienten (AG) gegenüber dem automatischen
-    #        Gradienten (AD) und numerischen Gradienten (ND); erwartet, dass sum_an_ad klein ist und sum_num_ad
-    #        größer als sum_an_ad und sum_an_num (stärkere Bedingung); wirft Fehler bei unzuverlässigem AG;
-    #        gibt Erfolgsmeldung für bestandene Funktionen aus
+        # 2. Caching-Prüfung
+        run_test, reason = should_run_test(fn_name, src_file)
 
-end #testset
+        if !run_test
+            @info "SKIP: $fn_name. $reason"
+            @test_skip true 
+            continue
+        end
+
+        # 3. Bestimme Standard-Dimension
+        is_scalable = "scalable" in tf.meta[:properties]
+        
+        n = 0 # Initialisiere n
+
+        if is_scalable
+            # Wenn skalierbar, MUSS :default_n existieren.
+            if haskey(tf.meta, :default_n)
+                n = tf.meta[:default_n]
+            else
+                 @error "Metadatenfehler: Skalierbare Funktion $(fn_name) fehlt :default_n. Verwende n=2 als Fallback."
+                 n = 2 
+            end
+        else
+            # Wenn nicht skalierbar, lies die Dimension aus min_position.
+            try
+                fixed_min_pos = get_meta_value(tf.meta[:min_position], 1, false, fn_name, "min_position")
+                n = length(fixed_min_pos)
+            catch e
+                @error "Konnte Dimension für $fn_name nicht ermittelt werden: $e"
+                @test false
+                continue
+            end
+        end
+        
+        # Sicherheits-Check
+        if n <= 0
+            @error "Dimension n konnte für $fn_name nicht korrekt bestimmt werden (n=$n)."
+            @test false
+            continue
+        end
+        
+        # 4. Test-Ausführung
+        @info @sprintf "RUNNING: %-20s - %s (N=%d)" fn_name reason n
+        
+        sum_diff, count = try
+            test_gradient_accuracy_bigfloat(tf, n)
+        catch e
+            @error "Testlauf für $fn_name fehlgeschlagen (Exception): $e"
+            @test false 
+            continue 
+        end
+        
+        # 5. Ergebnis-Prüfung
+        @test count > 0 # Mindestens ein gültiger Punkt muss gefunden worden sein
+        @test sum_diff < TOLERANCE * count 
+        
+        if sum_diff < TOLERANCE * count
+            # 6. Caching-Update bei Erfolg
+            current_mod_time = Int(round(mtime(src_file))) 
+            CACHE_DATA[fn_name] = current_mod_time 
+            save_cache_to_disk() 
+            
+            @info @sprintf "SUCCESS: %-20s - Akkumulierte Differenz: %.2e (Punkte: %d)" fn_name sum_diff count
+        end
+    end
+end

@@ -55,4 +55,3 @@ const VENTER_SOBIEZCCZANSKI_SOBIESKI_FUNCTION = TestFunction(
 )
 
 # Validierung beim Laden
-@assert "venter_sobiezcczanski_sobieski" == basename(@__FILE__)[1:end-3] "venter_sobiezcczanski_sobieski: Dateiname mismatch!"

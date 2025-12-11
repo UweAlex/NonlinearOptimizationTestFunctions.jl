@@ -17,9 +17,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function elattavidyasagardutta(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 4 && throw(ArgumentError("$(func_name) requires exactly 4 dimensions"))
+    n != 4 && throw(ArgumentError("elattavidyasagardutta requires exactly 4 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -35,9 +34,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function elattavidyasagardutta_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 4 && throw(ArgumentError("$(func_name) requires exactly 4 dimensions"))
+    n != 4 && throw(ArgumentError("elattavidyasagardutta requires exactly 4 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 4)
     any(isinf.(x)) && return fill(T(Inf), 4)
     
@@ -57,7 +55,7 @@ const ELATTAVIDYASAGARDUTTA_FUNCTION = TestFunction(
     elattavidyasagardutta,
     elattavidyasagardutta_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "elattavidyasagardutta",
         :description => "El-Attar-Vidyasagar-Dutta test function from El-Attar et al. (1979), as standardized in Jamil & Yang (2013). Unimodal, non-separable function in 4 dimensions. Properties based on Jamil & Yang (2013).",
         :math => raw"""f(\mathbf{x}) = (x_1^2 + x_2 - 10)^2 + 5(x_3 - x_4)^2 + (x_2 - x_3)^2 + 10(x_4 - 1)^2.""",
         :start => () -> [0.0, 0.0, 0.0, 0.0],

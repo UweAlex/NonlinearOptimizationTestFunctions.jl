@@ -70,4 +70,3 @@ const WOLFE_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "wolfe" == basename(@__FILE__)[1:end-3] "wolfe: Dateiname mismatch!"

@@ -10,6 +10,82 @@ using Zygote
 using LinearAlgebra  # For norm() function
 using NonlinearOptimizationTestFunctions
 
+@testset "Property Consistency Checks" begin
+    # 1. Implikationen (bleiben unverändert)
+    implications = Dict(
+        "differentiable" => ["continuous"],
+        "strongly convex" => ["convex", "differentiable"],
+        "quasi-convex" => ["continuous"],
+        "highly multimodal" => ["multimodal", "non-convex"],
+        "deceptive" => ["non-convex"],
+    )
+
+    # 2. Inkompatible Paare – nur in einer Richtung definieren!
+    #    Wir machen automatisch beidseitig daraus.
+    base_incompatibles = [
+        "convex" => ["multimodal", "highly multimodal", "deceptive", "non-convex"],
+        "strongly convex" => ["non-convex"],
+        "unimodal" => ["multimodal", "highly multimodal"],
+        "differentiable" => ["has_noise", "partially differentiable"],
+        # Füge hier neue hinzu – nur einmal pro Richtung!
+    ]
+
+    # Automatisch alle Kombinationen erzeugen (beidseitig, aber keine Duplikate)
+    incompatibles = Set{Tuple{String,String}}()
+    for (a, bs) in base_incompatibles
+        for b in bs
+            push!(incompatibles, (a, b))
+            push!(incompatibles, (b, a))  # ← symmetrisch
+        end
+    end
+
+    all_issues = Tuple{String,String}[]
+
+    for tf in values(TEST_FUNCTIONS)
+        props = Set(tf.meta[:properties])
+        name = tf.name
+
+        # --- Implikationen prüfen ---
+        for (key, required) in implications
+            if key in props
+                for r in required
+                    if r ∉ props
+                        push!(all_issues, (name, "$key requires '$r' (missing)"))
+                    end
+                end
+            end
+        end
+
+        # --- Inkompatibilitäten prüfen ---
+        for (a, b) in incompatibles
+            if a in props && b in props && a ≤ b  # nur einmal melden (vermeidet doppelte Meldungen)
+                push!(all_issues, (name, "'$a' and '$b' are mutually exclusive"))
+            end
+        end
+
+        # --- Weiche Warnung (nicht failend) ---
+        if "bounded" in props && "finite_at_inf" in props
+            push!(all_issues, (name, "bounded + finite_at_inf is redundant (soft warning)"))
+        end
+    end
+
+    # --- Ergebnis ---
+    if !isempty(all_issues)
+        println("\n=== Property Consistency Issues ===")
+        for (n, msg) in sort!(all_issues; by=first)
+            println("$n: $msg")
+        end
+        println("Total: $(length(all_issues))")
+        @test false
+    else
+        println("All properties consistent")
+        @test true
+    end
+end
+
+
+
+
 @testset "Minimum Validation" begin
     failed_functions = String[]
     for tf in values(TEST_FUNCTIONS)
@@ -71,7 +147,7 @@ using NonlinearOptimizationTestFunctions
             end
         catch err
             name = get(tf.meta, :name, "unknown")
-            @error "Exception in Minimum Validation for $name" exception=(err, catch_backtrace())
+            @error "Exception in Minimum Validation for $name" exception = (err, catch_backtrace())
             @test false
         end
     end
@@ -108,7 +184,7 @@ end
 
             @test_throws ArgumentError tf.f(Float64[])
             @test isnan(tf.f(fill(NaN, n)))
-			should_skip_tiny_test = false
+            should_skip_tiny_test = false
             if "bounded" in tf.meta[:properties]
                 lb = is_scalable ? tf.meta[:lb](n) : tf.meta[:lb]()
                 ub = is_scalable ? tf.meta[:ub](n) : tf.meta[:ub]()
@@ -119,23 +195,23 @@ end
             else
                 @test isinf(tf.f(fill(Inf, n)))
             end
-if "bounded" in tf.meta[:properties]
+            if "bounded" in tf.meta[:properties]
                 # Die Untergrenzen (lb) abrufen, die von der Funktion definiert wurden
                 local lb = is_scalable ? tf.meta[:lb](n) : tf.meta[:lb]()
-                
+
                 # Prüfen, ob eine der Untergrenzen größer als ein sehr kleiner Wert ist (z.B. 1e-10)
                 # Ist dies der Fall (wie bei Brad: 0.01), sollte der Test übersprungen werden.
                 if any(x -> x > 1e-10, lb)
                     should_skip_tiny_test = true
                 end
             end
-            
+
             if !should_skip_tiny_test
                 @test isfinite(tf.f(fill(1e-308, n)))
             end
         catch err
             name = get(tf.meta, :name, "unknown")
-            @error "Error in Edge Cases for $name" exception=(err, catch_backtrace())
+            @error "Error in Edge Cases for $name" exception = (err, catch_backtrace())
             push!(failed_functions, name)
             rethrow(err)
         end
@@ -161,7 +237,7 @@ end
             @test all(isfinite, H)
         catch err
             name = get(tf.meta, :name, "unknown")
-            @error "Error in Zygote Hessian for $name" exception=(err, catch_backtrace())
+            @error "Error in Zygote Hessian for $name" exception = (err, catch_backtrace())
             push!(failed_functions, name)
             rethrow(err)
         end

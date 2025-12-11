@@ -7,9 +7,8 @@ export SHUBERT_CLASSIC_FUNCTION, shubert_classic, shubert_classic_gradient
 
 function shubert_classic(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "shubert_classic" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("shubert_classic requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -26,9 +25,8 @@ end
 
 function shubert_classic_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("shubert_classic requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -59,7 +57,7 @@ const SHUBERT_CLASSIC_FUNCTION = TestFunction(
     shubert_classic,
     shubert_classic_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # "shubert_classic" [RULE_NAME_CONSISTENCY]
+        :name => "shubert_classic",  # "shubert_classic" [RULE_NAME_CONSISTENCY]
         :description => "Classical Shubert function (product of cosine sums); highly multimodal with 760 local minima in 2D; properties based on Jamil & Yang (2013, p. 55, f133); originally from Shubert (1970).",
         :math => raw"""f(\mathbf{x}) = \prod_{i=1}^{2} \left( \sum_{j=1}^{5} j \cos((j+1) x_i + j) \right).""",
         :start => () -> [0.0, 0.0],
@@ -71,3 +69,4 @@ const SHUBERT_CLASSIC_FUNCTION = TestFunction(
         :ub => () -> [10.0, 10.0],
     )
 )
+

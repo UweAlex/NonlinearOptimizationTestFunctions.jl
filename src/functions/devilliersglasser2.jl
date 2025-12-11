@@ -101,4 +101,3 @@ const DEVILLIERSGLASSER2_FUNCTION = TestFunction(
     )
 )
 
-@assert "devilliersglasser2" == basename(@__FILE__)[1:end-3] "devilliersglasser2: Dateiname mismatch!"

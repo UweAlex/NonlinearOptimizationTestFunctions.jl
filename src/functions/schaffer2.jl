@@ -19,9 +19,8 @@ Reference: Jamil & Yang (2013, p. 28)
 """
 function schaffer2(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schaffer2" für Konsistenz [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("schaffer2 requires exactly 2 dimensions"))  # Dynamischer Fehlertext [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -41,9 +40,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function schaffer2_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # Dynamisch: "schaffer2" [RULE_NAME_CONSISTENCY]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
+    n != 2 && throw(ArgumentError("schaffer2 requires exactly 2 dimensions"))  # Dynamisch [RULE_ERROR_TEXT_DYNAMIC]
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -70,7 +68,7 @@ const SCHAFFER2_FUNCTION = TestFunction(
     schaffer2,
     schaffer2_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],  # Dynamisch: "schaffer2" – exakt Dateiname [RULE_NAME_CONSISTENCY]
+        :name => "schaffer2",  # Dynamisch: "schaffer2" – exakt Dateiname [RULE_NAME_CONSISTENCY]
         :description => "2D unimodal test function with fixed dimension (non-scalable); Properties based on Jamil & Yang (2013, p. 28); Note: The denominator in Jamil & Yang appears to omit the outer square (likely a typographical error with forgotten parentheses and square, deviating from referenced Mishra (2007)), implemented as per Jamil for consistency; originally from Schaffer.",
         :math => raw"""f(\mathbf{x}) = 0.5 + \frac{\sin^2(x_1^2 - x_2^2) - 0.5}{1 + 0.001 (x_1^2 + x_2^2)^2}.""",
         :start => () -> [10.0, 10.0],

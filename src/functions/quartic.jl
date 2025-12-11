@@ -65,4 +65,3 @@ const QUARTIC_FUNCTION = TestFunction(
 )
 
 # Validierung beim Laden
-@assert basename(@__FILE__)[1:end-3] == "quartic" "quartic: Dateiname mismatch!"

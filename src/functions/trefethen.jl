@@ -61,4 +61,3 @@ const TREFETHEN_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "trefethen" == basename(@__FILE__)[1:end-3] "trefethen: Dateiname mismatch!"

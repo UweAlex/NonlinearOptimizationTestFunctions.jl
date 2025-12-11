@@ -15,9 +15,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function brent(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("brent requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     x1, x2 = x
@@ -31,9 +30,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function brent_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("brent requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
     any(isinf.(x)) && return fill(T(Inf), 2)
     x1, x2 = x
@@ -47,7 +45,7 @@ const BRENT_FUNCTION = TestFunction(
     brent,
     brent_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "brent",
         :start => () -> [0.0, 0.0],
         :min_position => () -> [-10.0, -10.0],
         :min_value => () -> 0.0,

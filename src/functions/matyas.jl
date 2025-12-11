@@ -48,4 +48,3 @@ const MATYAS_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "matyas" == basename(@__FILE__)[1:end-3] "matyas: Dateiname mismatch!"

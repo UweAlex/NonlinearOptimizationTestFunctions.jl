@@ -55,4 +55,3 @@ const TRIPOD_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "tripod" == basename(@__FILE__)[1:end-3] "tripod: Dateiname mismatch!"

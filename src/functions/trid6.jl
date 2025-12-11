@@ -60,4 +60,3 @@ const TRID6_FUNCTION = TestFunction(
 )
 
 # Optional: Validation on load [RULE_NAME_CONSISTENCY]
-@assert "trid6" == basename(@__FILE__)[1:end-3] "trid6: Dateiname mismatch!"

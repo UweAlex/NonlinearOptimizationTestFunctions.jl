@@ -1,92 +1,76 @@
 # src/functions/griewank.jl
-# Purpose: Implements the Griewank test function with its gradient for nonlinear optimization.
-# Context: Part of NonlinearOptimizationTestFunctions, used in optimization demos and tests.
-# Last modified: September 12, 2025
+# Purpose: Implements the Griewank test function – classic deceptive multimodal benchmark
+# Global minimum: f(x*) = 0 at x* = [0, ..., 0]
+# Bounds: -600 ≤ x_i ≤ 600
+# Last modified: 29 November 2025
 
-using LinearAlgebra
-using ForwardDiff
+export GRIEWANK_FUNCTION, griewank, griewank_gradient
 
-# Computes the Griewank function value at point `x`. Requires at least 1 dimension.
-#
-# The function is defined as:
-# f(x) = \sum_{i=1}^n x_i^2 / 4000 - \prod_{i=1}^n \cos(x_i / \sqrt{i}) + 1
-#
-# Arguments:
-# - `x`: Input vector of length n >= 1.
-#
-# Returns:
-# - Function value as type `T`.
-# - `NaN` if any input is `NaN`.
-# - `Inf` if any input is `Inf`.
-#
-# Throws:
-# - `ArgumentError` if the input vector is empty.
-#
-# Example:
-# julia> griewank([0.0, 0.0])
-# 0.0
-function griewank(x::AbstractVector{T}) where {T<:Real}
-    n = length(x)
-    n >= 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
+function griewank(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    isempty(x) && throw(ArgumentError("Input vector cannot be empty"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
-    sum_term = sum(x[i]^2 / T(4000) for i in 1:n)
-    prod_term = prod(cos(x[i] / sqrt(T(i))) for i in 1:n)
-    return sum_term - prod_term + T(1)
-end #function
 
-# Computes the gradient of the Griewank function at point `x`. Requires at least 1 dimension.
-#
-# Arguments:
-# - `x`: Input vector of length n >= 1.
-#
-# Returns:
-# - Gradient vector of length n as type `Vector{T}`.
-# - `fill(NaN, n)` if any input is `NaN`.
-# - `fill(Inf, n)` if any input is `Inf`.
-#
-# Throws:
-# - `ArgumentError` if the input vector is empty.
-function griewank_gradient(x::AbstractVector{T}) where {T<:Real}
     n = length(x)
-    n >= 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
-    any(isnan.(x)) && return fill(T(NaN), n)
-    any(isinf.(x)) && return fill(T(Inf), n)
+    n ≥ 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
+
+    if T <: BigFloat
+        setprecision(256)
+    end
+
+    sum_term = sum(x[i]^2 / 4000 for i in 1:n)
+    prod_term = prod(cos(x[i] / sqrt(i)) for i in 1:n)
+    sum_term - prod_term + 1
+end
+
+function griewank_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual, BigFloat}}
+    isempty(x) && throw(ArgumentError("Input vector cannot be empty"))
+    any(isnan.(x)) && return fill(T(NaN), length(x))
+    any(isinf.(x)) && return fill(T(Inf), length(x))
+
+    n = length(x)
+    n ≥ 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
+
+    if T <: BigFloat
+        setprecision(256)
+    end
+
     grad = zeros(T, n)
-    for i in 1:n
-        prod_term = prod(j == i ? 1 : cos(x[j] / sqrt(T(j))) for j in 1:n)
-        grad[i] = T(2) * x[i] / T(4000) + sin(x[i] / sqrt(T(i))) * prod_term / sqrt(T(i))
-    end #for
-    return grad
-end #function
+    @inbounds for i in 1:n
+        # Sum term derivative
+        sum_part = 2 * x[i] / 4000
+
+        # Product term derivative
+        prod_other = prod(j -> j == i ? 1.0 : cos(x[j] / sqrt(j)), 1:n)
+        sin_part = sin(x[i] / sqrt(i)) / sqrt(i)
+        prod_part = prod_other * sin_part
+
+        grad[i] = sum_part + prod_part
+    end
+    grad
+end
 
 const GRIEWANK_FUNCTION = TestFunction(
     griewank,
     griewank_gradient,
-    Dict(
-        :name => "griewank",
-        :start => (n::Int) -> begin
-            n >= 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
-            fill(1.0, n)
-        end,
-        :min_position => (n::Int) -> begin
-            n >= 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
-            fill(0.0, n)
-        end,
-        :min_value => (n::Int) -> 0.0,
-        :properties => Set(["differentiable", "multimodal", "non-convex", "non-separable", "scalable", "continuous", "bounded"]),
-        :default_n => 2,
-        :lb => (n::Int) -> begin
-            n >= 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
-            fill(-600.0, n)
-        end,
-        :ub => (n::Int) -> begin
-            n >= 1 || throw(ArgumentError("Griewank requires at least 1 dimension"))
-            fill(600.0, n)
-        end,
-        :in_molga_smutnicki_2005 => true,
-        :dimension => -1,
-        :description => raw"Griewank function: A scalable, multimodal, non-convex, non-separable, differentiable, continuous, bounded test function with a global minimum at (0, ..., 0) with value 0.0. References: Jamil & Yang (2013), al-roomi.org.",
-        :math => raw"f(x) = \sum_{i=1}^n \frac{x_i^2}{4000} - \prod_{i=1}^n \cos\left(\frac{x_i}{\sqrt{i}}\right) + 1"
+    Dict{Symbol, Any}(
+        :name         => "griewank",
+        :description  => "Griewank function – one of the most deceptive multimodal benchmarks in global optimization. " *
+                         "The oscillating product term creates countless local minima that become increasingly misleading " *
+                         "with higher dimensions. Gradient-based methods are systematically trapped far from the global minimum.",
+        :math         => raw"f(\mathbf{x}) = \sum_{i=1}^n \frac{x_i^2}{4000} - \prod_{i=1}^n \cos\!\left(\frac{x_i}{\sqrt{i}}\right) + 1",
+        :start        => (n::Int) -> fill(300.0, n),           # weit weg vom Minimum – RULE_START_AWAY_FROM_MIN
+        :min_position => (n::Int) -> zeros(n),
+        :min_value    => (n::Int) -> 0.0,
+        :properties   => ["multimodal", "non-convex", "non-separable", "differentiable",
+                           "scalable", "bounded", "continuous", "deceptive"],
+        :default_n    => 10,
+        :lb           => (n::Int) -> fill(-600.0, n),
+        :ub           => (n::Int) -> fill(600.0, n),
+        :source       => "Griewank (1981); " *
+                         "Molga & Smutnicki (2005, p. 19); " *
+                         "Jamil & Yang (2013, p. 57); " *
+                         "Lehman & Stanley (2011, arXiv:1106.2128) – classic deceptive benchmark; " *
+                         "Locatelli & Schoen (2013) – deception increases with dimension"
     )
 )

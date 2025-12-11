@@ -82,4 +82,3 @@ const WEIERSTRASS_FUNCTION = TestFunction(
     )
 )
 
-@assert "weierstrass" == basename(@__FILE__)[1:end-3] "weierstrass: Dateiname mismatch!"

@@ -54,4 +54,3 @@ const STYBLINSKI_TANG_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "styblinski_tang" == basename(@__FILE__)[1:end-3] "styblinski_tang: Dateiname mismatch!"

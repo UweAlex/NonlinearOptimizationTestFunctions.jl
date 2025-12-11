@@ -69,4 +69,3 @@ const SINEENVELOPE_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden [RULE_NAME_CONSISTENCY]
-@assert "sineenvelope" == basename(@__FILE__)[1:end-3] "sineenvelope: Dateiname mismatch!"

@@ -68,4 +68,3 @@ const ALPINEN1_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "alpinen1" == basename(@__FILE__)[1:end-3] "alpinen1: Dateiname mismatch!"

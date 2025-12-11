@@ -3,8 +3,8 @@
 # Context: Non-scalable, 3D, multimodal function from Mishra (2006f) as compiled in Jamil & Yang (2013).
 # Global minimum: f(x*)= 0.0 at x*= [1.0, 2.0, 3.0].
 # Bounds: -10 ≤ x_i ≤ 10.
-# Last modified: 27. September 2025.
-# Wichtig: Halte Code sauber – keine Erklärungen inline ohne #; validiere Mapping/Gradient separat.
+# Last modified: 28. November 2025.
+# Fix: dc_dx3 korrigiert - der Term T(6)*x3 war falsch.
 
 export MISHRA9_FUNCTION, mishra9, mishra9_gradient
 
@@ -55,19 +55,19 @@ function mishra9_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDif
     
     dc_dx1 = T(16)*x1
     dc_dx2 = T(2)*x3 + T(4)*x2 + T(9)*x2^2
-    dc_dx3 = T(2)*x2 + T(6)*x3
+    dc_dx3 = T(2)*x2  # KORREKTUR: + T(6)*x3 entfernt
     
-    # d(term1)/dx = da*b^2*c + a*2b*db*c + a b^2 *dc
+    # d(term1)/dx = da*b^2*c + a*2b*db*c + a*b^2*dc
     dterm1_dx1 = da_dx1 * b^2 * c + a * T(2)*b * db_dx1 * c + a * b^2 * dc_dx1
     dterm1_dx2 = da_dx2 * b^2 * c + a * T(2)*b * db_dx2 * c + a * b^2 * dc_dx2
     dterm1_dx3 = da_dx3 * b^2 * c + a * T(2)*b * db_dx3 * c + a * b^2 * dc_dx3
     
-    # d(term2)/dx = da*b*c^2 + a*db*c^2 + a b *2c*dc
+    # d(term2)/dx = da*b*c^2 + a*db*c^2 + a*b*2c*dc
     dterm2_dx1 = da_dx1 * b * c^2 + a * db_dx1 * c^2 + a * b * T(2)*c * dc_dx1
     dterm2_dx2 = da_dx2 * b * c^2 + a * db_dx2 * c^2 + a * b * T(2)*c * dc_dx2
     dterm2_dx3 = da_dx3 * b * c^2 + a * db_dx3 * c^2 + a * b * T(2)*c * dc_dx3
     
-    # d(term3)/dx = 2 b db
+    # d(term3)/dx = 2*b*db
     dterm3_dx1 = T(2) * b * db_dx1
     dterm3_dx2 = T(2) * b * db_dx2
     dterm3_dx3 = T(2) * b * db_dx3
@@ -78,12 +78,12 @@ function mishra9_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDif
     dterm4_dx2 = T(2) * s * T(1)
     dterm4_dx3 = T(2) * s * (-T(1))
     
-    # d inner / dx = sum dterm / dx
+    # d(inner)/dx = sum of d(term)/dx
     d_inner_dx1 = dterm1_dx1 + dterm2_dx1 + dterm3_dx1 + dterm4_dx1
     d_inner_dx2 = dterm1_dx2 + dterm2_dx2 + dterm3_dx2 + dterm4_dx2
     d_inner_dx3 = dterm1_dx3 + dterm2_dx3 + dterm3_dx3 + dterm4_dx3
     
-    # grad = 2 * inner * d_inner / dx
+    # grad = 2 * inner * d(inner)/dx
     grad = zeros(T, 3)
     grad[1] = T(2) * inner * d_inner_dx1
     grad[2] = T(2) * inner * d_inner_dx2

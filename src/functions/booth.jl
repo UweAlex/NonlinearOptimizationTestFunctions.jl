@@ -15,9 +15,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function booth(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("booth requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     (x[1] + 2 * x[2] - 7)^2 + (2 * x[1] + x[2] - 5)^2
@@ -30,9 +29,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function booth_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("booth requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), 2)
     any(isinf.(x)) && return fill(T(Inf), 2)
     a = x[1] + 2 * x[2] - 7
@@ -44,7 +42,7 @@ const BOOTH_FUNCTION = TestFunction(
     booth,
     booth_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "booth",
         :start => () -> [0.0, 0.0],
         :min_position => () -> [1.0, 3.0],
         :min_value => () -> 0.0,

@@ -21,9 +21,8 @@ end
 
 function shubert_shifted_rotated(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]  # "shubert_shifted_rotated"
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions (Shubert is 2D-primary)"))
+    n != 2 && throw(ArgumentError("shubert_shifted_rotated requires exactly 2 dimensions (Shubert is 2D-primary)"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -45,9 +44,8 @@ end
 
 function shubert_shifted_rotated_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("shubert_shifted_rotated requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -63,7 +61,7 @@ const SHUBERT_SHIFTED_ROTATED_FUNCTION = TestFunction(
     shubert_shifted_rotated,
     shubert_shifted_rotated_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "shubert_shifted_rotated",
         :description => "Shifted Rotated Shubert (CEC 2014 variant, product form with Q(x - o), fixed 2D); non-separable, highly multimodal (~760 local minima); tests invariance and coupling; based on classic Shubert with orthogonal rotation Q and shift o ~ U[-80,80].",
         :math => raw"""f(\mathbf{x}) = \prod_{i=1}^2 \sum_{j=1}^5 j \cos((j+1)[\mathbf{Q}(\mathbf{x}-\mathbf{o})]_i + j).""",
         :start => () -> zeros(2),
@@ -76,3 +74,4 @@ const SHUBERT_SHIFTED_ROTATED_FUNCTION = TestFunction(
         :ub => () -> [100.0, 100.0],
     )
 )
+

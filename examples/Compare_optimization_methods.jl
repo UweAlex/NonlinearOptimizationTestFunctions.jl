@@ -12,7 +12,7 @@ tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
 n = 2
 
 # Perform optimization using Gradient Descent
-result_gd = optimize(
+result_gd = Optim.optimize(
     tf.f,              # Objective function
     tf.gradient!,      # Gradient function
     start(tf),      # Starting point
@@ -21,7 +21,7 @@ result_gd = optimize(
 )
 
 # Perform optimization using L-BFGS
-result_lbfgs = optimize(
+result_lbfgs = Optim.optimize(
     tf.f,              # Objective function
     tf.gradient!,      # Gradient function
     start(tf),      # Starting point 

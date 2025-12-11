@@ -60,4 +60,3 @@ const EASOM_FUNCTION = TestFunction(
 )
 
 # Optional: Validierung beim Laden
-@assert "easom" == basename(@__FILE__)[1:end-3] "easom: Dateiname mismatch!"

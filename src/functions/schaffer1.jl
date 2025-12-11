@@ -7,9 +7,8 @@ export SCHAFFER1_FUNCTION, schaffer1, schaffer1_gradient
 
 function schaffer1(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("schaffer1 requires exactly 2 dimensions"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -22,9 +21,8 @@ end
 
 function schaffer1_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n != 2 && throw(ArgumentError("$(func_name) requires exactly 2 dimensions"))
+    n != 2 && throw(ArgumentError("schaffer1 requires exactly 2 dimensions"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -49,7 +47,7 @@ const SCHAFFER1_FUNCTION = TestFunction(
     schaffer1,
     schaffer1_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "schaffer1",
         :description => "Schaffer's Function No. 01. Highly multimodal with concentric rings of local minima caused by the squared sine term. The function is non-separable due to coupling through x₁² + x₂².",
         :math => raw"""f(\mathbf{x}) = 0.5 + \frac{\sin^2(x_1^2 + x_2^2) - 0.5}{[1 + 0.001(x_1^2 + x_2^2)]^2}, \quad D=2.""",
         :start => () -> [1.0, 1.0],

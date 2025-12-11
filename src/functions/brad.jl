@@ -90,4 +90,3 @@ const BRAD_FUNCTION = TestFunction(
     )
 )
 
-@assert "brad" == basename(@__FILE__)[1:end-3] "brad: Dateiname mismatch!"

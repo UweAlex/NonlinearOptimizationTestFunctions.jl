@@ -17,9 +17,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function chungreynolds(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("chungreynolds requires at least 1 dimension"))
     any(isnan.(x)) && return T(NaN)
     any(isinf.(x)) && return T(Inf)
     
@@ -37,9 +36,8 @@ Throws `ArgumentError` if the input vector is empty or has incorrect dimensions.
 """
 function chungreynolds_gradient(x::AbstractVector{T}) where {T<:Union{Real, ForwardDiff.Dual}}
     n = length(x)
-    func_name = basename(@__FILE__)[1:end-3]
     n == 0 && throw(ArgumentError("Input vector cannot be empty"))
-    n < 1 && throw(ArgumentError("$(func_name) requires at least 1 dimension"))
+    n < 1 && throw(ArgumentError("chungreynolds requires at least 1 dimension"))
     any(isnan.(x)) && return fill(T(NaN), n)
     any(isinf.(x)) && return fill(T(Inf), n)
     
@@ -58,16 +56,16 @@ const CHUNGREYNOLDS_FUNCTION = TestFunction(
     chungreynolds,
     chungreynolds_gradient,
     Dict(
-        :name => basename(@__FILE__)[1:end-3],
+        :name => "chungreynolds",
         :description => "Chung Reynolds function (continuous, differentiable, partially separable, scalable, unimodal). Source: Jamil & Yang (2013) and Chung & Reynolds (1998). Global minimum at the origin.",
         :math => raw"""f(\mathbf{x}) = \left( \sum_{i=1}^n x_i^2 \right)^2 """,
-        :start => (n::Int) -> begin func_name = basename(@__FILE__)[1:end-3]; n < 1 && throw(ArgumentError("$(func_name) start requires n >= 1")); fill(1.0, n) end,
-        :min_position => (n::Int) -> begin func_name = basename(@__FILE__)[1:end-3]; n < 1 && throw(ArgumentError("$(func_name) min position requires n >= 1")); zeros(n) end,
-        :min_value => (n::Int) -> begin func_name = basename(@__FILE__)[1:end-3]; n < 1 && throw(ArgumentError("$(func_name) min value requires n >= 1")); 0.0 end,
+        :start => (n::Int) -> begin n < 1 && throw(ArgumentError("chungreynolds start requires n >= 1")); fill(1.0, n) end,
+        :min_position => (n::Int) -> begin n < 1 && throw(ArgumentError("chungreynolds min position requires n >= 1")); zeros(n) end,
+        :min_value => (n::Int) -> begin n < 1 && throw(ArgumentError("chungreynolds min value requires n >= 1")); 0.0 end,
         :properties => ["bounded", "continuous", "differentiable", "partially separable", "scalable", "unimodal"],
         :default_n => 2,
-        :lb => (n::Int) -> begin func_name = basename(@__FILE__)[1:end-3]; n < 1 && throw(ArgumentError("$(func_name) lb requires n >= 1")); fill(-100.0, n) end,
-        :ub => (n::Int) -> begin func_name = basename(@__FILE__)[1:end-3]; n < 1 && throw(ArgumentError("$(func_name) ub requires n >= 1")); fill(100.0, n) end,
+        :lb => (n::Int) -> begin n < 1 && throw(ArgumentError("chungreynolds lb requires n >= 1")); fill(-100.0, n) end,
+        :ub => (n::Int) -> begin n < 1 && throw(ArgumentError("chungreynolds ub requires n >= 1")); fill(100.0, n) end,
         :source => "Jamil & Yang (2013, Entry 34)"
     )
 )

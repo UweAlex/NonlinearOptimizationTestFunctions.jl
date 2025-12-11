@@ -24,12 +24,12 @@ using Printf  # Added for high-precision formatting
 # - `ub`: Upper bounds.
 # - `reason`: Symbol indicating validation failure (if any).
 function get_and_validate_metadata(tf, fn_name, is_scalable)
-    n = get_n(tf)
+    n = NonlinearOptimizationTestFunctions.dim(tf)
     if n == -1
         println("Warning: $fn_name is scalable, assuming n=2 for testing.")
         n = 2
     end #if
-    
+
     # For scalable functions with special requirements, try multiple n
     if is_scalable && n == 2
         candidates = [2, 4, 10]
@@ -52,7 +52,7 @@ function get_and_validate_metadata(tf, fn_name, is_scalable)
             return nothing, nothing, nothing, nothing, nothing, :no_valid_n
         end
     end
-    
+
     min_pos = try
         is_scalable ? tf.meta[:min_position](n) : tf.meta[:min_position]()
     catch e
@@ -115,7 +115,7 @@ end #function
 function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
     is_differentiable = "differentiable" in tf.meta[:properties] && !("partially differentiable" in tf.meta[:properties])
     has_noise = "has_noise" in tf.meta[:properties]
-    
+
     # Gradient check (deterministic even for noisy f)
     if is_differentiable
         initial_grad = tf.grad(min_pos)
@@ -125,14 +125,14 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
         if lb !== nothing && ub !== nothing
             at_bounds = any(isapprox.(min_pos, lb, atol=1e-8)) || any(isapprox.(min_pos, ub, atol=1e-8))
         end
-        
+
         # Gradient-Check mit Verbesserungsversuch
         if !isapprox(initial_norm, 0.0, atol=1e-7) && !at_bounds
             if initial_norm > 1e-4  # Schwellwert für Optimierungsversuch
                 println("Warning: Gradient not zero at alleged minimum for $fn_name: norm=$initial_norm")
                 println("  Gradient: $initial_grad")
                 println("  Attempting gradient norm minimization...")
-                
+
                 # Minimiere ||grad||^2 mit Bounds-Constraint
                 grad_norm_sq = x -> begin
                     # Penalty für Bounds-Verletzung
@@ -145,11 +145,11 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
                     g = tf.grad(x)
                     return dot(g, g)
                 end
-                
+
                 best_pos = min_pos
                 best_grad_norm = initial_norm
                 best_fx = min_fx
-                
+
                 # Versuche mehrere Starts
                 starts = [min_pos]
                 # Füge leicht verschobene Starts hinzu
@@ -161,16 +161,16 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
                     end
                     push!(starts, perturbed)
                 end
-                
+
                 for start in starts
                     try
-                        res = optimize(grad_norm_sq, start, LBFGS(), 
-                                     Optim.Options(iterations=10000, g_tol=1e-14))
+                        res = optimize(grad_norm_sq, start, LBFGS(),
+                            Optim.Options(iterations=10000, g_tol=1e-14))
                         cand_pos = Optim.minimizer(res)
                         cand_grad = tf.grad(cand_pos)
                         cand_norm = norm(cand_grad)
                         cand_fx = tf.f(cand_pos)
-                        
+
                         # Akzeptiere nur, wenn Gradient deutlich besser UND f-Wert ähnlich/besser UND innerhalb Bounds
                         in_bounds = true
                         if lb !== nothing
@@ -179,7 +179,7 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
                         if ub !== nothing
                             in_bounds = in_bounds && all(cand_pos .<= ub .+ 1e-10)
                         end
-                        
+
                         if in_bounds && cand_norm < best_grad_norm * 0.5 && cand_fx <= best_fx + 1e-6
                             best_pos = cand_pos
                             best_grad_norm = cand_norm
@@ -189,7 +189,7 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
                         # Ignoriere Fehler bei einzelnen Starts
                     end
                 end
-                
+
                 if best_grad_norm < initial_norm * 0.5
                     println("\n" * "="^80)
                     println("IMPROVED MINIMUM via gradient minimization for $fn_name:")
@@ -199,7 +199,7 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
                     println("  :min_value => () -> $(repr(best_fx)),")
                     println("  Gradient norm: $best_grad_norm (was: $initial_norm)")
                     println("="^80 * "\n")
-                    
+
                     # Update für weitere Tests
                     min_pos = best_pos
                     min_fx = best_fx
@@ -211,7 +211,7 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
             end
         end #if
     end #if
-    
+
     bounded_func = x -> begin
         if lb !== nothing && any(x .< lb)
             return Inf
@@ -221,11 +221,11 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
         end #if
         tf.f(x)
     end #function
-    
+
     iterations = 100000
     res_f = optimize(bounded_func, min_pos, NelderMead(), Optim.Options(iterations=iterations, f_reltol=1e-9))
     refined_pos = Optim.minimizer(res_f)
-    
+
     # For noisy functions: Average multiple evaluations at refined_pos for stability
     if has_noise
         num_samples = 20  # Increased for better noise averaging (low overall impact)
@@ -236,7 +236,7 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
     else
         refined_fx = tf.f(refined_pos)
     end
-    
+
     is_converged = try
         Optim.converged(res_f)
     catch
@@ -247,9 +247,9 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
             return false
         end #try
     end #try
-    
+
     dist = norm(refined_pos - min_pos)
-    
+
     # Adaptive tolerances based on noise
     if has_noise
         pos_tolerance = 0.1  # Looser for position due to noise-induced shifts
@@ -292,7 +292,7 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
             println("  Function value at expected minimum: $(tf.f(min_pos))")
             println("  Position deviation (norm): $dist (tolerance: $pos_tolerance)")
             println("  Value deviation (abs): $fx_diff (tolerance: $fx_tolerance)")
-            
+
             if dist > pos_tolerance && fx_diff > fx_tolerance
                 println("\n" * "!"^80)
                 println("SUGGESTED FIX for $fn_name:")
@@ -307,7 +307,7 @@ function validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
             else
                 println("\nNote: Position matches but value differs. Consider updating :min_value")
             end
-            
+
             @test false
             return false
         end #if
@@ -321,7 +321,7 @@ function summarize_test_results(error_counts)
     println("  Test failures are listed in the test output above.")
     println("  Test errors:")
     any_errors = false
-    for (func, count) in sort(collect(error_counts), by=x->x[2], rev=true)
+    for (func, count) in sort(collect(error_counts), by=x -> x[2], rev=true)
         if count > 0
             any_errors = true
             println("    $func: $count errors")
@@ -334,12 +334,12 @@ end #function
 
 # Main test suite
 @testset "Minimum Tests" begin
-    error_counts = Dict{String, Int}()
+    error_counts = Dict{String,Int}()
     for tf in values(TEST_FUNCTIONS)
         fn_name = tf.meta[:name]
         error_counts[fn_name] = 0
     end #for
-    
+
     for tf in values(TEST_FUNCTIONS)
         fn_name = tf.meta[:name]
         is_scalable = "scalable" in tf.meta[:properties]
@@ -350,13 +350,13 @@ end #function
             @test_broken "$fn_name metadata invalid: $reason"
             continue
         end #if
-        
+
         test_passed = validate_minimum_with_gradient(tf, fn_name, min_pos, min_fx, lb, ub)
         if !test_passed
             error_counts[fn_name] = get(error_counts, fn_name, 0) + 1
             @test false
         end #if
     end #for
-    
+
     summarize_test_results(error_counts)
 end #testset
