@@ -1,7 +1,7 @@
 using Documenter
 using NonlinearOptimizationTestFunctions
 
-# Setup DocTest, falls du @doctest verwendest
+# DocTest setup
 DocMeta.setdocmeta!(
     NonlinearOptimizationTestFunctions,
     :DocTestSetup,
@@ -12,14 +12,15 @@ DocMeta.setdocmeta!(
 makedocs(
     modules=[NonlinearOptimizationTestFunctions],
     authors="Uwe Alex",
-    repo="https://github.com/UweAlex/NonlinearOptimizationTestFunctions.jl.git",
     sitename="NonlinearOptimizationTestFunctions.jl",
+
+    # Kein GitTools nötig – HTML repolink reicht für Navbar
     format=Documenter.HTML(
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://uwealex.github.io/NonlinearOptimizationTestFunctions.jl",
+        repolink="https://github.com/UweAlex/NonlinearOptimizationTestFunctions.jl",
         assets=String[],
-    ),
-    pages=[
+    ), pages=[
         "Home" => "index.md",
         "Manual" => [
             "manual/installation.md",
@@ -28,18 +29,9 @@ makedocs(
             "manual/examples.md",
             "manual/properties.md",
             "manual/testing.md",
-            "manual/all_functions.md",  # Beachte: korrektes File
+            "manual/all_functions.md",
             "manual/roadmap.md",
         ],
         "API Reference" => "api.md",
-    ],
-    checkdocs=:skip  # überspringt fehlende Docstrings
-)
-
-# Deployment vorbereiten (lokal testen, ohne Push)
-deploydocs(
-    repo="github.com/UweAlex/NonlinearOptimizationTestFunctions.jl.git",
-    target="build",
-    devbranch="main",
-    push_preview=true
+    ], checkdocs=:warn,
 )
