@@ -13,11 +13,11 @@ using NonlinearOptimizationTestFunctions: ALPINEN2_FUNCTION, alpinen2, alpinen2_
 
     # Test metadata
     @test tf.meta[:name] == "alpinen2"
-    @test Set(tf.meta[:properties]) == Set(["multimodal", "non-convex", "separable", "differentiable", "scalable", "bounded"])
+    @test Set(tf.meta[:properties]) == Set(["multimodal", "separable", "bounded", "differentiable", "continuous", "scalable", "non-convex"])
 
     # Test function values
-    @test alpinen2(tf.meta[:min_position](n)) ≈ tf.meta[:min_value](n) atol=1e-6
-    @test alpinen2([1.0, 1.0]) ≈ -prod(sqrt(1.0) * sin(1.0) for _ in 1:n) atol=1e-6
+    @test alpinen2(tf.meta[:min_position](n)) ≈ tf.meta[:min_value](n) atol = 1e-6
+    @test alpinen2([1.0, 1.0]) ≈ -prod(sqrt(1.0) * sin(1.0) for _ in 1:n) atol = 1e-6
 
     # Test edge cases
     @test_throws ArgumentError alpinen2(Float64[])

@@ -63,10 +63,7 @@ using NonlinearOptimizationTestFunctions
             end
         end
 
-        # --- Weiche Warnung (nicht failend) ---
-        if "bounded" in props && "finite_at_inf" in props
-            push!(all_issues, (name, "bounded + finite_at_inf is redundant (soft warning)"))
-        end
+
     end
 
     # --- Ergebnis ---

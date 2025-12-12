@@ -11,19 +11,20 @@ using NonlinearOptimizationTestFunctions: ACKLEY4_FUNCTION, ackley4
 
     # Test metadata
     @test tf.meta[:name] == "ackley4"
-    @test tf.meta[:properties] == Set(["continuous", "differentiable", "non-separable", "highly multimodal", "bounded", "controversial"])
+    @test tf.meta[:properties] == Set(["multimodal", "controversial", "non-separable", "bounded", "differentiable", "highly multimodal", "continuous", "non-convex"])
+
     @test tf.meta[:lb]() == [-35.0, -35.0]
     @test tf.meta[:ub]() == [35.0, 35.0]
 
     # Test start point
     start_point = tf.meta[:start]()
- 
+
     # Test minimum
     min_pos = tf.meta[:min_position]()
-    @test min_pos ≈ [-1.5812643986108843, -0.7906319137820829] atol=1e-6
+    @test min_pos ≈ [-1.5812643986108843, -0.7906319137820829] atol = 1e-6
     min_val = tf.meta[:min_value]()
-    @test min_val ≈ -5.297009385988958 atol=1e-6
-    @test ackley4(min_pos) ≈ min_val atol=1e-6
+    @test min_val ≈ -5.297009385988958 atol = 1e-6
+    @test ackley4(min_pos) ≈ min_val atol = 1e-6
 
     # Edge cases
     @test_throws ArgumentError ackley4(Float64[])  # Empty vector

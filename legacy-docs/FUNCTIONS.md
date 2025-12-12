@@ -1,6 +1,6 @@
 # Alphabetical List of Benchmark Functions
 
-Generated from package metadata on 2025-12-10. Functions are listed alphabetically with their details.
+Generated from package metadata on 2025-12-11. Functions are listed alphabetically with their details.
 
 ### ackley
 - **Description**: Ackley function – one of the most famous deceptive multimodal benchmarks. Nearly flat outer region with a deep central hole and countless cosine-induced local minima. Systematically misleads gradient-based and local optimizers away from the global minimum at zero.
@@ -22,7 +22,7 @@ Generated from package metadata on 2025-12-10. Functions are listed alphabetical
 - **Description**: Modified Ackley Function (Ackley 4). Properties adapted from Jamil & Yang (2013, p. 5) for variant with √(x_i² + x_{i+1}²) in exponential and no x_i² term; originally from Rónkkónen (2009). Highly multimodal with local minimum near origin; global minimum approaches -6 near boundaries. Implemented as fixed n=2 due to limited metadata for higher dimensions.
 - **Formula**: f(\mathbf{x}) = \sum_{i=1}^{1} \left[ e^{-0.2 \sqrt{x_i^2 + x_{i+1}^2}} + 3 (\cos(2x_i) + \sin(2x_{i+1})) \right].
 - **Bounds/Minimum**: Bounds: [-35.0, -35.0]; Min: -5.297009385988958 at [-1.5812643986108843, -0.7906319137820829]
-- **Properties**: controversial, non-separable, bounded, differentiable, highly multimodal, continuous
+- **Properties**: multimodal, controversial, non-separable, bounded, differentiable, highly multimodal, continuous, non-convex
 - **Reference**: Jamil & Yang (2013, p. 5)
 
 
@@ -46,7 +46,7 @@ Generated from package metadata on 2025-12-10. Functions are listed alphabetical
 - **Description**: Properties based on Jamil & Yang (2013, p. 5); Fully differentiable on [0,10]^n.
 - **Formula**: f(\mathbf{x}) = -\prod_{i=1}^n \sqrt{x_i} \sin x_i \quad (x_i \geq 0).
 - **Bounds/Minimum**: Bounds: [0.0, 0.0]; Min: -7.885600724127536 at [7.917052698245946, 7.917052698245946]
-- **Properties**: multimodal, separable, bounded, differentiable, scalable, non-convex
+- **Properties**: multimodal, separable, bounded, differentiable, continuous, scalable, non-convex
 - **Reference**: Jamil & Yang (2013, p. 5)
 
 
@@ -918,10 +918,10 @@ a=1,\; b=\frac{5.1}{4\pi^2},\; c=\frac{5}{\pi},\; r=6,\; s=10,\; t=\frac{1}{8\pi
 
 
 ### quartic
-- **Description**: Quartic Function with additive uniform noise from [0,1). The deterministic part is strictly convex. Properties based on Jamil & Yang (2013).
+- **Description**: Quartic Function with additive uniform noise from [0,1). The deterministic part is strictly convex, but the overall function is non-differentiable due to random noise. Gradient implementation returns derivative of deterministic component only. Properties based on Jamil & Yang (2013).
 - **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n} i x_i^4 + \mathcal{U}[0, 1).
 - **Bounds/Minimum**: Bounds: [-1.28, -1.28]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: separable, bounded, unimodal, differentiable, continuous, scalable, has_noise
+- **Properties**: separable, bounded, unimodal, continuous, scalable, has_noise
 - **Reference**: Jamil & Yang (2013)
 
 
@@ -978,7 +978,7 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Description**: Rosenbrock Modified function: 74 + 100(x_2 - x_1^2)^2 + (1 - x_1)^2 - 400 exp(-[(x_1 + 1)^2 + (x_2 + 1)^2]/0.1). Multimodal variant with Gaussian perturbation creating a deceptive local minimum near (1,1). Computed min_value via implementation for precision; literature values approximate (e.g., 34.04). Properties based on Jamil & Yang (2013).
 - **Formula**: f(\mathbf{x}) = 74 + 100(x_2 - x_1^2)^2 + (1 - x_1)^2 - 400 e^{-\frac{(x_1 + 1)^2 + (x_2 + 1)^2}{0.1}}.
 - **Bounds/Minimum**: Bounds: [-2.0, -2.0]; Min: 34.04024310664062 at [-0.9095537365025769, -0.9505717126589607]
-- **Properties**: multimodal, deceptive, controversial, non-separable, bounded, differentiable, continuous, ill-conditioned
+- **Properties**: multimodal, deceptive, controversial, non-separable, bounded, differentiable, continuous, ill-conditioned, non-convex
 - **Reference**: Jamil & Yang (2013), Benchmark Function #106
 
 
@@ -1226,15 +1226,15 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Description**: Classical Shubert function (product of cosine sums); highly multimodal with 760 local minima in 2D; properties based on Jamil & Yang (2013, p. 55, f133); originally from Shubert (1970).
 - **Formula**: f(\mathbf{x}) = \prod_{i=1}^{2} \left( \sum_{j=1}^{5} j \cos((j+1) x_i + j) \right).
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.73090883102375 at [4.858056878468046, 5.482864206944743]
-- **Properties**: controversial, non-separable, differentiable, highly multimodal, continuous
+- **Properties**: multimodal, controversial, non-separable, differentiable, highly multimodal, continuous, non-convex
 - **Reference**: Jamil & Yang (2013, p. 55)
 
 
 ### shubert_coupled
 - **Description**: Coupled Shubert function (Shubert 4); non-separable with 760 local minima in 2D; for n=2 identical to classical; properties based on Jamil & Yang (2013, p. 56, f135-related); originally from Yao (1999).
-- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[\sum_{j=1}^5 j \cos((j+1)x_i + j)\right] \left[\sum_{j=1}^5 j \cos((j+1)x_{i+1} + j)\right].
+- **Formula**: f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[\sum_{j=1}^5 j \cos((j+1) x_i + j)\right] \left[\sum_{j=1}^5 j \cos((j+1) x_{i+1} + j)\right].
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.73090883102375 at [4.858056878468046, 5.482864206944743]
-- **Properties**: non-separable, differentiable, highly multimodal, continuous, scalable
+- **Properties**: multimodal, non-separable, differentiable, highly multimodal, continuous, scalable, non-convex
 - **Reference**: Jamil & Yang (2013, p. 56)
 
 
@@ -1258,7 +1258,7 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Description**: Noisy variant of Shubert function; additive uniform [0,1) noise. Properties based on Jamil & Yang (2013, p. 55) for base; noise adapted for stochastic benchmark. Gradient is deterministic (noise constant per call). Multiple global minima (18 in 2D).
 - **Formula**: f(\mathbf{x}) = \prod_{i=1}^D \sum_{j=1}^5 j \cos((j + 1) x_i + j) + \varepsilon, \quad \varepsilon \sim U[0,1).
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.7309088310239 at [-7.083506405745021, -7.708313737307907]
-- **Properties**: multimodal, non-separable, differentiable, continuous, has_noise
+- **Properties**: multimodal, non-separable, continuous, has_noise
 - **Reference**: Jamil & Yang (2013, p. 55); noise adapted
 
 
@@ -1266,7 +1266,7 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Description**: Rotated Shubert function; non-separable with ≈760 local minima in 2D; fixed Q=identity for reproducibility (in CEC random orthogonal Q, Kond=1); properties based on Jamil & Yang (2013, p. 55, f133-Rotated); CEC 2021 F7.
 - **Formula**: f(\mathbf{x}) = \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)(Q\mathbf{x})_i + j), \ Q \ orthogonal.
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.73090883102375 at [4.858056878468046, 5.482864206944743]
-- **Properties**: non-separable, differentiable, highly multimodal, continuous, scalable
+- **Properties**: multimodal, non-separable, differentiable, highly multimodal, continuous, scalable, non-convex
 - **Reference**: Jamil & Yang (2013, p. 55)
 
 
@@ -1274,7 +1274,7 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Description**: Shifted Shubert function; non-separable with 760 local minima in 2D; fixed o=0 for reproducibility (in CEC random o~U[-10,10]); properties based on Jamil & Yang (2013, p. 55, f133-Shifted); CEC 2013 F6.
 - **Formula**: f(\mathbf{x}) = \prod_{i=1}^n \sum_{j=1}^5 j \cos((j+1)(x_i - o_i) + j), \ o_i \sim U[-10,10].
 - **Bounds/Minimum**: Bounds: [-10.0, -10.0]; Min: -186.73090883102375 at [4.858056878468046, 5.482864206944743]
-- **Properties**: non-separable, differentiable, highly multimodal, continuous, scalable
+- **Properties**: multimodal, non-separable, differentiable, highly multimodal, continuous, scalable, non-convex
 - **Reference**: Jamil & Yang (2013, p. 55)
 
 
@@ -1314,7 +1314,7 @@ t_1 = \sqrt{|x_{i+1} + x_i + 1|}, \quad t_2 = \sqrt{|x_{i+1} - x_i + 1|}.
 - **Description**: Noisy Sphere benchmark function with additive uniform [0,1) noise; Properties based on BBOB f101 / Nevergrad 'NoisySphere'. Additive uniform [0,1) noise.
 - **Formula**: f(\mathbf{x}) = \sum_{i=1}^n x_i^2 + \epsilon, \epsilon \sim U[0,1].
 - **Bounds/Minimum**: Bounds: [-100.0, -100.0]; Min: 0.0 at [0.0, 0.0]
-- **Properties**: separable, convex, differentiable, continuous, scalable, has_noise
+- **Properties**: separable, convex, continuous, scalable, has_noise
 - **Reference**: BBOB f101 / Nevergrad
 
 

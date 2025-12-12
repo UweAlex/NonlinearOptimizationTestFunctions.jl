@@ -30,7 +30,6 @@ include("print_function_properties.jl")
 println("----------------------------------------------------------------------", "\n\n", "property_statistics.jl")
 include("property_statistics.jl")
 
-
 println("----------------------------------------------------------------------", "\n\n", "List_all_available_test_functions_and_their_properties.jl")
 include("List_all_available_test_functions_and_their_properties.jl")
 println("----------------------------------------------------------------------", "\n\n", "simpelst.jl")
