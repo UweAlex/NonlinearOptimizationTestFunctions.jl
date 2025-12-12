@@ -1,2 +1,7 @@
+name = "NonlinearOptimizationTestFunctionsDocs"
+uuid = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"   # beliebig, wird nie benutzt
+authors = ["Uwe Alex"]
+version = "0.1.0"
+
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
