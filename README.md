@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Comprehensive, rigorously tested collection of nonlinear optimization test functions for Julia.  
-Over 100 standard benchmark problems with analytical gradients, known global minima, bounds and detailed mathematical properties.
+Over 200 standard benchmark problems with analytical gradients, known global minima, bounds and detailed mathematical properties.
 
 Perfect for developers of global optimizers, local solvers, derivative-free methods, metaheuristics and gradient-based algorithms.
 
