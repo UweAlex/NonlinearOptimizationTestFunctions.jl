@@ -29,7 +29,13 @@ echo "Source code & tag deployed"
 # --- 2. Dokumentation bauen & deployen ---
 echo "Building and deploying documentation..."
 
-# Dependencies sicherstellen
+# Aggressive Reinigung: Entfernt alle Manifest-Dateien, um hartnäckige
+# Pkg-Caching- oder Versionskonflikte (MethodError) zu beheben.
+echo "Performing hard Pkg reset: Deleting all Manifest.toml files to fix MethodError..."
+rm -f Manifest.toml        # Löscht die Manifest im Hauptverzeichnis
+rm -f docs/Manifest.toml   # Löscht die Manifest im Docs-Unterverzeichnis
+
+# Dependencies sicherstellen (instantiate wird die Manifest-Dateien neu erstellen)
 julia --project=docs -e 'using Pkg; Pkg.instantiate()'
 
 # Build + Deploy (deploydocs() nutzt deine lokale Git-Auth)
