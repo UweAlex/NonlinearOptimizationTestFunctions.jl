@@ -4,37 +4,35 @@
 
 set -e  # Stoppt bei Fehlern
 
-# --- 1. Push Quellcode auf master ---
-echo "=== Pushing source code to master ==="
-cd /c/Users/uweal/NonlinearOptimizationTestFunctions.jl
+REPO_ROOT="$(dirname "$0")"
+cd "$REPO_ROOT"
 
+# Default-Branch automatisch ermitteln (main oder master)
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+
+# Version aus Project.toml
+VERSION=$(grep -E 'version = ' Project.toml | sed -E 's/version = "(.+)"/\1/')
+TAG="v$VERSION"
+
+echo "Deploying version $TAG to branch $DEFAULT_BRANCH"
+
+# --- 1. Source Code pushen & taggen ---
 git add .
-git commit -m "new testfunctions"
-git push origin master
+git commit -m "Release $TAG" || echo "Nothing to commit"
+git push origin "$DEFAULT_BRANCH"
 
-# Tag erstellen und pushen
-VERSION="v0.6.7"
-git tag $VERSION
-git push origin $VERSION
-echo "Source code pushed and tagged as $VERSION"
+git tag -f "$TAG" || true  # -f überschreibt existierenden Tag falls nötig
+git push origin "$TAG" --force || true
 
-# --- 2. Build Dokumentation ---
-echo "=== Building documentation ==="
-julia --project=docs -e 'include("docs/make.jl")'
+echo "Source code & tag deployed"
 
-# --- 3. Deploy Dokumentation auf gh-pages ---
-echo "=== Deploying documentation to gh-pages ==="
-cd docs/build
+# --- 2. Dokumentation bauen & deployen ---
+echo "Building and deploying documentation..."
 
-# Git-Repo initialisieren, falls noch nicht vorhanden
-if [ ! -d ".git" ]; then
-    git init
-    git remote add origin https://github.com/UweAlex/NonlinearOptimizationTestFunctions.jl.git
-fi
+# Dependencies sicherstellen
+julia --project=docs -e 'using Pkg; Pkg.instantiate()'
 
-git checkout -B gh-pages
-git add .
-git commit -m "Deploy docs $VERSION"
-git push -f origin gh-pages
+# Build + Deploy (deploydocs() nutzt deine lokale Git-Auth)
+julia --project=docs docs/make.jl
 
-echo "Deployment complete!"
+echo "Deployment complete! Documentation should be live in a few minutes."

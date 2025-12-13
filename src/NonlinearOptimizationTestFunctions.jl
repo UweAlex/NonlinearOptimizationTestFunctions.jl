@@ -20,8 +20,6 @@ const VALID_PROPERTIES = Set{String}([
     "strongly convex", "unimodal", "ill-conditioned"
 ])
 
-const DEFAULT_N = Ref(2)  # mutable default dimension for scalable functions
-
 # ===================================================================
 # 2. TestFunction struct
 # ===================================================================
@@ -61,17 +59,20 @@ end
 # ===================================================================
 
 function access_metadata(tf::TestFunction, key::Symbol, n::Union{Int,Nothing}=nothing)
-    is_scalable = "scalable" in tf.meta[:properties]
-    val = get(tf.meta, key, nothing)
-    val === nothing && throw(ArgumentError("Metadata key :$key not found for $(tf.name)"))
+    val = tf.meta[key]
+    val isa Function || return val
 
-    if is_scalable
-        isa(val, Function) || throw(ArgumentError(":$key must be a function for scalable function $(tf.name)"))
-        dim = isnothing(n) ? DEFAULT_N[] : n
-        dim ≥ 1 || throw(ArgumentError("Dimension must be ≥ 1"))
-        return val(dim)
+    # Unterscheidung: Ist die Funktion noch skalierbar?
+    if "scalable" in tf.meta[:properties]
+        # FALL A: Skalierbar → Dimension n ist zwingend erforderlich
+        if isnothing(n)
+            error("Metadata :$key requires dimension n for scalable function $(tf.meta[:name])")
+        end
+        return val(n)
     else
-        isa(val, Function) ? val() : val
+        # FALL B: Fixiert (via fixed() oder nativ) → Wrapper akzeptiert keine Argumente
+        # Das übergebene 'n' wird hier ignoriert, da es bereits im Wrapper 'eingebacken' ist
+        return val()
     end
 end
 
@@ -114,8 +115,6 @@ separable(tf::TestFunction) = property(tf, "separable")
 # 6. Utility functions
 # ===================================================================
 
-set_default_n!(n::Int) = (n ≥ 1 || throw(ArgumentError("n ≥ 1 required"));
-DEFAULT_N[] = n)
 
 get_f_count(tf::TestFunction) = tf.f_count[]
 get_grad_count(tf::TestFunction) = tf.grad_count[]

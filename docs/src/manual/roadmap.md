@@ -13,7 +13,7 @@ Objective: Extend the suite to include test functions with inequality and equali
 ### Planned Implementation
 - Property "constrained": Add "constrained" to VALID_PROPERTIES in NonlinearOptimizationTestFunctions.jl to support functions with constraints.
 - Constraints Format: Store constraints in a dictionary: :constraints => Dict(:inequality => Vector{Function}, :equality => Vector{Function}).
-  - Example for shubert_constrained.jl: :constraints => Dict(:inequality => [(x::AbstractVector) -> sum(x)], :equality => []), representing sum(x_i) <= 0.
+  - Example for shubert_constrained.jl: :constraints => Dict(:inequality => [(x::AbstractVector) -> sum(x)], :equality => []), representing sum(x_i) <= 0.
 - Test Updates: Modify runtests.jl to validate :constraints for start points and minima, ensuring feasibility.
 - Optim.jl Integration: Add tests using constrained algorithms (e.g., IPNewton) to verify compatibility.
 - Additional Functions: Implement further constrained functions, such as constrained_rastrigin.jl and constrained_ackley.jl.
@@ -39,13 +39,13 @@ The shubert_constrained.jl function serves as the first complete implementation 
 Below is a Gantt chart for the planned development:
 
 gantt
-    title Roadmap: Constrained Test Functions
-    dateFormat  YYYY-MM-DD
-    section Planning
-    Research & Design       :active,  des1, 2026-01-01, 3m
-    Implementation          :         des2, after des1, 3m
-    Tests with Optim.jl     :         des3, after des2, 3m
-    Documentation           :         des4, after des3, 3m
+    title Roadmap: Constrained Test Functions
+    dateFormat  YYYY-MM-DD
+    section Planning
+    Research & Design       :active,  des1, 2026-01-01, 3m
+    Implementation          :         des2, after des1, 3m
+    Tests with Optim.jl     :         des3, after des2, 3m
+    Documentation           :         des4, after des3, 3m
 
 ### Links
 - Discussion: [Issue #123](https://github.com/USER/NonlinearOptimizationTestFunctions.jl/issues/123)
@@ -57,6 +57,7 @@ We welcome your suggestions! Please create a [new issue](https://github.com/USER
 
 ## Additional Future Developments
 - Support for additional properties (e.g., "ill-conditioned").
+- Integration with Optimization.jl: Ensure timely and robust compatibility with the SciML ecosystem's Optimization.jl interface to allow seamless use with all supported solvers.
 - Integration with other optimization frameworks (e.g., NLopt).
 
 *Last Updated: October 17, 2025*

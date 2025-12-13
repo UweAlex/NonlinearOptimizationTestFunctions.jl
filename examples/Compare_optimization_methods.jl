@@ -5,17 +5,21 @@
 
 using NonlinearOptimizationTestFunctions, Optim
 
-# Load the Rosenbrock function
-tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
+# Load the original Rosenbrock function
+tf_orig = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
 
-# Set the number of dimensions (default for Rosenbrock is n=2)
+# Set the number of dimensions
 n = 2
+
+# FIX: Convert the scalable function into a fixed function (with dimension n).
+# This removes the "scalable" property, allowing start(tf) to work without n.
+tf = fixed(tf_orig, n)
 
 # Perform optimization using Gradient Descent
 result_gd = Optim.optimize(
     tf.f,              # Objective function
     tf.gradient!,      # Gradient function
-    start(tf),      # Starting point
+    start(tf),         # Starting point can now be retrieved without n
     GradientDescent(), # Optimization algorithm
     Optim.Options(f_reltol=1e-6) # Convergence tolerance
 )
@@ -24,7 +28,7 @@ result_gd = Optim.optimize(
 result_lbfgs = Optim.optimize(
     tf.f,              # Objective function
     tf.gradient!,      # Gradient function
-    start(tf),      # Starting point 
+    start(tf),         # Starting point can now be retrieved without n
     LBFGS(),           # Optimization algorithm
     Optim.Options(f_reltol=1e-6) # Convergence tolerance
 )
