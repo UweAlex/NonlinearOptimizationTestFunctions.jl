@@ -1,7 +1,17 @@
-name = "NonlinearOptimizationTestFunctionsDocs"
-uuid = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"   # beliebig, wird nie benutzt
-authors = ["Uwe Alex"]
+# C:\Users\uweal\NonlinearOptimizationTestFunctions.jl\docs\Project.toml
+
+name = "NonlinearOptimizationTestFunctionsDocsEnvironment"
+uuid = "12345678-0000-0000-0000-000000000001" # Beliebige, neue UUID für dieses Environment
 version = "0.1.0"
 
 [deps]
+# Das Dokumentations-Tool
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+
+# Das Hauptpaket, das dokumentiert wird (NonlinearOptimizationTestFunctions)
+NonlinearOptimizationTestFunctions = "3180b13f-e8d1-40aa-806b-3e6ce7522c6b" 
+
+# Alle anderen Pakete, die im Docs-Build oder den Beispielen benötigt werden (wie Optim, NLopt etc.)
+Optim = "429524aa-4258-5aef-a3af-852621145aeb"
+NLopt = "76087f3c-5699-56af-9a33-bf431cd00edd"
+Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
