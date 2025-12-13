@@ -1,14 +1,13 @@
 #!/bin/bash
 # deploy.sh
-# Kombiniertes Skript: Quellcode pushen + Dokumentation bauen und deployen
 
-set -e  # Stoppt bei Fehlern
+set -e
 
 REPO_ROOT="$(dirname "$0")"
 cd "$REPO_ROOT"
 
-# Default-Branch automatisch ermitteln (main oder master)
-DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+# FIX: Setzen des Default-Branch manuell auf 'master', da die automatische Erkennung fehlschlägt.
+DEFAULT_BRANCH="master" 
 
 # Version aus Project.toml
 VERSION=$(grep -E 'version = ' Project.toml | sed -E 's/version = "(.+)"/\1/')
@@ -19,20 +18,17 @@ echo "Deploying version $TAG to branch $DEFAULT_BRANCH"
 # --- 1. Source Code pushen & taggen ---
 git add .
 git commit -m "Release $TAG" || echo "Nothing to commit"
-git push origin "$DEFAULT_BRANCH"
+git push origin "$DEFAULT_BRANCH" # Pushes den master Branch
 
-git tag -f "$TAG" || true  # -f überschreibt existierenden Tag falls nötig
-git push origin "$TAG" --force || true
+git tag -f "$TAG" || true
+git push origin "$TAG" --force || true # Pushes den Tag
 
 echo "Source code & tag deployed"
 
 # --- 2. Dokumentation bauen & deployen ---
 echo "Building and deploying documentation..."
 
-# Dependencies sicherstellen
 julia --project=docs -e 'using Pkg; Pkg.instantiate()'
-
-# Build + Deploy (deploydocs() nutzt deine lokale Git-Auth)
 julia --project=docs docs/make.jl
 
 echo "Deployment complete! Documentation should be live in a few minutes."
