@@ -36,7 +36,9 @@ rm -f Manifest.toml        # Löscht die Manifest im Hauptverzeichnis
 rm -f docs/Manifest.toml   # Löscht die Manifest im Docs-Unterverzeichnis
 
 # Dependencies sicherstellen (instantiate wird die Manifest-Dateien neu erstellen)
-julia --project=docs -e 'using Pkg; Pkg.instantiate()'
+# WICHTIG: Dieser Befehl wird auskommentiert, da er den MethodError verursacht hat.
+# Wir instanziieren die Umgebung stattdessen manuell in der Shell (siehe Schritt 2).
+# julia --project=docs -e 'using Pkg; Pkg.instantiate()' 
 
 # Build + Deploy (deploydocs() nutzt deine lokale Git-Auth)
 julia --project=docs docs/make.jl

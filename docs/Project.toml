@@ -1,16 +1,16 @@
 # C:\Users\uweal\NonlinearOptimizationTestFunctions.jl\docs\Project.toml
 
-name = "NonlinearOptimizationTestFunctions"
-# Die UUID des Hauptpakets
-uuid = "3180b13f-e8d1-40aa-806b-3e6ce7522c6b" 
-authors = ["Uwe Alex"]
-version = "0.6.8"
+# Wichtig: KEINE 'name', 'uuid' oder 'version' hier! Das ist nur eine Umgebung.
 
 [deps]
-# Das Hauptpaket selbst (als lokale Abhängigkeit)
+# Das Hauptpaket (Muss hier stehen, damit Documenter es im Pfad findet)
 NonlinearOptimizationTestFunctions = "3180b13f-e8d1-40aa-806b-3e6ce7522c6b"
 
-# Nur die Pakete, die im docs/make.jl direkt benötigt werden
+# Pakete, die für den Build benötigt werden:
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
-# Fügen Sie hier nur hinzu, was in docs/make.jl importiert wird!
+NLopt = "76087f3c-5699-56af-9a33-bf431cd00edd"
+Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
+
+[compat]
+julia = "1"
