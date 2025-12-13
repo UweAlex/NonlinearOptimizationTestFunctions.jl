@@ -1,17 +1,33 @@
 # C:\Users\uweal\NonlinearOptimizationTestFunctions.jl\docs\Project.toml
 
-name = "NonlinearOptimizationTestFunctionsDocsEnvironment"
-uuid = "12345678-0000-0000-0000-000000000001" # Beliebige, neue UUID für dieses Environment
-version = "0.1.0"
+name = "NonlinearOptimizationTestFunctions"
+# Die UUID des Hauptpakets, um Konsistenz zu gewährleisten.
+uuid = "3180b13f-e8d1-40aa-806b-3e6ce7522c6b" 
+authors = ["Uwe Alex"]
+version = "0.6.8"
 
 [deps]
-# Das Dokumentations-Tool
+# Das Hauptpaket, das dokumentiert werden soll (muss hier als Dependency stehen)
+NonlinearOptimizationTestFunctions = "3180b13f-e8d1-40aa-806b-3e6ce7522c6b"
+
+# Pakete, die für den Build und die Beispiele in der Dokumentation benötigt werden:
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-
-# Das Hauptpaket, das dokumentiert wird (NonlinearOptimizationTestFunctions)
-NonlinearOptimizationTestFunctions = "3180b13f-e8d1-40aa-806b-3e6ce7522c6b" 
-
-# Alle anderen Pakete, die im Docs-Build oder den Beispielen benötigt werden (wie Optim, NLopt etc.)
-Optim = "429524aa-4258-5aef-a3af-852621145aeb"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 NLopt = "76087f3c-5699-56af-9a33-bf431cd00edd"
+Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
+OptimizationNLopt = "4e6fcdb7-1186-4e1f-a706-475e75c168bb"
+OptimizationOptimJL = "36348300-93cb-4f02-beb5-3c3902f8871e"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+
+
+# [compat] und [extras] sind in der docs/Project.toml optional und können weggelassen werden,
+# da sie oft durch die Manifest-Datei des Hauptprojekts und die Environment-Erstellung gelöst werden.
+
+# Wenn Sie die Kompatibilitätsanforderungen beibehalten möchten, fügen Sie den Block hinzu:
+# [compat]
+# Documenter = "1.14.1" 
+# julia = "1"
+# ... (alle anderen benötigten Kompatibilitätsanforderungen)
