@@ -16,8 +16,8 @@ else
     echo "Änderungen committet."
 fi
 
-echo "Pushen zum main-Branch..."
-git push origin main
+echo "Pushen zum master-Branch..."
+git push origin master
 
 # --- 2. Optional: Neuen Version-Tag erstellen und pushen ---
 read -p "Neuen Version-Tag erstellen (z.B. v0.1.1) oder Enter zum Überspringen: " TAG
@@ -36,7 +36,7 @@ echo "Source code & tag deployed"
 # --- 3. Dokumentation bauen & deployen ---
 echo "Building and deploying documentation..."
 
-# Aggressive Reinigung gegen hartnäckige Pkg-Probleme (MethodError, Caching)
+# Aggressive Reinigung gegen Pkg-Probleme (MethodError, Caching etc.)
 echo "Performing hard Pkg reset: Deleting Manifest.toml files..."
 rm -f Manifest.toml
 rm -f docs/Manifest.toml
