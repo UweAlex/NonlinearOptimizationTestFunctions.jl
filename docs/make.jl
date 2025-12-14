@@ -20,20 +20,18 @@ makedocs(
     pages=[
         "Home" => "index.md",
         "Installation" => "installation.md",
-        "Quick Start" => "quickstart.md",
         "Available Test Functions" => "functions.md",
+        "Demos" => "demos.md",
         "API Reference" => "api.md",
-        # Füge hier weitere Seiten hinzu, falls vorhanden
     ],
-    doctest=true,           # Führt Doctests aus
-    checkdocs=:exports,     # Prüft, ob alle exportierten Funktionen dokumentiert sind
-    # strict = true          ← ENTFERNT! Existiert nicht mehr
-    warnonly=[:missing_docs, :cross_references],  # Optional: Nur Warnungen bei fehlenden DocStrings etc., kein Abbruch
+    doctest=true,
+    checkdocs=:exports,
+    warnonly=[:missing_docs, :cross_references],  # Warnt bei Problemen, bricht aber nicht ab
 )
 
 deploydocs(
     repo="github.com/UweAlex/NonlinearOptimizationTestFunctions.jl.git",
-    devbranch="master",     # Dein Default-Branch ist master
+    devbranch="master",
     branch="gh-pages",
     versions=["stable" => "v^", "v#.#.#", "dev" => "dev"],
     push_preview=true,
