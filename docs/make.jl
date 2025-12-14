@@ -1,7 +1,6 @@
 using Documenter
-using NonlinearOptimizationTestFunctions
+using NonlinearOptimizationTestFunctions  # Dein Paket-Modul
 
-# DocTest setup
 DocMeta.setdocmeta!(
     NonlinearOptimizationTestFunctions,
     :DocTestSetup,
@@ -10,28 +9,33 @@ DocMeta.setdocmeta!(
 )
 
 makedocs(
-    modules=[NonlinearOptimizationTestFunctions],
-    authors="Uwe Alex",
     sitename="NonlinearOptimizationTestFunctions.jl",
-
-    # Kein GitTools nötig – HTML repolink reicht für Navbar
+    authors="Uwe Alex",
     format=Documenter.HTML(
-        prettyurls=get(ENV, "CI", "false") == "true",
+        prettyurls=get(ENV, "CI", nothing) == "true",  # Schöne URLs auf GitHub Pages
         canonical="https://uwealex.github.io/NonlinearOptimizationTestFunctions.jl",
-        repolink="https://github.com/UweAlex/NonlinearOptimizationTestFunctions.jl",
         assets=String[],
-    ), pages=[
+    ),
+    modules=[NonlinearOptimizationTestFunctions],
+    pages=[
         "Home" => "index.md",
-        "Manual" => [
-            "manual/installation.md",
-            "manual/quickstart.md",
-            "manual/box_constraints.md",
-            "manual/examples.md",
-            "manual/properties.md",
-            "manual/testing.md",
-            "manual/all_functions.md",
-            "manual/roadmap.md",
-        ],
+        "Installation" => "installation.md",
+        "Quick Start" => "quickstart.md",
+        "Available Test Functions" => "functions.md",
         "API Reference" => "api.md",
-    ], checkdocs=:warn,
+        # Füge hier weitere Seiten hinzu, z. B.
+        # "Benchmarks" => "benchmarks.md",
+    ],
+    doctest=true,      # Optional: Doctests ausführen
+    strict=true,       # Fehlermeldungen bei Problemen
+    checkdocs=:exports,  # Prüft, ob alle exportierten Symbole dokumentiert sind
+)
+
+deploydocs(
+    repo="github.com/UweAlex/NonlinearOptimizationTestFunctions.jl.git",
+    devbranch="main",
+    branch="gh-pages",
+    target="build",
+    versions=["stable" => "v^", "v#.#.#", "dev" => "dev"],
+    push_preview=true,  # Baut Previews für Pull Requests
 )

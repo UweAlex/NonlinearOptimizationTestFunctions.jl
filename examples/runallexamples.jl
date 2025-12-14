@@ -1,3 +1,6 @@
+
+
+
 println("----------------------------------------------------------------------", "\n\n", "benchmark_three_nm.jl")
 include("benchmark_three_nm.jl")
 println("----------------------------------------------------------------------", "\n\n", "count_calls.jl")
@@ -11,6 +14,10 @@ include("Compare_optimization_methods.jl")
 
 println("----------------------------------------------------------------------", "\n\n", "example_high_precisison.jl")
 include("example_high_precisison.jl")
+
+println("----------------------------------------------------------------------", "\n\n", "filter.jl")
+include("filter.jl")
+
 
 println("----------------------------------------------------------------------", "\n\n", "generate_functions_md.jl")
 include("generate_functions_md.jl")

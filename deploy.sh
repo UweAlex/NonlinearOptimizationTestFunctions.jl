@@ -1,46 +1,55 @@
 #!/bin/bash
-# deploy.sh
-# Kombiniertes Skript: Quellcode pushen + Dokumentation bauen und deployen
+# deploy.sh für NonlinearOptimizationTestFunctions.jl
+set -e  # Skript bei Fehler abbrechen
 
-set -e # Stoppt bei Fehlern
+echo "=== Deploy-Skript gestartet ==="
 
-REPO_ROOT="$(dirname "$0")"
-cd "$REPO_ROOT"
+# --- 1. Alle lokalen Änderungen committen und pushen ---
+echo "Staging aller Änderungen..."
+git add -A
 
-# Manuelles Setzen des Default-Branch, um den Fehler der automatischen Erkennung zu vermeiden
-DEFAULT_BRANCH="master" 
+echo "Committen der Änderungen..."
+if git diff --quiet --staged; then
+    echo "Keine Änderungen zum Committen."
+else
+    git commit -m "Deploy: Update code and documentation"
+    echo "Änderungen committet."
+fi
 
-# Version aus Project.toml
-VERSION=$(grep -E 'version = ' Project.toml | sed -E 's/version = "(.+)"/\1/')
-TAG="v$VERSION"
+echo "Pushen zum main-Branch..."
+git push origin main
 
-echo "Deploying version $TAG to branch $DEFAULT_BRANCH"
+# --- 2. Optional: Neuen Version-Tag erstellen und pushen ---
+read -p "Neuen Version-Tag erstellen (z.B. v0.1.1) oder Enter zum Überspringen: " TAG
 
-# --- 1. Source Code pushen & taggen ---
-git add .
-git commit -m "Release $TAG" || echo "Nothing to commit"
-git push origin "$DEFAULT_BRANCH"
-
-git tag -f "$TAG" || true
-git push origin "$TAG" --force || true
+if [ ! -z "$TAG" ]; then
+    echo "Erstelle Tag $TAG..."
+    git tag -a "$TAG" -m "Release $TAG"
+    git push origin "$TAG"
+    echo "Tag $TAG erfolgreich gepusht."
+else
+    echo "Kein Tag erstellt – übersprungen."
+fi
 
 echo "Source code & tag deployed"
 
-# --- 2. Dokumentation bauen & deployen ---
+# --- 3. Dokumentation bauen & deployen ---
 echo "Building and deploying documentation..."
 
-# Aggressive Reinigung: Entfernt alle Manifest-Dateien, um hartnäckige
-# Pkg-Caching- oder Versionskonflikte (MethodError) zu beheben.
-echo "Performing hard Pkg reset: Deleting all Manifest.toml files to fix MethodError..."
-rm -f Manifest.toml        # Löscht die Manifest im Hauptverzeichnis
-rm -f docs/Manifest.toml   # Löscht die Manifest im Docs-Unterverzeichnis
+# Aggressive Reinigung gegen hartnäckige Pkg-Probleme (MethodError, Caching)
+echo "Performing hard Pkg reset: Deleting Manifest.toml files..."
+rm -f Manifest.toml
+rm -f docs/Manifest.toml
 
-# Dependencies sicherstellen (instantiate wird die Manifest-Dateien neu erstellen)
-# WICHTIG: Dieser Befehl wird auskommentiert, da er den MethodError verursacht hat.
-# Wir instanziieren die Umgebung stattdessen manuell in der Shell (siehe Schritt 2).
-# julia --project=docs -e 'using Pkg; Pkg.instantiate()' 
+echo "Pkg.instantiate() im docs-Projekt..."
+julia --project=docs -e 'using Pkg; Pkg.instantiate()'
 
-# Build + Deploy (deploydocs() nutzt deine lokale Git-Auth)
+echo "Starte make.jl → baut Docs und deployt via deploydocs()..."
 julia --project=docs docs/make.jl
 
-echo "Deployment complete! Documentation should be live in a few minutes."
+echo "=== Deployment abgeschlossen! ==="
+echo "Die Dokumentation sollte in wenigen Minuten live sein unter:"
+echo "https://uwealex.github.io/NonlinearOptimizationTestFunctions.jl/"
+echo ""
+echo "Stable-Version: https://uwealex.github.io/NonlinearOptimizationTestFunctions.jl/stable"
+echo "Dev-Version:    https://uwealex.github.io/NonlinearOptimizationTestFunctions.jl/dev"

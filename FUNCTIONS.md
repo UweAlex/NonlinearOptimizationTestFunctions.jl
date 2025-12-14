@@ -1,6 +1,6 @@
 # Alphabetical List of Benchmark Functions
 
-Generated from package metadata on 2025-12-13. Functions are listed alphabetically with their details.
+Generated from package metadata on 2025-12-14. Functions are listed alphabetically with their details.
 
 ### ackley
 - **Description**: Ackley function – one of the most famous deceptive multimodal benchmarks. Nearly flat outer region with a deep central hole and countless cosine-induced local minima. Systematically misleads gradient-based and local optimizers away from the global minimum at zero.

@@ -1,53 +1,108 @@
 # examples/count_calls.jl
-# Purpose: Demonstrates the use of function and gradient call counters, including resetting, for a test function.
-# Context: Part of NonlinearOptimizationTestFunctions, showcasing the tracking of f and gradient! calls.
-# Last modified: 11 September 2025
-
-# Helper function: Main execution logic for the example
-# Purpose: Evaluates the Rosenbrock function, its gradient, performs optimization, and displays call counts.
-# Input: None
-# Output: None (prints results to console)
-# Used in: This file, executed directly or via runallexamples.jl
+# =============================================================================
+# Purpose: 
+#   This example demonstrates the built-in call counting and resetting functionality
+#   of TestFunction objects in NonlinearOptimizationTestFunctions.jl.
+#
+# Why this feature exists:
+#   • When benchmarking optimizers or comparing algorithms, it is crucial to know
+#     exactly how many objective function evaluations (f-count) and gradient evaluations
+#     (grad-count) were performed.
+#   • The package automatically wraps every TestFunction's f and grad with counters
+#     (Ref{Int}) that increment on each call – completely transparent to the user.
+#   • reset_counts!(tf) allows starting fresh for each experiment.
+#   • This makes fair, reproducible comparisons possible without modifying the optimizer.
+#
+# Key functions demonstrated:
+#   • get_f_count(tf)     → number of objective evaluations
+#   • get_grad_count(tf)  → number of gradient evaluations
+#   • reset_counts!(tf)   → set both counters back to zero
+#
+# Expected behaviour:
+#   • Counters start at 0 after reset
+#   • Each tf.f(x) increments f-count by 1
+#   • Each tf.grad(x) or tf.gradient!(g,x) increments grad-count by 1
+#   • Optimization with Optim.jl (L-BFGS) shows realistic call numbers
+#   • Second reset brings counters back to 0
+#
+# Last modified: December 2025
+# =============================================================================
 
 using NonlinearOptimizationTestFunctions
+# Core package – every TestFunction automatically tracks f and gradient calls.
+
 using Optim
+# Standard optimization library used here to show real-world usage of the counters.
+
+# -------------------------------------------------------------------------
+# Main demonstration function
+# -------------------------------------------------------------------------
 function run_count_calls_example()
-
-
-    # Select the Rosenbrock test function
+    # Select the classic Rosenbrock function (scalable, but we use n=2 here)
+    # f(x) = ∑ [100*(x_{i+1} - x_i²)² + (1 - x_i)²]   → global minimum 0 at x = [1,1,...,1]
     tf = NonlinearOptimizationTestFunctions.ROSENBROCK_FUNCTION
-    n = 2  # Dimension for scalable function
+    n = 2  # Fixed dimension for this demonstration
 
-    # Reset counters before starting
-    reset_counts!(tf)  # Reset function and gradient call counters to 0
-    println("After reset - Function calls: ", get_f_count(tf))  # Should print 0
-    println("After reset - Gradient calls: ", get_grad_count(tf))  # Should print 0
+    # ---------------------------------------------------------------------
+    # Start with clean counters
+    # ---------------------------------------------------------------------
+    reset_counts!(tf)  # Zero both internal Ref{Int} counters
+    println("After reset - Function calls: ", get_f_count(tf))   # → 0
+    println("After reset - Gradient calls: ", get_grad_count(tf)) # → 0
+    println()
 
-    # Evaluate function at start point
-    x = tf.meta[:start](n)  # Get start point [1.0, 1.0]
-    f_value = tf.f(x)  # Compute function value
-    println("Function value at start point $x: ", f_value)  # Should print 24.0
-    println("Function calls after evaluation: ", get_f_count(tf))  # Should print 1
+    # ---------------------------------------------------------------------
+    # Manual function and gradient evaluation
+    # ---------------------------------------------------------------------
+    x = tf.meta[:start](n)  # Recommended starting point from metadata (usually far from minimum)
+    # For Rosenbrock n=2: typically [ -1.2, 1.0 ] or similar – deliberately challenging
 
-    # Evaluate gradient at start point
-    grad_value = tf.grad(x)  # Compute gradient
-    println("Gradient at start point $x: ", grad_value)  # Should print [400.0, -200.0]
-    println("Gradient calls after evaluation: ", get_grad_count(tf))  # Should print 1
+    f_value = tf.f(x)       # One objective evaluation
+    println("Function value at start point $x: ", f_value)
+    println("Function calls after f(x): ", get_f_count(tf))      # → 1
 
-    # Perform optimization with L-BFGS
-    result = Optim.optimize(tf.f, tf.gradient!, x, Optim.LBFGS(), Optim.Options(f_reltol=1e-6))
+    grad_value = tf.grad(x) # One gradient evaluation (out-of-place version)
+    println("Gradient at start point $x: ", grad_value)
+    println("Gradient calls after grad(x): ", get_grad_count(tf)) # → 1
+    println()
+
+    # ---------------------------------------------------------------------
+    # Run an actual optimization and observe how many calls are made
+    # ---------------------------------------------------------------------
+    # Optim.jl's L-BFGS will repeatedly call tf.f and tf.gradient! during line search
+    # and model building – the counters will accumulate all of these calls.
+    result = Optim.optimize(
+        tf.f,              # objective
+        tf.gradient!,      # in-place gradient (preferred for performance)
+        x,                 # initial guess
+        Optim.LBFGS(),     # limited-memory quasi-Newton method
+        Optim.Options(f_reltol=1e-6)  # stop when relative function change < 1e-6
+    )
+
     println("Optimization result - Minimizer: ", Optim.minimizer(result))
-    println("Optimization result - Minimum: ", Optim.minimum(result))
-    println("Function calls after optimization: ", get_f_count(tf))  # Prints total function calls
-    println("Gradient calls after optimization: ", get_grad_count(tf))  # Prints total gradient calls
+    println("Optimization result - Minimum:   ", Optim.minimum(result))
+    # Typical numbers for Rosenbrock n=2 with L-BFGS:
+    #   ~20–40 function calls
+    #   ~20–40 gradient calls
+    # Exact numbers may vary slightly depending on Julia/Optim version and tolerances.
+    println("Function calls after optimization: ", get_f_count(tf))
+    println("Gradient calls after optimization: ", get_grad_count(tf))
+    println()
 
-    # Reset counters again
-    reset_counts!(tf)  # Reset counters to 0
-    println("After second reset - Function calls: ", get_f_count(tf))  # Should print 0
-    println("After second reset - Gradient calls: ", get_grad_count(tf))  # Should print 0
-end #function
+    # ---------------------------------------------------------------------
+    # Reset counters again – ready for the next experiment
+    # ---------------------------------------------------------------------
+    reset_counts!(tf)
+    println("After second reset - Function calls: ", get_f_count(tf))   # → 0
+    println("After second reset - Gradient calls: ", get_grad_count(tf)) # → 0
+end
 
-# Execute the example
-# Purpose: Runs the demonstration when the file is included or executed.
-# Context: Ensures the example runs standalone or via runallexamples.jl.
+# -------------------------------------------------------------------------
+# Execute the example when the file is loaded
+# -------------------------------------------------------------------------
+# This ensures the demonstration runs automatically whether the file is
+#   • run directly (julia count_calls.jl)
+#   • included from runallexamples.jl
+#   • loaded interactively
 run_count_calls_example()
+
