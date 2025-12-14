@@ -5,28 +5,39 @@ DocMeta.setdocmeta!(
     NonlinearOptimizationTestFunctions,
     :DocTestSetup,
     :(using NonlinearOptimizationTestFunctions);
-    recursive = true,
+    recursive=true,
 )
 
 makedocs(
-    sitename = "NonlinearOptimizationTestFunctions.jl",
-    authors = "Uwe Alex",
-    format = Documenter.HTML(
-        prettyurls = get(ENV, "CI", nothing) == "true",
-        canonical = "https://uwealex.github.io/NonlinearOptimizationTestFunctions.jl",
-        assets = String[],
+    sitename="NonlinearOptimizationTestFunctions.jl",
+    authors="Uwe Alex",
+    format=Documenter.HTML(
+        prettyurls=get(ENV, "CI", nothing) == "true",
+        canonical="https://uwealex.github.io/NonlinearOptimizationTestFunctions.jl",
+        assets=String[],
     ),
-    modules = [NonlinearOptimizationTestFunctions],
-    pages = [],  # Leer, da keine .md-Dateien mehr existieren – baut nur autogenerierte Docs
-    doctest = true,
-    checkdocs = :exports,
-    warnonly = [:missing_docs, :cross_references],  # Warnt, bricht nicht ab
+    modules=[NonlinearOptimizationTestFunctions],
+    pages=[
+        "Home" => "index.md",  # Bewege index.md nach docs/src/, falls noch nicht dort
+        "Installation" => "manual/installation.md",
+        "Quick Start" => "manual/quickstart.md",
+        "Usage" => "manual/usage.md",
+        "All Functions" => "manual/all_functions.md",
+        "Box Constraints" => "manual/box_constraints.md",
+        "Examples" => "manual/examples.md",
+        "Properties" => "manual/properties.md",
+        "Testing" => "manual/testing.md",
+        "Roadmap" => "manual/roadmap.md",
+    ],
+    doctest=true,
+    checkdocs=:exports,
+    warnonly=[:missing_docs, :cross_references],
 )
 
 deploydocs(
-    repo = "github.com/UweAlex/NonlinearOptimizationTestFunctions.jl.git",
-    devbranch = "master",
-    branch = "gh-pages",
-    versions = ["stable" => "v^", "v#.#.#", "dev" => "dev"],
-    push_preview = true,
+    repo="github.com/UweAlex/NonlinearOptimizationTestFunctions.jl.git",
+    devbranch="master",
+    branch="gh-pages",
+    versions=["stable" => "v^", "v#.#.#", "dev" => "dev"],
+    push_preview=true,
 )
