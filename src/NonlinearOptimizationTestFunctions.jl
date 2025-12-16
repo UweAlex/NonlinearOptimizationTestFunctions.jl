@@ -1,6 +1,6 @@
 # src/NonlinearOptimizationTestFunctions.jl
 # Purpose: Core module for NonlinearOptimizationTestFunctions.jl
-# Stand: 29. November 2025 – precompile-sicher + tf.scalable ready
+# Stand: 16. Dezember 2025 – FINAL: Alle Konstruktor-Probleme behoben
 module NonlinearOptimizationTestFunctions
 __precompile__(false)
 using LinearAlgebra
@@ -28,11 +28,16 @@ struct TestFunction
     f::Function
     grad::Function
     gradient!::Function
+    f_original::Function
+    grad_original::Function
     meta::Dict{Symbol,Any}
     name::String
     f_count::Ref{Int}
     grad_count::Ref{Int}
 
+    # ===================================================================
+    # Main constructor - creates new counters
+    # ===================================================================
     function TestFunction(f, grad, meta)
         required = [:name, :start, :min_position, :min_value, :properties, :lb, :ub]
         missing_keys = setdiff(required, keys(meta))
@@ -50,7 +55,52 @@ struct TestFunction
         grad_wrapped = x -> (grad_count[] += 1; grad(x))
         gradient_wrapped! = (G, x) -> (grad_count[] += 1; copyto!(G, grad(x)))
 
-        new(f_wrapped, grad_wrapped, gradient_wrapped!, meta, name, f_count, grad_count)
+        new(
+            f_wrapped,
+            grad_wrapped,
+            gradient_wrapped!,
+            f,
+            grad,
+            meta,
+            name,
+            f_count,
+            grad_count
+        )
+    end
+
+    # ===================================================================
+    # Alternative constructor - uses provided counter Refs
+    # ===================================================================
+    function TestFunction(
+        f::Function,
+        grad::Function,
+        meta::Dict{Symbol,Any},
+        f_count::Ref{Int},
+        grad_count::Ref{Int}
+    )
+        required = [:name, :start, :min_position, :min_value, :properties, :lb, :ub]
+        missing_keys = setdiff(required, keys(meta))
+        isempty(missing_keys) || throw(ArgumentError("Missing required meta keys: $missing_keys"))
+
+        meta[:properties] = Set(lowercase.(string.(meta[:properties])))
+        invalid = setdiff(meta[:properties], VALID_PROPERTIES)
+        isempty(invalid) || throw(ArgumentError("Invalid properties: $invalid"))
+
+        name = meta[:name]
+        gradient! = (G, x) -> copyto!(G, grad(x))
+
+        # ✅ FIX: new() works inside struct definition, not TestFunction.new()
+        new(
+            f,
+            grad,
+            gradient!,
+            f,
+            grad,
+            meta,
+            name,
+            f_count,
+            grad_count
+        )
     end
 end
 
@@ -62,16 +112,12 @@ function access_metadata(tf::TestFunction, key::Symbol, n::Union{Int,Nothing}=no
     val = tf.meta[key]
     val isa Function || return val
 
-    # Unterscheidung: Ist die Funktion noch skalierbar?
     if "scalable" in tf.meta[:properties]
-        # FALL A: Skalierbar → Dimension n ist zwingend erforderlich
         if isnothing(n)
             error("Metadata :$key requires dimension n for scalable function $(tf.meta[:name])")
         end
         return val(n)
     else
-        # FALL B: Fixiert (via fixed() oder nativ) → Wrapper akzeptiert keine Argumente
-        # Das übergebene 'n' wird hier ignoriert, da es bereits im Wrapper 'eingebacken' ist
         return val()
     end
 end
@@ -81,14 +127,15 @@ min_position(tf::TestFunction, n::Union{Int,Nothing}=nothing) = access_metadata(
 min_value(tf::TestFunction, n::Union{Int,Nothing}=nothing) = access_metadata(tf, :min_value, n)
 lb(tf::TestFunction, n::Union{Int,Nothing}=nothing) = access_metadata(tf, :lb, n)
 ub(tf::TestFunction, n::Union{Int,Nothing}=nothing) = access_metadata(tf, :ub, n)
+source(tf::TestFunction) = get(tf.meta, :source, "Unknown Source")
 
 # ===================================================================
-# 4. MODERN PROPERTY HANDLING (precompile-safe + tf.scalable)
+# 4. MODERN PROPERTY HANDLING
 # ===================================================================
 
 function property(tf::TestFunction, prop::AbstractString)
     p = lowercase(string(prop))
-    p in (p, VALID_PROPERTIES) || throw(ArgumentError(
+    p in VALID_PROPERTIES || throw(ArgumentError(
         "Invalid property '$p'. Allowed: $(join(sort(collect(VALID_PROPERTIES)), ", "))"
     ))
     return p in tf.meta[:properties]
@@ -115,21 +162,22 @@ separable(tf::TestFunction) = property(tf, "separable")
 # 6. Utility functions
 # ===================================================================
 
+"""
+    properties(tf::TestFunction) -> Vector{String}
+
+Returns a vector containing all properties of the test function.
+"""
+function properties(tf::TestFunction)
+    return sort(collect(tf.meta[:properties]))
+end
+
+export properties
 
 get_f_count(tf::TestFunction) = tf.f_count[]
 get_grad_count(tf::TestFunction) = tf.grad_count[]
 reset_counts!(tf::TestFunction) = (tf.f_count[] = 0; tf.grad_count[] = 0)
 
 dim(tf::TestFunction) = "scalable" in tf.meta[:properties] ? -1 : length(min_position(tf))
-
-
-function use_testfunction(tf::TestFunction, x::Vector{T}, n::Union{Int,Nothing}=nothing) where T
-    isempty(x) && throw(ArgumentError("x must not be empty"))
-    is_scalable = "scalable" in tf.meta[:properties]
-    d = is_scalable ? (isnothing(n) ? DEFAULT_N[] : n) : dim(tf)
-    length(x) == d || throw(ArgumentError("wrong dimension for $(tf.name)"))
-    (f=tf.f(x), grad=tf.grad(x))
-end
 
 filter_testfunctions(pred, dict=TEST_FUNCTIONS) = [tf for tf in values(dict) if pred(tf)]
 
@@ -142,8 +190,6 @@ filter_testfunctions(pred, dict=TEST_FUNCTIONS) = [tf for tf in values(dict) if 
     fixed(tf::TestFunction, n::Int) -> TestFunction
 
 Return a non-scalable `TestFunction` with fixed dimension.
-Uses `tf.meta[:default_n]` if no `n` is given.
-Future-proof: automatically binds all dimension-dependent metadata.
 """
 function fixed(tf::TestFunction; n::Union{Int,Nothing}=nothing)
     !scalable(tf) && return tf
@@ -152,14 +198,12 @@ function fixed(tf::TestFunction; n::Union{Int,Nothing}=nothing)
               haskey(tf.meta, :default_n) ? tf.meta[:default_n] :
               error("Scalable function '$(tf.name)' has no :default_n and no explicit n given")
 
-    # Use the real constructor – tf.f and tf.grad are already wrapped with counters
     tf_fixed = TestFunction(
-        tf.f,
-        tf.grad,
+        tf.f_original,
+        tf.grad_original,
         deepcopy(tf.meta)
     )
 
-    # Bind all dimension-dependent metadata
     for (key, val) in tf_fixed.meta
         if val isa Function
             try
@@ -204,12 +248,13 @@ for tf in values(TEST_FUNCTIONS)
     isdefined(@__MODULE__, const_sym) && @eval export $const_sym
 end
 
-export TEST_FUNCTIONS, TestFunction, filter_testfunctions, use_testfunction
+export TEST_FUNCTIONS, TestFunction, filter_testfunctions
 export start, min_position, min_value, lb, ub, dim
 export property, bounded, scalable, differentiable, multimodal, separable
-export get_f_count, get_grad_count, reset_counts!, set_default_n!
+export get_f_count, get_grad_count, reset_counts!
 export fixed
 export optimization_problem
+export source
 
 include("l1_penalty_wrapper.jl")
 using Optimization

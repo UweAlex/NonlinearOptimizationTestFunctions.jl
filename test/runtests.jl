@@ -277,6 +277,67 @@ end
     end
 end
 
+
+@testset "Start Point Feasibility (within bounds)" begin
+    failed_functions = String[]
+    for tf in values(TEST_FUNCTIONS)
+        try
+            name = tf.name
+
+            # Nur bounded Funktionen prüfen
+            if !bounded(tf)
+                continue
+            end
+
+            # Dimension bestimmen (wie in anderen Tests)
+            is_scalable = scalable(tf)
+            n = if is_scalable
+                haskey(tf.meta, :default_n) ? tf.meta[:default_n] : 2
+            else
+                try
+                    length(tf.meta[:min_position]())
+                catch
+                    2
+                end
+            end
+
+            # Bounds und Startpunkt holen
+            lb_vec = lb(tf, n)
+            ub_vec = ub(tf, n)
+            x0 = start(tf, n)
+
+            # Prüfen, ob Startpunkt streng innerhalb der Bounds liegt
+            # (≥ lb und ≤ ub – aber nicht genau auf der Grenze, da viele Optimizer
+            #  interior points erwarten)
+            if any(x0 .< lb_vec) || any(x0 .> ub_vec)
+                push!(failed_functions, name)
+                @warn "Start point OUTSIDE bounds for bounded function '$name'" x0 = x0 lb = lb_vec ub = ub_vec
+            end
+
+            # Optional: Warnung, wenn Startpunkt genau auf der Grenze liegt
+            # (kann bei manchen Algorithmen (z. B. Fminbox) Probleme machen)
+            if any(isapprox.(x0, lb_vec, atol=1e-12)) || any(isapprox.(x0, ub_vec, atol=1e-12))
+                @warn "Start point ON boundary for bounded function '$name' (may cause issues with some solvers)" x0 = x0 lb = lb_vec ub = ub_vec
+            end
+
+        catch err
+            name = get(tf.meta, :name, "unknown")
+            @error "Exception while checking start point feasibility for '$name'" exception = (err, catch_backtrace())
+            push!(failed_functions, name)
+        end
+    end
+
+    if !isempty(failed_functions)
+        @warn "Start point feasibility check failed for: $(join(failed_functions, ", "))"
+        @test false
+    else
+        println("All bounded functions have feasible (interior or on-boundary) start points.")
+        @test true
+    end
+end
+
+
 include("gradient_accuracy_tests.jl")
 include("minima_tests.jl")
+include("l1_penalty_wrapper_tests.jl")
 include("include_testfiles.jl")

@@ -25,73 +25,47 @@ end
 function print_function_properties()
     println("# Test Function Properties")
     println("Below is a summary of the properties for all implemented test functions in NonlinearOptimizationTestFunctions.jl:\n")
-    
-    for tf in sort(collect(values(NonlinearOptimizationTestFunctions.TEST_FUNCTIONS)), by=tf -> tf.meta[:name])
-        meta = tf.meta
-        name = meta[:name]
-        properties = join(sort(collect(meta[:properties])), ", ")
-        is_scalable = occursin("scalable", properties)
-        
-        # Dynamically determine dimension using :default_n if available for scalable functions
-        n = try
-            if haskey(meta, :default_n)
-                meta[:default_n]
-            else
-                length(tf.meta[:min_position](2))  # Default: n=2 for scalable functions
-            end
-        catch
-            try
-                if haskey(meta, :default_n)
-                    meta[:default_n]
-                else
-                    length(tf.meta[:min_position]())  # Fallback for fixed dimensions (e.g., shekel, hartmann)
-                end
-            catch
-                2  # Ultimate fallback
-            end
-        end
-        
+
+    for tf in sort(collect(values(TEST_FUNCTIONS)), by=tf -> tf.name)
+        name = tf.name
+        properties_str = join(sort(properties(tf)), ", ")
+        is_scalable = scalable(tf)
+
+        # Dynamically determine dimension using dim(tf)
+        n = is_scalable ? 2 : dim(tf)  # fallback to n=2 for scalable (since no default_n without meta)
+
         # Format dimensions string
         dimensions_str = is_scalable ? "scalable (n ≥ 1)" : "n = $n"
-        
-        # Extract metadata
-        # Handle min_value as a function or scalar (fixed call for non-scalable)
+
+        # Extract metadata using accessors
         min_value_raw = try
-            if isa(meta[:min_value], Function)
-                if is_scalable
-                    meta[:min_value](n)
-                else
-                    meta[:min_value]()
-                end
-            else
-                meta[:min_value]
-            end
+            min_value(tf, n)
         catch
             NaN
         end
         min_value = isfinite(min_value_raw) ? format_number(min_value_raw) : "Unknown"
-        
+
         min_position = try
-            format_vector(meta[:min_position](n), is_scalable)
+            format_vector(min_position(tf, n), is_scalable)
         catch
-            format_vector(meta[:min_position](), is_scalable)
+            "Unknown"
         end
-        lb = try
-            format_vector(meta[:lb](n), is_scalable)
+        lb_str = try
+            format_vector(lb(tf, n), is_scalable)
         catch
-            format_vector(meta[:lb](), is_scalable)
+            "Unknown"
         end
-        ub = try
-            format_vector(meta[:ub](n), is_scalable)
+        ub_str = try
+            format_vector(ub(tf, n), is_scalable)
         catch
-            format_vector(meta[:ub](), is_scalable)
+            "Unknown"
         end
-        
-        # Use :properties_source if available, else :source, else fallback
-        source = get(meta, :source, get(meta, :source, "Unknown Source"))
-        
+
+        # Use :source if available, else fallback (still uses meta, but only here as no accessor)
+        func_source = source(tf)  # Renamed variable to avoid conflict with function name
+
         # Output in Markdown format
-        println("- **$name** [$source:] $properties. Minimum: $min_value at $min_position. Bounds: [$lb, $ub]. Dimensions: $dimensions_str.")
+        println("- **$name** [$func_source:] $properties_str. Minimum: $min_value at $min_position. Bounds: [$lb_str, $ub_str]. Dimensions: $dimensions_str.")
     end
 end
 
