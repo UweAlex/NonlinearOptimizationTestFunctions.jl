@@ -3,17 +3,17 @@ using NonlinearOptimizationTestFunctions
 using Optim
 
 # ===================================================================
-# Hilfsfunktion: Verschobene Sphere f(x) = ||x - c||²
-# Optimiert: Validierung, raw math, source Feld, default_n entfernt
+# Helper: Shifted Sphere f(x) = ||x - c||²
+# Optimized: Validation, raw math, source field, default_n removed
 # ===================================================================
 
 function make_shifted_sphere(;
-    n::Int = 2,
-    shift::Vector{Float64} = ones(n),
-    lb::Float64 = -5.0,
-    ub::Float64 = 10.0,
-    bounded::Bool = true,
-    name::String = "shifted_sphere_test"
+    n::Int=2,
+    shift::Vector{Float64}=ones(n),
+    lb::Float64=-5.0,
+    ub::Float64=10.0,
+    bounded::Bool=true,
+    name::String="shifted_sphere_test"
 )
     if bounded && lb >= ub
         throw(ArgumentError("Lower bound must be strictly less than upper bound: lb=$lb, ub=$ub"))
@@ -24,15 +24,15 @@ function make_shifted_sphere(;
     f(x) = sum(abs2, x .- c)
     grad(x) = 2.0 .* (x .- c)
 
-    meta = Dict{Symbol, Any}(
-        :name         => name,
-        :description  => "Shifted sphere f(x) = ||x - c||², minimum at c = $c",
-        :properties   => Set(["convex", "unimodal", "separable", "differentiable", "continuous"]),
-        :math         => raw"f(\mathbf{x}) = \sum_{i=1}^n (x_i - c_i)^2",  # raw string
-        :source       => "Synthetic test function for L1 penalty wrapper testing",
-        :start        => () -> zeros(n),
+    meta = Dict{Symbol,Any}(
+        :name => name,
+        :description => "Shifted sphere f(x) = ||x - c||², minimum at c = $c",
+        :properties => Set(["convex", "unimodal", "separable", "differentiable", "continuous"]),
+        :math => raw"f(\mathbf{x}) = \sum_{i=1}^n (x_i - c_i)^2",  # raw string
+        :source => "Synthetic test function for L1 penalty wrapper testing",
+        :start => () -> zeros(n),
         :min_position => () -> copy(c),
-        :min_value    => () -> 0.0,
+        :min_value => () -> 0.0,
     )
 
     if bounded
@@ -44,26 +44,26 @@ function make_shifted_sphere(;
         meta[:ub] = () -> fill(+Inf, n)
     end
 
-    return TestFunction(f, grad, meta)  # Haupt-Konstruktor
+    return TestFunction(f, grad, meta)  # Main constructor
 end
 
 # ===================================================================
-# Tests für den L1 Penalty Wrapper
+# Tests for the L1 Penalty Wrapper
 # ===================================================================
 
 @testset "L1 Penalty Wrapper - Shifted Sphere Tests" begin
 
-    ρ = NonlinearOptimizationTestFunctions.BOUND_PENALTY
+    ρ = 1e6  # Fixed ρ value as now defined in the wrapper
 
     @testset "Bounds Validation in Helper" begin
         @test_throws ArgumentError make_shifted_sphere(n=2, lb=10.0, ub=-5.0, bounded=true)
         @test_throws ArgumentError make_shifted_sphere(n=2, lb=5.0, ub=5.0, bounded=true)
-        # Gültige Bounds → kein Error
+        # Valid bounds → no error
         @test make_shifted_sphere(n=2, lb=-10.0, ub=10.0, bounded=true) isa TestFunction
     end
 
     @testset "Non-bounded: Early Return" begin
-        tf = make_shifted_sphere(bounded = false)
+        tf = make_shifted_sphere(bounded=false)
         ctf = with_box_constraints(tf)
         @test ctf === tf
     end
@@ -74,23 +74,23 @@ end
 
         reset_counts!(tf)
 
-        num_inside_f     = 8
-        num_inside_grad  = 12
-        num_outside_f    = 7
+        num_inside_f = 8
+        num_inside_grad = 12
+        num_outside_f = 7
         num_outside_grad = 10
 
-        total_f    = num_inside_f + num_outside_f
+        total_f = num_inside_f + num_outside_f
         total_grad = num_inside_grad + num_outside_grad
 
-        # Innen
+        # Inside
         for i in 1:num_inside_f
-            ctf.f([2.0, 3.0] .+ i/100)
+            ctf.f([2.0, 3.0] .+ i / 100)
         end
         for i in 1:num_inside_grad
-            ctf.grad([1.0, 4.0] .+ i/100)
+            ctf.grad([1.0, 4.0] .+ i / 100)
         end
 
-        # Außen
+        # Outside
         for i in 1:num_outside_f
             ctf.f([-10.0 - i, 15.0 + i])
         end
@@ -120,13 +120,14 @@ end
         f_inner = sum(abs2, x_clamped .- [12.0, 12.0])
         f_expected = f_inner + ρ * violation
 
-        @test ctf.f(x) ≈ f_expected rtol=1e-12
+        @test ctf.f(x) ≈ f_expected rtol = 1e-12
 
-        g_inner = 2.0 .* (x_clamped .- [12.0, 12.0])
+        # Corrected: Due to chain rule, inner gradient contribution is 0 when outside (x_clamped constant w.r.t x)
+        g_inner = zeros(2)  # Effective contribution is 0
         g_penalty = [ρ, ρ]
         g_expected = g_inner + g_penalty
 
-        @test ctf.grad(x) ≈ g_expected rtol=1e-12
+        @test ctf.grad(x) ≈ g_expected rtol = 1e-12
     end
 
     @testset "Only one dimension violated" begin
@@ -136,8 +137,8 @@ end
         x = [0.0, 15.0]
         g = ctf.grad(x)
 
-        @test g[1] ≈ 2.0 * (0.0 - 0.0)
-        @test g[2] ≈ 2.0 * (10.0 - 12.0) + ρ
+        @test g[1] ≈ 2.0 * (0.0 - 0.0)  # Inside, full inner grad
+        @test g[2] ≈ 0.0 + ρ  # Outside, inner contrib 0 + penalty
     end
 
     @testset "Point inside bounds" begin
@@ -153,14 +154,14 @@ end
         tf = make_shifted_sphere(n=2, shift=[0.0, 0.0], lb=-5.0, ub=10.0)
         ctf = with_box_constraints(tf)
 
-        x = [15.0, -10.0]  # beide außerhalb
+        x = [15.0, -10.0]  # both outside
         g = zeros(2)
         ctf.gradient!(g, x)
 
         x_clamped = [10.0, -5.0]
-        g_expected = 2.0 .* x_clamped .+ [ρ, -ρ]
+        g_expected = zeros(2) .+ [ρ, -ρ]  # Inner contrib 0 due to chain rule
 
-        @test g ≈ g_expected rtol=1e-12
+        @test g ≈ g_expected rtol = 1e-12
     end
 
     @testset "Degenerate input handling (NaN/Inf)" begin
@@ -201,7 +202,7 @@ end
             ctf.gradient!,
             start(ctf),
             LBFGS(),
-            Optim.Options(iterations = 1000)
+            Optim.Options(iterations=1000)
         )
 
         @test isfinite(Optim.minimum(result))

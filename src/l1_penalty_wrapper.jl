@@ -2,8 +2,7 @@
 # Hard box-constraints via L1 exact penalty – allocation-free, domain-safe
 # Stand: 16. Dezember 2025 – ✅ Funktioniert mit alternativem Konstruktor
 
-const BOUND_PENALTY = 1e21
-
+const BOUND_PENALTY = 1e6
 """
     with_box_constraints(tf::TestFunction) -> TestFunction
 
