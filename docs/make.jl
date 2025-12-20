@@ -15,6 +15,7 @@ makedocs(
         prettyurls=get(ENV, "CI", nothing) == "true",
         canonical="https://uwealex.github.io/NonlinearOptimizationTestFunctions.jl",
         assets=String[],
+        size_threshold_ignore=["manual/all_functions.md"],  # Ignore size check for the large function list page
     ),
     modules=[NonlinearOptimizationTestFunctions],
     pages=[
