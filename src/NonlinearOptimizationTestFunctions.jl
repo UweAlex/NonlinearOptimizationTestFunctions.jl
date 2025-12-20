@@ -1,11 +1,10 @@
 # src/NonlinearOptimizationTestFunctions.jl
 # Purpose: Core module for NonlinearOptimizationTestFunctions.jl
-# Stand: 16. Dezember 2025 – FINAL: Alle Konstruktor-Probleme behoben
+# Stand: 18. Dezember 2025 – Mit automatischen Property-Accessoren (korrigierter Export)
 module NonlinearOptimizationTestFunctions
 __precompile__(false)
 using LinearAlgebra
 using ForwardDiff
-
 
 # ===================================================================
 # 1. VALID PROPERTIES & DEFAULTS
@@ -35,9 +34,7 @@ struct TestFunction
     f_count::Ref{Int}
     grad_count::Ref{Int}
 
-    # ===================================================================
     # Main constructor - creates new counters
-    # ===================================================================
     function TestFunction(f, grad, meta)
         required = [:name, :start, :min_position, :min_value, :properties, :lb, :ub]
         missing_keys = setdiff(required, keys(meta))
@@ -68,9 +65,7 @@ struct TestFunction
         )
     end
 
-    # ===================================================================
-    # Alternative constructor - uses provided counter Refs
-    # ===================================================================
+    # Alternative constructor - uses provided counter Refs (for wrappers like l1_penalty)
     function TestFunction(
         f::Function,
         grad::Function,
@@ -89,7 +84,6 @@ struct TestFunction
         name = meta[:name]
         gradient! = (G, x) -> copyto!(G, grad(x))
 
-        # ✅ FIX: new() works inside struct definition, not TestFunction.new()
         new(
             f,
             grad,
@@ -113,9 +107,7 @@ function access_metadata(tf::TestFunction, key::Symbol, n::Union{Int,Nothing}=no
     val isa Function || return val
 
     if "scalable" in tf.meta[:properties]
-        if isnothing(n)
-            error("Metadata :$key requires dimension n for scalable function $(tf.meta[:name])")
-        end
+        isnothing(n) && error("Metadata :$key requires dimension n for scalable function $(tf.name)")
         return val(n)
     else
         return val()
@@ -128,6 +120,19 @@ min_value(tf::TestFunction, n::Union{Int,Nothing}=nothing) = access_metadata(tf,
 lb(tf::TestFunction, n::Union{Int,Nothing}=nothing) = access_metadata(tf, :lb, n)
 ub(tf::TestFunction, n::Union{Int,Nothing}=nothing) = access_metadata(tf, :ub, n)
 source(tf::TestFunction) = get(tf.meta, :source, "Unknown Source")
+
+# ===================================================================
+# 3.1 User-friendly accessors
+# ===================================================================
+
+name(tf::TestFunction) = tf.name
+description(tf::TestFunction) = get(tf.meta, :description, "No description available.")
+math(tf::TestFunction) = get(tf.meta, :math, raw"Placeholder: f(\mathbf{x}) = \dots")
+
+function default_n(tf::TestFunction)
+    scalable(tf) || error("default_n is only defined for scalable functions")
+    tf.meta[:default_n]  # per RULE_DEFAULT_N: MUST exist
+end
 
 # ===================================================================
 # 4. MODERN PROPERTY HANDLING
@@ -145,18 +150,37 @@ has_property(tf::TestFunction, prop::AbstractString) = property(tf, prop)
 has_property(tf::TestFunction, prop::Symbol) = has_property(tf, string(prop))
 @deprecate has_property(tf, prop) property(tf, prop)
 
-Base.getproperty(tf::TestFunction, sym::Symbol) =
-    sym in fieldnames(TestFunction) ? getfield(tf, sym) : getproperty(tf.meta, sym)
-
 # ===================================================================
-# 5. Convenience property shortcuts
+# 5. Auto-generate accessor functions for all valid properties + static export
 # ===================================================================
 
-bounded(tf::TestFunction) = property(tf, "bounded")
-scalable(tf::TestFunction) = property(tf, "scalable")
-differentiable(tf::TestFunction) = property(tf, "differentiable")
-multimodal(tf::TestFunction) = property(tf, "multimodal")
-separable(tf::TestFunction) = property(tf, "separable")
+# *** NOTE ON THIS BLOCK ***
+# This section automatically generates boolean accessor functions (e.g. scalable(tf), convex(tf))
+# for every property in VALID_PROPERTIES and exports them.
+# It uses @eval and dynamic Expr building to create a static `export` statement.
+# While it may look "magical" to Julia beginners, it is safe, idiomatic for this use case,
+# runs only at module load time, and has zero runtime cost.
+# All generated functions are fully documented via docstrings.
+
+export_expr = Expr(:export)
+
+for prop in VALID_PROPERTIES
+    func_name = Symbol(replace(lowercase(prop), r"[ -]" => ""))
+
+    @eval begin
+        """
+            $($func_name)(tf::TestFunction) -> Bool
+
+        Check if the test function has the "$($prop)" property.
+        """
+        $func_name(tf::TestFunction) = property(tf, $prop)
+    end
+
+    push!(export_expr.args, func_name)
+end
+
+# Static export of all generated accessors
+@eval $export_expr
 
 # ===================================================================
 # 6. Utility functions
@@ -164,11 +188,10 @@ separable(tf::TestFunction) = property(tf, "separable")
 
 """
     properties(tf::TestFunction) -> Vector{String}
-
-Returns a vector containing all properties of the test function.
+Returns a sorted vector of all properties.
 """
 function properties(tf::TestFunction)
-    return sort(collect(tf.meta[:properties]))
+    sort(collect(tf.meta[:properties]))
 end
 
 export properties
@@ -177,7 +200,7 @@ get_f_count(tf::TestFunction) = tf.f_count[]
 get_grad_count(tf::TestFunction) = tf.grad_count[]
 reset_counts!(tf::TestFunction) = (tf.f_count[] = 0; tf.grad_count[] = 0)
 
-dim(tf::TestFunction) = "scalable" in tf.meta[:properties] ? -1 : length(min_position(tf))
+dim(tf::TestFunction) = scalable(tf) ? -1 : length(min_position(tf))
 
 filter_testfunctions(pred, dict=TEST_FUNCTIONS) = [tf for tf in values(dict) if pred(tf)]
 
@@ -189,29 +212,25 @@ filter_testfunctions(pred, dict=TEST_FUNCTIONS) = [tf for tf in values(dict) if 
     fixed(tf::TestFunction; n::Union{Int,Nothing}=nothing) -> TestFunction
     fixed(tf::TestFunction, n::Int) -> TestFunction
 
-Return a non-scalable `TestFunction` with fixed dimension.
+Return a fixed-dimension `TestFunction`. For scalable functions, uses `n` or `:default_n`.
 """
 function fixed(tf::TestFunction; n::Union{Int,Nothing}=nothing)
     !scalable(tf) && return tf
 
-    n_fixed = n !== nothing ? n :
-              haskey(tf.meta, :default_n) ? tf.meta[:default_n] :
-              error("Scalable function '$(tf.name)' has no :default_n and no explicit n given")
+    n_fixed = n !== nothing ? n : tf.meta[:default_n]  # per rule: MUST exist
 
     tf_fixed = TestFunction(
         tf.f_original,
         tf.grad_original,
-        deepcopy(tf.meta)
+        deepcopy(tf.meta),
+        tf.f_count,
+        tf.grad_count
     )
 
     for (key, val) in tf_fixed.meta
         if val isa Function
-            try
-                _ = val(n_fixed)
-                tf_fixed.meta[key] = let n = n_fixed
-                    () -> val(n)
-                end
-            catch
+            tf_fixed.meta[key] = let n = n_fixed
+                () -> val(n)
             end
         end
     end
@@ -250,11 +269,9 @@ end
 
 export TEST_FUNCTIONS, TestFunction, filter_testfunctions
 export start, min_position, min_value, lb, ub, dim
-export property, bounded, scalable, differentiable, multimodal, separable
-export get_f_count, get_grad_count, reset_counts!
-export fixed
+export property, get_f_count, get_grad_count, reset_counts!
+export fixed, name, description, math, default_n, source
 export optimization_problem
-export source
 
 include("l1_penalty_wrapper.jl")
 using Optimization
